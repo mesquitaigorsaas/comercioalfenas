@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Anúncio - Guia Comercial</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #333333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: #e11d48;
+        }
+
+        .logo span { color: #0f172a; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .page-title { padding: 30px 0 10px 0; }
+        .page-title h1 { font-size: 1.8rem; color: #0f172a; }
+        .page-title p { color: #64748b; font-size: 0.9rem; }
+
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0 50px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-section-title:not(:first-child) { margin-top: 34px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-hint { color: #64748b; font-size: 0.8rem; margin-top: 5px; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #ffffff;
+        }
+
+        input[type="text"]:focus, input[type="tel"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+            border-color: #93c5fd;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px dashed #cbd5e1;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .preview-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .preview-thumb-wrapper { position: relative; }
+
+        .preview-thumb {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            display: block;
+        }
+
+        .preview-remove {
+            position: absolute; top: -6px; right: -6px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #e11d48; color: #fff; border: none;
+            font-size: 0.65rem; cursor: pointer; line-height: 1;
+        }
+
+        .btn-submit {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background-color: #1d4ed8; }
+        .btn-submit:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+
+        .horarios-grid { display: flex; flex-direction: column; gap: 8px; }
+        .horario-linha {
+            display: grid; grid-template-columns: 90px 90px 1fr 1fr; gap: 10px; align-items: center;
+            padding: 8px 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;
+        }
+        .horario-linha span { font-weight: 700; font-size: 0.85rem; color: #334155; }
+        .horario-linha label.chk-fechado {
+            display: flex; align-items: center; gap: 6px; font-weight: 500; font-size: 0.78rem;
+            color: #64748b; margin: 0; cursor: pointer;
+        }
+        .horario-linha input[type="time"] {
+            padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; width: 100%;
+        }
+        @media (max-width: 560px) {
+            .horario-linha { grid-template-columns: 70px 1fr; grid-template-rows: auto auto; }
+        }
+
+        .tela-verificando {
+            text-align: center; padding: 120px 20px; color: #94a3b8;
+        }
+        .tela-verificando i { font-size: 1.8rem; margin-bottom: 12px; display: block; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">
+                <i class="fa-solid fa-location-dot"></i> GUIA<span>ALFENAS</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="../index.html">INÍCIO</a>
+                <a href="../planos.html">PLANOS</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Exibido enquanto confere login / limite de 1 loja -->
+        <div id="telaVerificando" class="tela-verificando">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Verificando sua conta...
+        </div>
+
+        <div id="conteudoFormulario" style="display: none;">
+            <div class="page-title">
+                <h1>Configurar Anúncio da Empresa</h1>
+                <p>Preencha os dados abaixo para publicar seu anúncio no portal.</p>
+            </div>
+
+            <form id="formAnuncio" class="form-card">
+
+                <div class="form-section-title">
+                    <i class="fa-solid fa-store" style="color: #2563eb;"></i> 1. Informações do Negócio
+                </div>
+
+                <div class="form-group">
+                    <label for="nomeEmpresa">Nome Fantasia da Empresa *</label>
+                    <input type="text" id="nomeEmpresa" placeholder="Ex: Zinzane Boutique" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cidade">Cidade *</label>
+                        <select id="cidade" required>
+                            <option value="">Selecione a cidade...</option>
+                            <option value="Alfenas">Alfenas</option>
+                            <option value="Alterosa">Alterosa</option>
+                            <option value="Areado">Areado</option>
+                            <option value="Boa Esperança">Boa Esperança</option>
+                            <option value="Borda da Mata">Borda da Mata</option>
+                            <option value="Cabo Verde">Cabo Verde</option>
+                            <option value="Cambuí">Cambuí</option>
+                            <option value="Campestre">Campestre</option>
+                            <option value="Campo do Meio">Campo do Meio</option>
+                            <option value="Campos Gerais">Campos Gerais</option>
+                            <option value="Carmo do Rio Claro">Carmo do Rio Claro</option>
+                            <option value="Fama">Fama</option>
+                            <option value="Guaxupé">Guaxupé</option>
+                            <option value="Itajubá">Itajubá</option>
+                            <option value="Itaú de Minas">Itaú de Minas</option>
+                            <option value="Machado">Machado</option>
+                            <option value="Muzambinho">Muzambinho</option>
+                            <option value="Paraguaçu">Paraguaçu</option>
+                            <option value="Passos">Passos</option>
+                            <option value="Poços de Caldas">Poços de Caldas</option>
+                            <option value="Pouso Alegre">Pouso Alegre</option>
+                            <option value="Santa Rita do Sapucaí">Santa Rita do Sapucaí</option>
+                            <option value="São Lourenço">São Lourenço</option>
+                            <option value="São Sebastião do Paraíso">São Sebastião do Paraíso</option>
+                            <option value="Serrania">Serrania</option>
+                            <option value="Três Corações">Três Corações</option>
+                            <option value="Três Pontas">Três Pontas</option>
+                            <option value="Varginha">Varginha</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoria Principal *</label>
+                        <select id="categoria" required>
+                            <option value="">Selecione a categoria...</option>
+                            <option value="Academias e Esportes">Academias e Esportes</option>
+                            <option value="Advocacia e Contabilidade">Advocacia e Contabilidade</option>
+                            <option value="Alimentação e Gastronomia">Alimentação e Gastronomia</option>
+                            <option value="Automotivo e Peças">Automotivo e Peças</option>
+                            <option value="Bares e Distribuidoras">Bares e Distribuidoras</option>
+                            <option value="Beleza e Estética">Beleza e Estética</option>
+                            <option value="Casa, Construção e Reformas">Casa, Construção e Reformas</option>
+                            <option value="Comércio e Compras">Comércio e Compras</option>
+                            <option value="Cursos e Educação">Cursos e Educação</option>
+                            <option value="Eventos e Festas">Eventos e Festas</option>
+                            <option value="Farmácias e Saúde">Farmácias e Saúde</option>
+                            <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
+                            <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
+                            <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
+                            <option value="Tecnologia e Celulares">Tecnologia e Celulares</option>
+                            <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Sobre a Empresa / Descrição do Anúncio *</label>
+                    <textarea id="descricao" placeholder="Escreva aqui os detalhes sobre seus produtos, serviços e diferenciais..." required></textarea>
+                </div>
+
+                <div class="form-section-title">
+                    <i class="fa-solid fa-map-location-dot" style="color: #2563eb;"></i> 2. Contato e Localização
+                </div>
+
+                <div class="form-group">
+                    <label for="endereco">Endereço Completo *</label>
+                    <input type="text" id="endereco" placeholder="Ex: Rua Coronel José Justino, 123 - Centro, Alfenas - MG" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone Fixo</label>
+                        <input type="tel" id="telefone" placeholder="Ex: (35) 3299-0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsapp">WhatsApp *</label>
+                        <input type="tel" id="whatsapp" placeholder="Ex: (35) 99999-0000" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="instagram">Instagram</label>
+                        <input type="text" id="instagram" placeholder="Ex: @suaempresa ou link do perfil">
+                    </div>
+                    <div class="form-group">
+                        <label for="site">Site (opcional)</label>
+                        <input type="url" id="site" placeholder="Ex: https://www.suaempresa.com.br">
+                    </div>
+                </div>
+
+                <div class="form-section-title">
+                    <i class="fa-solid fa-clock" style="color: #2563eb;"></i> 3. Horário de Funcionamento
+                </div>
+
+                <div class="form-group">
+                    <div id="horariosSemana" class="horarios-grid"></div>
+                </div>
+
+                <div class="form-section-title">
+                    <i class="fa-solid fa-image" style="color: #2563eb;"></i> 4. Logo da Empresa
+                </div>
+
+                <div class="form-group">
+                    <label for="uploadLogo">Logo da Empresa (PNG ou JPEG)</label>
+                    <input type="file" id="uploadLogo" accept="image/png, image/jpeg, image/jpg">
+                    <div id="previewLogoContainer" class="preview-container"></div>
+                    <p class="form-hint">Recomendado: imagem quadrada, ex: 500x500px.</p>
+                </div>
+
+                <div class="form-section-title">
+                    <i class="fa-solid fa-images" style="color: #2563eb;"></i> 5. Fotos do Estabelecimento
+                </div>
+
+                <div class="form-group">
+                    <label for="uploadFotos">Fotos (até 8 imagens)</label>
+                    <input type="file" id="uploadFotos" accept="image/png, image/jpeg, image/jpg" multiple>
+                    <div id="previewFotosContainer" class="preview-container"></div>
+                    <p class="form-hint" id="contadorFotos">0 de 8 fotos selecionadas.</p>
+                </div>
+
+                <button type="submit" class="btn-submit">SALVAR E PUBLICAR ANÚNCIO</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // Configurações do Supabase
+        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let usuarioAtual = null;
+        let logoFileNovo = null;      // arquivo novo selecionado (ainda não enviado)
+        let logoUrlExistente = '';    // URL já salva no banco (modo edição)
+        let fotosNovas = [];          // arquivos novos selecionados (ainda não enviados)
+        let fotosExistentes = [];     // URLs já salvas no banco (modo edição)
+        let modoEdicao = false;
+        let anuncioIdEdicao = null;
+
+        // ===== Monta as 7 linhas de horário (Seg a Dom) =====
+        const DIAS_SEMANA = [
+            { chave: 'seg', label: 'Segunda' },
+            { chave: 'ter', label: 'Terça' },
+            { chave: 'qua', label: 'Quarta' },
+            { chave: 'qui', label: 'Quinta' },
+            { chave: 'sex', label: 'Sexta' },
+            { chave: 'sab', label: 'Sábado' },
+            { chave: 'dom', label: 'Domingo' }
+        ];
+
+        function montarLinhasHorario(horariosExistentes) {
+            const container = document.getElementById('horariosSemana');
+            container.innerHTML = DIAS_SEMANA.map(dia => {
+                const h = horariosExistentes ? horariosExistentes[dia.chave] : null;
+                const fechado = h ? !h.aberto : (dia.chave === 'dom');
+                const abre = h && h.aberto ? h.abre : '08:00';
+                const fecha = h && h.aberto ? h.fecha : '18:00';
+                return `
+                <div class="horario-linha" data-dia="${dia.chave}">
+                    <span>${dia.label}</span>
+                    <label class="chk-fechado">
+                        <input type="checkbox" class="chk-fechado-input" ${fechado ? 'checked' : ''}> Fechado
+                    </label>
+                    <input type="time" class="input-abre" value="${abre}" ${fechado ? 'disabled' : ''}>
+                    <input type="time" class="input-fecha" value="${fecha}" ${fechado ? 'disabled' : ''}>
+                </div>
+            `;
+            }).join('');
+
+            container.querySelectorAll('.chk-fechado-input').forEach(chk => {
+                chk.addEventListener('change', function() {
+                    const linha = this.closest('.horario-linha');
+                    linha.querySelector('.input-abre').disabled = this.checked;
+                    linha.querySelector('.input-fecha').disabled = this.checked;
+                });
+            });
+        }
+
+        function coletarHorarios() {
+            const horarios = {};
+            document.querySelectorAll('#horariosSemana .horario-linha').forEach(linha => {
+                const dia = linha.dataset.dia;
+                const fechado = linha.querySelector('.chk-fechado-input').checked;
+                horarios[dia] = fechado ? { aberto: false } : {
+                    aberto: true,
+                    abre: linha.querySelector('.input-abre').value,
+                    fecha: linha.querySelector('.input-fecha').value
+                };
+            });
+            return horarios;
+        }
+
+        // As linhas de horário são montadas dentro de verificarAcesso() (com ou sem dados existentes)
+
+        // ===== Verifica login; se tiver ?id= na URL, entra em modo de edição =====
+        async function verificarAcesso() {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                alert('Você precisa estar logado para cadastrar um anúncio.');
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            usuarioAtual = user;
+
+            const params = new URLSearchParams(window.location.search);
+            const idParam = params.get('id');
+
+            if (idParam) {
+                // ===== MODO EDIÇÃO =====
+                const { data: anuncioExistente, error } = await supabase
+                    .from('anuncios')
+                    .select('*')
+                    .eq('id', idParam)
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (error || !anuncioExistente) {
+                    alert('Não foi possível carregar este anúncio para edição, ou ele não pertence à sua conta.');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                modoEdicao = true;
+                anuncioIdEdicao = anuncioExistente.id;
+                preencherFormulario(anuncioExistente);
+
+                document.querySelector('.page-title h1').innerText = 'Editar Anúncio da Empresa';
+                document.querySelector('.page-title p').innerText = 'Atualize as informações do seu anúncio no portal.';
+                document.querySelector('.btn-submit').innerText = 'SALVAR ALTERAÇÕES';
+            } else {
+                // ===== MODO CRIAÇÃO: verifica se já existe loja cadastrada =====
+                montarLinhasHorario();
+
+                const { data: anunciosExistentes, error } = await supabase
+                    .from('anuncios')
+                    .select('id')
+                    .eq('user_id', user.id);
+
+                if (!error && anunciosExistentes && anunciosExistentes.length > 0) {
+                    alert('Você já possui uma loja cadastrada. Cada anunciante pode cadastrar apenas 1 estabelecimento — redirecionando para edição.');
+                    window.location.href = `cadastrar-anuncio.html?id=${anunciosExistentes[0].id}`;
+                    return;
+                }
+            }
+
+            document.getElementById('telaVerificando').style.display = 'none';
+            document.getElementById('conteudoFormulario').style.display = 'block';
+        }
+
+        // Preenche o formulário com os dados de um anúncio existente (modo edição)
+        function preencherFormulario(anuncio) {
+            document.getElementById('nomeEmpresa').value = anuncio.titulo || '';
+            document.getElementById('descricao').value = anuncio.descricao || '';
+            document.getElementById('endereco').value = anuncio.endereco || '';
+            document.getElementById('telefone').value = anuncio.telefone || '';
+            document.getElementById('whatsapp').value = anuncio.whatsapp || '';
+            document.getElementById('instagram').value = anuncio.instagram || '';
+            document.getElementById('site').value = anuncio.site || '';
+
+            // Cidade e categoria: seleciona a opção comparando sem diferenciar maiúsculas/minúsculas
+            selecionarOpcaoIgnorandoCase('cidade', anuncio.cidade);
+            selecionarOpcaoIgnorandoCase('categoria', anuncio.categoria);
+
+            // Horários (com os dados existentes)
+            montarLinhasHorario(anuncio.horarios);
+
+            // Logo já cadastrada
+            if (anuncio.imagem_url) {
+                logoUrlExistente = anuncio.imagem_url;
+                document.getElementById('previewLogoContainer').innerHTML = `<img src="${logoUrlExistente}" class="preview-thumb">`;
+            }
+
+            // Fotos já cadastradas
+            if (anuncio.fotos && anuncio.fotos.length > 0) {
+                fotosExistentes = [...anuncio.fotos];
+                renderizarPreviewFotos();
+            }
+        }
+
+        function selecionarOpcaoIgnorandoCase(idSelect, valor) {
+            if (!valor) return;
+            const select = document.getElementById(idSelect);
+            const opcao = Array.from(select.options).find(op => op.value.toLowerCase() === valor.toLowerCase());
+            if (opcao) select.value = opcao.value;
+        }
+
+        verificarAcesso();
+
+        // ===== Preview da logo (arquivo fica pendente, só sobe ao salvar) =====
+        document.getElementById('uploadLogo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const container = document.getElementById('previewLogoContainer');
+            container.innerHTML = '';
+            if (file) {
+                logoFileNovo = file;
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file); // prévia local, rápida, sem converter pra texto
+                img.className = 'preview-thumb';
+                container.appendChild(img);
+            }
+        });
+
+        // ===== Preview das fotos do estabelecimento (até 8) =====
+        // Mistura fotos já existentes (URLs, modo edição) com fotos novas (arquivos, ainda não enviadas)
+        function renderizarPreviewFotos() {
+            const container = document.getElementById('previewFotosContainer');
+            container.innerHTML = '';
+
+            fotosExistentes.forEach((url, index) => {
+                adicionarThumbPreview(container, url, () => {
+                    fotosExistentes.splice(index, 1);
+                    renderizarPreviewFotos();
+                });
+            });
+
+            fotosNovas.forEach((file, index) => {
+                adicionarThumbPreview(container, URL.createObjectURL(file), () => {
+                    fotosNovas.splice(index, 1);
+                    renderizarPreviewFotos();
+                });
+            });
+
+            const total = fotosExistentes.length + fotosNovas.length;
+            document.getElementById('contadorFotos').textContent = `${total} de 8 fotos selecionadas.`;
+        }
+
+        function adicionarThumbPreview(container, srcUrl, aoRemover) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-thumb-wrapper';
+
+            const img = document.createElement('img');
+            img.src = srcUrl;
+            img.className = 'preview-thumb';
+
+            const btnRemover = document.createElement('button');
+            btnRemover.type = 'button';
+            btnRemover.className = 'preview-remove';
+            btnRemover.innerHTML = '&times;';
+            btnRemover.onclick = aoRemover;
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(btnRemover);
+            container.appendChild(wrapper);
+        }
+
+        document.getElementById('uploadFotos').addEventListener('change', function(e) {
+            const arquivos = Array.from(e.target.files);
+            const totalAtual = fotosExistentes.length + fotosNovas.length;
+            const vagasDisponiveis = 8 - totalAtual;
+
+            if (arquivos.length > vagasDisponiveis) {
+                alert(`Você só pode adicionar mais ${vagasDisponiveis} foto(s). O limite é 8 fotos no total.`);
+            }
+
+            const arquivosParaAdicionar = arquivos.slice(0, vagasDisponiveis);
+            fotosNovas.push(...arquivosParaAdicionar);
+            renderizarPreviewFotos();
+
+            e.target.value = '';
+        });
+
+        // ===== Envia um arquivo para o Supabase Storage e devolve a URL pública =====
+        async function enviarArquivoParaStorage(file, pasta) {
+            const extensao = file.name.split('.').pop();
+            const nomeArquivo = `${pasta}/${usuarioAtual.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
+
+            const { error: erroUpload } = await supabase.storage
+                .from('anuncios')
+                .upload(nomeArquivo, file, { cacheControl: '3600', upsert: false });
+
+            if (erroUpload) {
+                throw new Error(`Falha ao enviar imagem (${file.name}): ${erroUpload.message}`);
+            }
+
+            const { data } = supabase.storage.from('anuncios').getPublicUrl(nomeArquivo);
+            return data.publicUrl;
+        }
+
+        // ===== Envio do formulário =====
+        document.getElementById('formAnuncio').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btnSubmit = document.querySelector('.btn-submit');
+            btnSubmit.disabled = true;
+
+            try {
+                // 1) Sobe pro Storage só os arquivos novos (logo e fotos ainda não enviados)
+                btnSubmit.innerText = 'Enviando imagens...';
+
+                let logoUrlFinal = logoUrlExistente;
+                if (logoFileNovo) {
+                    logoUrlFinal = await enviarArquivoParaStorage(logoFileNovo, 'logos');
+                }
+
+                const fotosNovasUrls = [];
+                for (const arquivo of fotosNovas) {
+                    const url = await enviarArquivoParaStorage(arquivo, 'fotos');
+                    fotosNovasUrls.push(url);
+                }
+                const fotosUrlsFinais = [...fotosExistentes, ...fotosNovasUrls];
+
+                // 2) Salva o anúncio com as URLs (leves) em vez das imagens inteiras
+                btnSubmit.innerText = modoEdicao ? 'Salvando Alterações...' : 'Salvando no Banco de Dados...';
+
+                const dadosAnuncio = {
+                    user_id: usuarioAtual.id,
+                    titulo: document.getElementById('nomeEmpresa').value.trim(),
+                    cidade: document.getElementById('cidade').value.toLowerCase().trim(),
+                    categoria: document.getElementById('categoria').value.trim(),
+                    descricao: document.getElementById('descricao').value.trim(),
+                    endereco: document.getElementById('endereco').value.trim(),
+                    telefone: document.getElementById('telefone').value.trim(),
+                    whatsapp: document.getElementById('whatsapp').value.trim(),
+                    instagram: document.getElementById('instagram').value.trim(),
+                    site: document.getElementById('site').value.trim(),
+                    horarios: coletarHorarios(),
+                    imagem_url: logoUrlFinal || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
+                    fotos: fotosUrlsFinais
+                };
+
+                if (!modoEdicao) {
+                    dadosAnuncio.status = 'ABERTO AGORA';
+                }
+
+                let resultado;
+                if (modoEdicao) {
+                    resultado = await supabase
+                        .from('anuncios')
+                        .update(dadosAnuncio)
+                        .eq('id', anuncioIdEdicao)
+                        .select();
+                } else {
+                    resultado = await supabase
+                        .from('anuncios')
+                        .insert([dadosAnuncio])
+                        .select();
+                }
+
+                if (resultado.error) {
+                    throw resultado.error;
+                }
+
+                alert(modoEdicao ? 'Anúncio atualizado com sucesso!' : 'Anúncio cadastrado e publicado com sucesso no Supabase!');
+                window.location.href = 'dashboard.html';
+
+            } catch (err) {
+                console.error('Erro detalhado do Supabase:', err);
+
+                let mensagemErro = err.message || JSON.stringify(err);
+                if (mensagemErro.includes('Failed to fetch')) {
+                    mensagemErro = "Falha de comunicação com o Supabase. Verifique se as políticas de segurança (RLS) da tabela 'anuncios' permitem inserções públicas ou se a URL do projeto está correta.";
+                }
+
+                alert('Erro ao salvar o anúncio: ' + mensagemErro);
+
+
+                btnSubmit.innerText = modoEdicao ? 'SALVAR ALTERAÇÕES' : 'SALVAR E PUBLICAR ANÚNCIO';
+                btnSubmit.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

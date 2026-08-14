@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Anunciante - Guia Alfenas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+
+    <header class="dashboard-header">
+        <div class="container dash-nav">
+            <a href="../index.html" class="logo">
+                <i class="fa-solid fa-location-dot"></i> GUIA<span>ALFENAS</span>
+            </a>
+            <div class="user-info">
+                <span>Bem-vindo ao seu painel</span>
+                <a href="../index.html" class="btn-exit"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main section-padding">
+        <div class="container">
+
+            <div class="dash-welcome">
+                <div>
+                    <h2>Painel de Controle</h2>
+                    <p>Gerencie as informações e visualizações do seu anúncio comercial.</p>
+                </div>
+                <!-- O botão aqui é montado dinamicamente pelo JS: só aparece "Novo Anúncio" se ainda não existir loja -->
+                <div id="botaoTopoWrapper"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span>Visualizações Totais</span>
+                        <h4>0</h4>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span>Cliques no WhatsApp</span>
+                        <h4>0</h4>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span>Anúncios Ativos</span>
+                        <h4>0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-content-box">
+                <div class="box-header">
+                    <h3><i class="fa-solid fa-list-check"></i> Meus Anúncios Cadastrados</h3>
+                </div>
+
+                <div id="user-listings-container">
+                    <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom: 12px; color: #cbd5e1;"></i>
+                        <p>Carregando...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function carregarPainelRestrito() {
+        try {
+            const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+
+            if (authError || !user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            const { data: anuncios, error } = await supabaseClient
+                .from('anuncios')
+                .select('*')
+                .eq('user_id', user.id);
+
+            const container = document.getElementById('user-listings-container');
+            const botaoTopoWrapper = document.getElementById('botaoTopoWrapper');
+
+            if (error) {
+                console.error('Erro ao buscar anúncios:', error);
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 40px; color: #e11d48;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 30px; margin-bottom: 12px;"></i>
+                        <p>Erro ao carregar seus anúncios: ${error.message}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (!anuncios || anuncios.length === 0) {
+                // Sem loja cadastrada: mostra botão de criar (única opção disponível)
+                botaoTopoWrapper.innerHTML = `
+                    <a href="cadastrar-anuncio.html" class="btn-primary-dash">
+                        <i class="fa-solid fa-plus"></i> Novo Anúncio
+                    </a>
+                `;
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                        <i class="fa-solid fa-folder-open" style="font-size: 40px; margin-bottom: 12px; color: #cbd5e1;"></i>
+                        <p>Você ainda não possui sua loja cadastrada.</p>
+                        <a href="cadastrar-anuncio.html" class="btn-primary-dash" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px;">Cadastrar Minha Loja</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const anuncio = anuncios[0]; // Pega a única loja permitida (regra de 1 loja por conta)
+
+            // Já tem loja: o botão do topo vira "Editar Anúncio" (nunca "Novo Anúncio")
+            botaoTopoWrapper.innerHTML = `
+                <a href="cadastrar-anuncio.html?id=${anuncio.id}" class="btn-primary-dash">
+                    <i class="fa-solid fa-pen"></i> Editar Anúncio
+                </a>
+            `;
+
+            // Atualiza as métricas reais com base no banco de dados
+            document.querySelector('.stat-card:nth-child(1) h4').innerText = anuncio.visualizacoes || 0;
+            document.querySelector('.stat-card:nth-child(2) h4').innerText = anuncio.cliques_whatsapp || 0;
+            document.querySelector('.stat-card:nth-child(3) h4').innerText = anuncios.length; // conta anúncios ativos de verdade
+
+            container.innerHTML = `
+                <div class="listing-item-dash" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="${anuncio.imagem_url || 'https://via.placeholder.com/80'}" alt="${anuncio.titulo || 'Loja'}" style="width: 80px; height: 80px; object-fit: contain; background:#f1f5f9; border-radius: 6px;">
+                        <div>
+                            <h4 style="font-size: 18px; color: #1e293b; margin-bottom: 4px;">${anuncio.titulo || 'Estabelecimento'}</h4>
+                            <p style="color: #64748b; font-size: 14px;"><i class="fa-solid fa-tag"></i> ${anuncio.categoria || 'Geral'}</p>
+                            <span style="display: inline-block; margin-top: 6px; padding: 2px 8px; background: #dcfce7; color: #166534; border-radius: 4px; font-size: 12px; font-weight: 600;">${anuncio.status || 'Anúncio ativo ou pendente de regularização'}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="../anuncio-detalhes.html?id=${anuncio.id}" target="_blank" style="padding: 8px 14px; background: #f1f5f9; color: #334155; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500;"><i class="fa-solid fa-eye"></i> Ver Loja</a>
+                        <a href="cadastrar-anuncio.html?id=${anuncio.id}" style="padding: 8px 14px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500;"><i class="fa-solid fa-pen"></i> Editar</a>
+                    </div>
+                </div>
+            `;
+
+        } catch (err) {
+            console.error('Erro inesperado no painel:', err);
+            const container = document.getElementById('user-listings-container');
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 40px; color: #e11d48;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 30px; margin-bottom: 12px;"></i>
+                    <p>Ocorreu um erro inesperado ao carregar o painel.</p>
+                    <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">${err.message || err}</p>
+                </div>
+            `;
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', carregarPainelRestrito);
+</script>
+</html>

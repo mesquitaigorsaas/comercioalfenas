@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - Guia Comercial Alfenas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .auth-container {
+            max-width: 480px;
+            margin: 40px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .auth-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f1f5f9;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            background: #ffffff;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            cursor: default;
+        }
+
+        .auth-body {
+            padding: 30px 25px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .input-with-icon input,
+        .input-with-icon select {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-with-icon input:focus,
+        .input-with-icon select:focus {
+            border-color: #2563eb;
+        }
+
+        .btn-submit {
+            background: #2563eb;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+        }
+
+        .auth-header-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .auth-header-text h2 {
+            font-size: 22px;
+            color: #1e293b;
+        }
+
+        .auth-header-text p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .plano-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .plano-badge.show { display: flex; }
+
+        .auth-alert {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 25px;
+            margin-top: 20px;
+        }
+        .auth-alert.show { display: flex; }
+        .auth-alert.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .auth-alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .forgot-link {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">
+                <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+            </a>
+
+            <nav class="nav-links">
+                <a href="../index.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+
+            <div class="auth-tabs">
+                <button type="button" class="tab-btn">Criar Conta</button>
+            </div>
+
+            <div id="authAlert" class="auth-alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="authAlertText"></span>
+            </div>
+
+            <div class="auth-body">
+
+                <div id="planoBadge" class="plano-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span id="planoBadgeText"></span>
+                </div>
+
+                <form id="form-register" class="auth-form">
+                    <div class="auth-header-text">
+                        <h2>Crie sua conta</h2>
+                        <p>Cadastre-se para publicar e divulgar sua empresa.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-name">Nome Completo *</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="reg-name" placeholder="Seu nome completo" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phone">WhatsApp / Telefone *</label>
+                        <div class="input-with-icon">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <input type="tel" id="reg-phone" placeholder="(35) 99999-9999" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email">E-mail Comercial *</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="reg-email" placeholder="seuemail@empresa.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Crie uma Senha *</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="reg-password" placeholder="Mínimo de 6 caracteres" required minlength="6">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-rocket"></i> CRIAR CONTA E ANUNCIAR
+                    </button>
+
+                    <p style="text-align: center; font-size: 13px; color: #64748b; margin-top: 8px;">
+                        Já tem conta? <a href="login.html" class="forgot-link">Acessar conta</a>
+                    </p>
+                </form>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 Guia Comercial Alfenas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cliente Supabase (mesmo projeto usado no restante do site)
+        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Pega o plano escolhido em planos.html (?plano=trimestral / semestral / anual / especial)
+        const urlParams = new URLSearchParams(window.location.search);
+        const planoEscolhido = urlParams.get('plano') || urlParams.get('add') || '';
+
+        const nomesPlanos = {
+            trimestral: 'Plano Trimestral',
+            semestral: 'Plano Semestral',
+            anual: 'Plano Anual',
+            especial: 'Destaque Especial (15 dias)'
+        };
+
+        if (planoEscolhido) {
+            const badge = document.getElementById('planoBadge');
+            const badgeText = document.getElementById('planoBadgeText');
+            badgeText.textContent = 'Plano selecionado: ' + (nomesPlanos[planoEscolhido] || planoEscolhido);
+            badge.classList.add('show');
+        }
+
+        function showAlert(type, message) {
+            const box = document.getElementById('authAlert');
+            const text = document.getElementById('authAlertText');
+            const icon = box.querySelector('i');
+            box.classList.remove('error', 'success');
+            box.classList.add(type, 'show');
+            icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+            text.textContent = message;
+        }
+
+        function hideAlert() {
+            document.getElementById('authAlert').classList.remove('show');
+        }
+
+        function setLoading(button, loading, loadingText) {
+            if (loading) {
+                button.dataset.originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${loadingText}`;
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalHtml;
+            }
+        }
+
+        // ===== CRIAR CONTA =====
+        document.getElementById('form-register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const nome = document.getElementById('reg-name').value.trim();
+            const telefone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const btn = e.target.querySelector('.btn-submit');
+
+            setLoading(btn, true, 'Criando conta...');
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { nome_completo: nome, telefone: telefone },
+                    emailRedirectTo: window.location.origin + window.location.pathname.replace('cadastro.html', 'login.html')
+                }
+            });
+            setLoading(btn, false);
+
+            if (error) {
+                showAlert('error', error.message.includes('already registered')
+                    ? 'Este e-mail já possui cadastro. Tente acessar sua conta.'
+                    : 'Não foi possível criar a conta: ' + error.message);
+                return;
+            }
+
+            // Monta a próxima URL levando o plano escolhido para o cadastro do comércio
+            const proximaUrl = '../dashboard/cadastrar-anuncio.html' + (planoEscolhido ? '?plano=' + encodeURIComponent(planoEscolhido) : '');
+
+            if (data.session) {
+                // Projeto sem confirmação de e-mail: usuário já entra logado e segue para cadastrar o comércio
+                window.location.href = proximaUrl;
+            } else {
+                // Projeto com confirmação de e-mail: avisa e manda para o login
+                showAlert('success', 'Conta criada! Verifique seu e-mail para confirmar o cadastro e depois acesse sua conta.');
+            }
+        });
+    </script>
+</body>
+</html>

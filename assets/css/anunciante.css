@@ -1,0 +1,167 @@
+/* BANNER DE TOPO */
+.listing-header-banner {
+    background: #1e293b;
+    color: white;
+    padding: 40px 0;
+}
+
+.listing-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.badge-cat {
+    background-color: #e52d27;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.listing-title-area h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.listing-title-area p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.listing-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-badge.open {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-fav {
+    background: transparent;
+    border: 1px solid #ffffff40;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* LAYOUT DUAS COLUNAS */
+.listing-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .listing-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.detail-box, .sidebar-box {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.detail-box h3, .sidebar-box h3 {
+    font-size: 18px;
+    color: #1e293b;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+/* GALERIA */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* COMODIDADES */
+.features-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.features-list li {
+    font-size: 14px;
+    color: #475569;
+}
+
+.features-list i {
+    color: #10b981;
+    margin-right: 8px;
+}
+
+/* SIDEBAR CONTATO */
+.btn-whatsapp {
+    display: block;
+    background-color: #25d366;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.contact-info-list {
+    list-style: none;
+}
+
+.contact-info-list li {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.contact-info-list i {
+    width: 20px;
+    color: #2563eb;
+}
+
+.hours-list {
+    list-style: none;
+}
+
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e2e8f0;
+    font-size: 13px;
+}
+
+.closed {
+    color: #ef4444;
+}

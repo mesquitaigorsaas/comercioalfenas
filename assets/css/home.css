@@ -1,0 +1,598 @@
+/* ==========================================================================
+   ESTRUTURA GERAL DA HOME
+   ========================================================================== */
+.section-padding {
+    padding: 60px 0;
+}
+
+.bg-gray {
+    background-color: #f1f5f9;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-subtitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e293b;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   1. HERO BANNER & FORMULÁRIO DE BUSCA
+   ========================================================================== */
+.hero {
+    position: relative;
+    background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+    padding: 90px 0 110px;
+    text-align: center;
+    color: white;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.hero-subtitle {
+    font-size: 16px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.search-box {
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(5px);
+    padding: 12px;
+    border-radius: 8px;
+    max-width: 850px;
+    margin: 0 auto;
+    gap: 12px;
+}
+
+.search-field {
+    flex: 1;
+}
+
+.search-field select {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    color: #333;
+    font-size: 14px;
+    background-color: #ffffff;
+}
+
+.btn-search {
+    background-color: #1e293b;
+    color: white;
+    border: none;
+    padding: 0 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-search:hover {
+    background-color: #0f172a;
+}
+
+/* ==========================================================================
+   2. BARRA DE CATEGORIAS PRINCIPAIS
+   ========================================================================== */
+.categories-section {
+    margin-top: -45px;
+    position: relative;
+    z-index: 3;
+    padding-bottom: 20px;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    gap: 12px;
+}
+
+.cat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 10px;
+    border-radius: 8px;
+    color: white;
+    transition: transform 0.2s;
+    height: 105px;
+}
+
+.cat-card:hover {
+    transform: translateY(-5px);
+}
+
+.cat-card i {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.cat-card span {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* CORES DAS CATEGORIAS */
+.cat-red { background-color: #ef4444; }
+.cat-blue { background-color: #06b6d4; }
+.cat-green { background-color: #84cc16; }
+.cat-yellow { background-color: #eab308; }
+.cat-purple { background-color: #a855f7; }
+.cat-orange { background-color: #f97316; }
+.cat-pink { background-color: #ec4899; }
+.cat-teal { background-color: #14b8a6; }
+
+/* ==========================================================================
+   3. ANÚNCIOS ESPECIAIS (CARDS)
+   ========================================================================== */
+.featured-listings {
+    padding: 60px 0;
+}
+
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.card-listing {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-listing:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-thumb {
+    position: relative;
+    height: 200px;
+}
+
+.card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge-category {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background-color: #84cc16;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 18px;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.card-title a {
+    color: inherit;
+    transition: color 0.2s;
+}
+
+.card-title a:hover {
+    color: #e52d27;
+}
+
+.card-category {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-top: 1px solid #f1f5f9;
+    background-color: #fafafa;
+}
+
+.status-open {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-green { color: #10b981 !important; }
+.status-red { color: #ef4444 !important; }
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.btn-icon:hover { color: #ef4444; }
+
+.price-tag {
+    font-size: 12px;
+    font-weight: bold;
+    color: #10b981;
+}
+
+/* ==========================================================================
+   4. PESQUISAR POR CIDADES ("VOCÊ TAMBÉM PODE")
+   ========================================================================== */
+.cities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.city-card {
+    position: relative;
+    height: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.city-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+}
+
+.city-card:hover img {
+    transform: scale(1.08);
+}
+
+.city-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+}
+
+.city-info h3 { 
+    font-size: 20px; 
+    margin-bottom: 5px;
+}
+
+.badge-count {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   5. CATEGORIAS COM CONTADORES
+   ========================================================================== */
+.small-categories {
+    padding: 40px 0;
+    background-color: #ffffff;
+}
+
+.small-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.small-cat-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 10px;
+    text-align: center;
+    background-color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.small-cat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.small-cat-card i {
+    font-size: 28px;
+    color: #2563eb;
+    margin-bottom: 10px;
+}
+
+.small-cat-card h4 {
+    font-size: 14px;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.small-cat-card span {
+    font-size: 11px;
+    background-color: #0f172a;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   6. CATEGORIAS ESPECIAIS (COM FOTO DE FUNDO)
+   ========================================================================== */
+.special-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.special-card {
+    position: relative;
+    height: 240px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.special-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.special-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.special-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.special-overlay h3 { 
+    font-size: 22px; 
+    margin-bottom: 5px; 
+}
+
+.special-overlay p { 
+    font-size: 13px; 
+    opacity: 0.85; 
+}
+
+/* ==========================================================================
+   7. BLOG & NOTÍCIAS
+   ========================================================================== */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.blog-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.blog-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.blog-content {
+    padding: 20px;
+}
+
+.blog-date {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.blog-content h3 {
+    font-size: 16px;
+    color: #1e293b;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.blog-content p {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.btn-read-more {
+    font-size: 12px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+/* ==========================================================================
+   8. RODAPÉ (FOOTER)
+   ========================================================================== */
+.footer {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding-top: 60px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.text-white { 
+    color: white !important; 
+}
+
+.footer-desc {
+    font-size: 13px;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+.social-links {
+    display: flex;
+    gap: 12px;
+}
+
+.social-links a {
+    width: 36px;
+    height: 36px;
+    background-color: #1e293b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.social-links a:hover {
+    background-color: #e52d27;
+}
+
+.footer-col h4 {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 10px;
+}
+
+.footer-col ul a {
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+.footer-col ul a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    border-top: 1px solid #1e293b;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* Torna o card a referência do clique */
+.card-listing {
+    position: relative !important;
+}
+
+/* Estica o link por toda a foto e corpo do card */
+.card-link::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10 !important;
+}
+
+/* Mantém os botões do rodapé funcionando sem interferir */
+.card-footer, 
+.card-actions, 
+.btn-icon {
+    position: relative !important;
+    z-index: 11 !important;
+}

@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Comercial Alfenas e Região</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #333333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 1. CABEÇALHO / NAVBAR */
+        .main-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #e11d48;
+        }
+
+        /* Botão do menu sanduíche (escondido no desktop) */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: #27272a;
+            cursor: pointer;
+            padding: 6px 10px;
+            z-index: 1100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-icon-login {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 38px;
+            height: 38px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-listing {
+            background-color: #27272a;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add-listing:hover {
+            background-color: #000000;
+        }
+
+        /* 1.1. BANNER ROTATIVO (CARROSSEL INSTITUCIONAL) */
+        .banner-carousel-section {
+            background-color: #f1f5f9;
+            padding: 30px 20px 20px 20px;
+        }
+
+        .banner-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            background-color: #0f172a;
+        }
+
+        .banner-slides-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .banner-slide {
+            min-width: 100%;
+            height: 420px;
+            position: relative;
+            background-color: #0f172a;
+        }
+
+        .banner-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .banner-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            color: #ffffff;
+            padding: 25px 20px;
+            text-align: left;
+        }
+
+        .banner-caption h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            color: #f8fafc;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .banner-caption p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 400;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* AJUSTES ESPECÍFICOS PARA CELULAR (MOBILE) */
+        @media (max-width: 768px) {
+            .banner-carousel-section {
+                padding: 0 !important;
+            }
+            .banner-wrapper {
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+            .banner-slides-container {
+                align-items: flex-start;
+            }
+            .banner-slide {
+                height: auto;
+            }
+            .banner-slide img {
+                height: auto;
+                object-fit: cover;
+            }
+            .banner-caption h3 { font-size: 1rem; }
+            .banner-caption p { font-size: 0.75rem; }
+        }
+
+        /* Botões de navegação do carrossel */
+        .banner-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+
+        .banner-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .banner-prev { left: 15px; }
+        .banner-next { right: 15px; }
+
+        /* Indicadores (bolinhas) */
+        .banner-dots {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .banner-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .banner-dot.active {
+            background-color: #ffffff;
+            width: 22px;
+            border-radius: 5px;
+        }
+
+        /* 2. HERO / PESQUISA */
+        .hero-section {
+            background: #f1f5f9;
+            padding: 10px 20px 40px 20px;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 25px;
+        }
+
+        .search-box-wrapper {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 850px;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-form select {
+            flex: 1 1 250px;
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+            color: #475569;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .btn-search {
+            flex: 1 1 150px;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 14px 25px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-search:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* 3. CATEGORIAS COLORIDAS FLUTUANTES */
+        .categories-container {
+            margin-top: -10px;
+            position: relative;
+            z-index: 10;
+            margin-bottom: 60px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+            gap: 12px;
+        }
+
+        .category-card {
+            padding: 22px 10px;
+            border-radius: 8px;
+            text-align: center;
+            color: #ffffff;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .category-card i {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .category-card span {
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: block;
+        }
+
+        /* Cores dos Cards */
+        .cat-auto { background-color: #ef4444; }
+        .cat-saude { background-color: #06b6d4; }
+        .cat-compras { background-color: #22c55e; }
+        .cat-decor { background-color: #eab308; }
+        .cat-gastro { background-color: #a855f7; }
+        .cat-imoveis { background-color: #f97316; }
+        .cat-moda { background-color: #ec4899; }
+        .cat-pet { background-color: #14b8a6; }
+
+        /* 4. LISTAGEM DE ANÚNCIOS DA CIDADE */
+        .listings-section {
+            padding: 20px 0 60px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            color: #0f172a;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .listing-card {
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .listing-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 230px;
+        }
+
+        .listing-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .badge-cat-icon {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background-color: #22c55e;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .listing-body {
+            padding: 20px;
+        }
+
+        .listing-title {
+            font-size: 1.2rem;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .listing-category {
+            color: #64748b;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .listing-description {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .listing-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .listing-actions i {
+            margin-left: 10px;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .listing-actions i:hover {
+            color: #e11d48;
+        }
+
+        /* MENU SANDUÍCHE - MOBILE */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                order: 2;
+            }
+
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                order: 1;
+            }
+
+            /* No mobile, os botões saem do header e vão para o rodapé */
+            .main-header .header-actions {
+                display: none;
+            }
+
+            .nav-links {
+                order: 3;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+                width: 100%;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out;
+            }
+
+            .nav-links.active {
+                max-height: 300px;
+                margin-top: 15px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 14px 5px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 1px solid #1e293b;
+        }
+
+        /* Ações (Entrar / Cadastrar Anúncio) dentro do rodapé — só aparecem no mobile */
+        .footer-actions {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .footer-actions {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .footer-actions .btn-add-listing {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+            </a>
+            
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html">INÍCIO</a>
+                <a href="planos.html">PLANOS</a>
+                <a href="#">SOBRE NÓS</a>
+                <a href="#">FALE CONOSCO</a>
+            </nav>
+
+            <div class="header-actions">
+                <a href="auth/login.html" class="btn-icon-login" title="Entrar"><i class="fa-solid fa-key"></i></a>
+                <a href="planos.html" class="btn-add-listing">+ CADASTRAR ANÚNCIO</a>
+            </div>
+        </div>
+    </header>
+    <section class="banner-carousel-section">
+        <div class="banner-wrapper">
+            <div class="banner-slides-container" id="bannerSlides">
+                <div class="banner-slide">
+                    <img src="assets/img/Banner.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/img/Banner0.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/img/Banner2.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/img/Banner3.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/img/Banner4.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/img/Banner5.png" alt="Onde a tradição encontra o futuro">
+                    <div class="banner-caption">
+                    </div>
+                </div>
+            </div>
+
+            <button class="banner-btn banner-prev" id="bannerPrev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="banner-btn banner-next" id="bannerNext"><i class="fa-solid fa-chevron-right"></i></button>
+
+            <div class="banner-dots" id="bannerDots">
+                <span class="banner-dot active" data-index="0"></span>
+                <span class="banner-dot" data-index="1"></span>
+                <span class="banner-dot" data-index="2"></span>
+                <span class="banner-dot" data-index="3"></span>
+                <span class="banner-dot" data-index="4"></span>
+                <span class="banner-dot" data-index="5"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1>Encontre os melhores estabelecimentos da região</h1>
+            
+            <div class="search-box-wrapper">
+                <form class="search-form" id="searchForm">
+                    <select name="cidade" id="searchCidade">
+                        <option value="">Selecione a cidade</option>
+                        <option value="alfenas" selected>Alfenas</option>
+                        <option value="alterosa">Alterosa</option>
+                        <option value="areado">Areado</option>
+                        <option value="boa-esperanca">Boa Esperança</option>
+                        <option value="borda-da-mata">Borda da Mata</option>
+                        <option value="cabo-verde">Cabo Verde</option>
+                        <option value="cambui">Cambuí</option>
+                        <option value="campestre">Campestre</option>
+                        <option value="campo-do-meio">Campo do Meio</option>
+                        <option value="campos-gerais">Campos Gerais</option>
+                        <option value="carmo-do-rio-claro">Carmo do Rio Claro</option>
+                        <option value="fama">Fama</option>
+                        <option value="guaxupe">Guaxupé</option>
+                        <option value="itajuba">Itajubá</option>
+                        <option value="itau-de-minas">Itaú de Minas</option>
+                        <option value="machado">Machado</option>
+                        <option value="muzambinho">Muzambinho</option>
+                        <option value="paraguacu">Paraguaçu</option>
+                        <option value="passos">Passos</option>
+                        <option value="pocos-de-caldas">Poços de Caldas</option>
+                        <option value="pouso-alegre">Pouso Alegre</option>
+                        <option value="santa-rita-do-sapucai">Santa Rita do Sapucaí</option>
+                        <option value="sao-lourenco">São Lourenço</option>
+                        <option value="sao-sebastiao-do-paraiso">São Sebastião do Paraíso</option>
+                        <option value="serrania">Serrania</option>
+                        <option value="tres-coracoes">Três Corações</option>
+                        <option value="tres-pontas">Três Pontas</option>
+                        <option value="varginha">Varginha</option>
+                    </select>
+
+                    <select name="categoria" id="searchCategoria">
+                        <option value="">Todas as Categorias</option>
+                        <option value="Academias e Esportes">Academias e Esportes</option>
+                        <option value="Advocacia e Contabilidade">Advocacia e Contabilidade</option>
+                        <option value="Alimentação e Gastronomia">Alimentação e Gastronomia</option>
+                        <option value="Automotivo e Peças">Automotivo e Peças</option>
+                        <option value="Bares e Distribuidoras">Bares e Distribuidoras</option>
+                        <option value="Beleza e Estética">Beleza e Estética</option>
+                        <option value="Casa, Construção e Reformas">Casa, Construção e Reformas</option>
+                        <option value="Comércio e Compras">Comércio e Compras</option>
+                        <option value="Cursos e Educação">Cursos e Educação</option>
+                        <option value="Eventos e Festas">Eventos e Festas</option>
+                        <option value="Farmácias e Saúde">Farmácias e Saúde</option>
+                        <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
+                        <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
+                        <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
+                        <option value="Tecnologia e Celulares">Tecnologia e Celulares</option>
+                        <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
+                    </select>
+
+                    <button type="submit" class="btn-search">BUSCAR</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories-container">
+        <div class="container">
+            <div class="categories-grid">
+                <a onclick="filtrarCategoria('Automotivo e Peças')" class="category-card cat-auto">
+                    <i class="fa-solid fa-car"></i>
+                    <span>Automotivo</span>
+                </a>
+                <a onclick="filtrarCategoria('Beleza e Estética')" class="category-card cat-saude">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Beleza e Saúde</span>
+                </a>
+                <a onclick="filtrarCategoria('Comércio e Compras')" class="category-card cat-compras">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Compras</span>
+                </a>
+                <a onclick="filtrarCategoria('Casa, Construção e Reformas')" class="category-card cat-decor">
+                    <i class="fa-solid fa-couch"></i>
+                    <span>Decorações</span>
+                </a>
+                <a onclick="filtrarCategoria('Alimentação e Gastronomia')" class="category-card cat-gastro">
+                    <i class="fa-solid fa-burger"></i>
+                    <span>Gastronomia</span>
+                </a>
+                <a onclick="filtrarCategoria('Imóveis e Imobiliárias')" class="category-card cat-imoveis">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Imóveis</span>
+                </a>
+                <a onclick="filtrarCategoria('Comércio e Compras')" class="category-card cat-moda">
+                    <i class="fa-solid fa-shirt"></i>
+                    <span>Moda</span>
+                </a>
+                <a onclick="filtrarCategoria('Pet Shop e Veterinária')" class="category-card cat-pet">
+                    <i class="fa-solid fa-dog"></i>
+                    <span>Pet Shop</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="listings-section" id="anuncios">
+        <div class="container">
+            <div class="section-header">
+                <h2>ANÚNCIOS EM DESTAQUE</h2>
+                <p>Confira os principais estabelecimentos da nossa região</p>
+            </div>
+
+            <div class="listings-grid" id="listingsContainer">
+                <p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Carregando anúncios...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-actions">
+                <a href="auth/login.html" class="btn-icon-login" title="Entrar"><i class="fa-solid fa-key"></i></a>
+                <a href="planos.html" class="btn-add-listing">+ CADASTRAR ANÚNCIO</a>
+            </div>
+            <p>&copy; 2026 Guia Comercial Alfenas e Região. Todos os direitos reservados: Mesquita SaaS.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cliente único do Supabase, acessível por TODOS os scripts desta página
+        // (antes ele era criado dentro de um <script type="module">, o que o isolava
+        // e impedia o popup do anúncio de funcionar, pois ele não enxergava essa variável).
+        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 1. Lógica do Carrossel / Banner Rotativo
+        const slidesContainer = document.getElementById('bannerSlides');
+        const slides = document.querySelectorAll('.banner-slide');
+        const dots = document.querySelectorAll('.banner-dot');
+        const prevBtn = document.getElementById('bannerPrev');
+        const nextBtn = document.getElementById('bannerNext');
+        const bannerWrapper = document.querySelector('.banner-wrapper');
+        
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        // Ajusta a altura do banner à proporção real da imagem ativa (só no mobile)
+        function ajustarAlturaBanner() {
+            if (window.innerWidth > 768) {
+                bannerWrapper.style.height = '';
+                return;
+            }
+            const img = slides[currentIndex].querySelector('img');
+            const aplicarAltura = () => {
+                const ratio = img.naturalHeight / img.naturalWidth;
+                bannerWrapper.style.height = (bannerWrapper.offsetWidth * ratio) + 'px';
+            };
+            if (img.complete && img.naturalWidth) {
+                aplicarAltura();
+            } else {
+                img.addEventListener('load', aplicarAltura, { once: true });
+            }
+        }
+
+        function updateSlider() {
+            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentIndex);
+            });
+            ajustarAlturaBanner();
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                currentIndex = parseInt(e.target.getAttribute('data-index'));
+                updateSlider();
+            });
+        });
+
+        window.addEventListener('resize', ajustarAlturaBanner);
+        ajustarAlturaBanner();
+
+        // Rotação automática a cada 5 segundos
+        let autoSlide = setInterval(nextSlide, 5000);
+
+        bannerWrapper.addEventListener('mouseenter', () => clearInterval(autoSlide));
+        bannerWrapper.addEventListener('mouseleave', () => autoSlide = setInterval(nextSlide, 5000));
+
+        // 2. Carregamento de Anúncios do Supabase
+        const urlParams = new URLSearchParams(window.location.search);
+        const cidadeUrl = urlParams.get('cidade') || 'alfenas';
+        const categoriaUrl = urlParams.get('categoria') || '';
+
+        if(document.getElementById('searchCidade')) document.getElementById('searchCidade').value = cidadeUrl;
+        if(document.getElementById('searchCategoria')) document.getElementById('searchCategoria').value = categoriaUrl;
+
+        async function carregarAnuncios(cidadeFiltro, categoriaFiltro) {
+            const container = document.getElementById('listingsContainer');
+            container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Buscando estabelecimentos...</p>';
+
+            try {
+                let query = supabaseClient.from('anuncios').select('*');
+
+                if (cidadeFiltro) {
+                    query = query.eq('cidade', cidadeFiltro.toLowerCase());
+                }
+                if (categoriaFiltro) {
+                    query = query.eq('categoria', categoriaFiltro);
+                }
+
+                const { data, error } = await query;
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1; padding: 40px 0;">Nenhum anúncio encontrado para esta busca.</p>';
+                    return;
+                }
+
+                container.innerHTML = ''; 
+                data.forEach(anuncio => {
+                    const card = document.createElement('div');
+                    card.className = 'listing-card';
+                    // Onde o card do anúncio é construído, adicione a tag <a> ao redor ou no container:
+card.innerHTML = `
+    <a href="anuncio-detalhes.html?id=${anuncio.id}" style="cursor: pointer; text-decoration: none; color: inherit; display: block; height: 100%;">
+        <div class="listing-image-wrapper">
+            <img src="${anuncio.imagem_url}" class="listing-img" alt="${anuncio.titulo}">
+        </div>
+        <div class="listing-body">
+            <h3 class="listing-title">${anuncio.titulo}</h3>
+            <p class="listing-category"><i class="fa-solid fa-tag"></i> ${anuncio.categoria}</p>
+            <p class="listing-description">${anuncio.descricao ? anuncio.descricao.substring(0, 90) + '...' : ''}</p>
+        </div>
+    </a>
+`;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error('Erro ao carregar anúncios:', err.message);
+                container.innerHTML = '<p style="text-align: center; color: #ef4444; grid-column: 1 / -1;">Erro ao conectar com o banco de dados.</p>';
+            }
+        }
+
+        carregarAnuncios(cidadeUrl, categoriaUrl);
+
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const cidade = document.getElementById('searchCidade').value;
+            const categoria = document.getElementById('searchCategoria').value;
+            window.location.href = `index.html?cidade=${encodeURIComponent(cidade)}&categoria=${encodeURIComponent(categoria)}#anuncios`;
+        });
+    </script>
+
+    <script>
+        // Menu sanduíche (mobile)
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const isOpen = navLinks.classList.contains('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars', !isOpen);
+            icon.classList.toggle('fa-xmark', isOpen);
+            menuToggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Fecha o menu ao clicar em um link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-xmark');
+            });
+        });
+
+        function filtrarCategoria(nomeCategoria) {
+            const selectCidade = document.getElementById('searchCidade');
+            let cidade = (selectCidade && selectCidade.value) ? selectCidade.value : 'alfenas';
+            window.location.href = `index.html?cidade=${encodeURIComponent(cidade)}&categoria=${encodeURIComponent(nomeCategoria)}#anuncios`;
+        }
+    </script>
+
+</body>
+</html>

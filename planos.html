@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+        <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos e Preços - Guia Comercial Alfenas</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #333333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 1. CABEÇALHO / NAVBAR (Padronizado com a Index) */
+        .main-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: #e11d48;
+        }
+
+        .logo span {
+            color: #0f172a;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #e11d48;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-icon-login {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 38px;
+            height: 38px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-listing {
+            background-color: #27272a;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add-listing:hover {
+            background-color: #000000;
+        }
+
+        /* 2. HERO / BANNER DA PÁGINA PLANOS */
+        .plans-hero {
+            background-color: #27272a;
+            color: #ffffff;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .plans-hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .plans-hero p {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+        }
+
+        .plans-hero p a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        /* 3. SEÇÃO DOS CARDS DE PLANOS */
+        .plans-section {
+            padding: 60px 0;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .plan-card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .plan-card.featured {
+            border: 2px solid #2563eb;
+        }
+
+        .plan-card-header {
+            background-color: #27272a;
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .plan-price-box {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        .plan-price-box .currency {
+            font-size: 1.2rem;
+            vertical-align: top;
+            position: relative;
+            top: 5px;
+        }
+
+        .plan-price-box .price-cents {
+            font-size: 1.2rem;
+            vertical-align: top;
+            position: relative;
+            top: 5px;
+        }
+
+        .plan-card-header h3 {
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: #cbd5e1;
+            margin-top: 10px;
+        }
+
+        .plan-card-body {
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li i {
+            color: #22c55e;
+            font-size: 0.85rem;
+        }
+
+        .btn-choose {
+            display: block;
+            text-align: center;
+            background-color: #334155;
+            color: #ffffff;
+            padding: 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-choose:hover {
+            background-color: #1e293b;
+        }
+
+        .btn-choose.btn-highlight {
+            background-color: #2563eb;
+        }
+
+        .btn-choose.btn-highlight:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* 4. CAIXA DE ANÚNCIO ESPECIAL */
+        .special-boost-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .boost-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .boost-icon {
+            background-color: #fef08a;
+            color: #ca8a04;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .boost-text h3 {
+            font-size: 1.1rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .boost-text p {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .boost-price-action {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .boost-price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .boost-price span {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        .btn-boost {
+            background-color: #e11d48;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-boost:hover {
+            background-color: #be123c;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 1px solid #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+            </a>
+            
+            <nav class="nav-links">
+                <a href="index.html">INÍCIO</a>
+                <a href="planos.html" class="active">PLANOS</a>
+                <a href="#">BLOG</a>
+                <a href="#">SOBRE NÓS</a>
+                <a href="#">FALE CONOSCO</a>
+            </nav>
+
+            <div class="header-actions">
+                <a href="auth/login.html" class="btn-icon-login" title="Entrar"><i class="fa-solid fa-key"></i></a>
+                <a href="planos.html" class="btn-add-listing">+ CADASTRAR ANÚNCIO</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="plans-hero">
+        <div class="container">
+            <h1>Planos</h1>
+            <p><a href="index.html">Home</a> &gt; Planos</p>
+        </div>
+    </section>
+
+    <section class="plans-section">
+        <div class="container">
+            <div class="plans-grid">
+                
+                <div class="plan-card">
+                    <div class="plan-card-header">
+                        <div class="plan-price-box">
+                            <span class="currency">R$</span>59<span class="price-cents">,90</span>
+                        </div>
+                        <h3>TRIMESTRAL</h3>
+                    </div>
+                    <div class="plan-card-body">
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> Validade : 3 Meses</li>
+                            <li><i class="fa-solid fa-check"></i> Vídeo No Anúncio : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Link Para Site : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Quant. De Imagens : 15</li>
+                            <li><i class="fa-solid fa-check"></i> Espaço para logomarca : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Faixa De Preço : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Horário De Funcionamento : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Permitir Palavras-Chaves : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Criar Cupom desconto : Sim</li>
+                        </ul>
+                        <a href="auth/cadastro.html?plano=trimestral" class="btn-choose">CONTRATAR PLANO</a>
+                    </div>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-card-header">
+                        <div class="plan-price-box">
+                            <span class="currency">R$</span>107<span class="price-cents">,90</span>
+                        </div>
+                        <h3>SEMESTRAL</h3>
+                    </div>
+                    <div class="plan-card-body">
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> Validade : 6 Meses</li>
+                            <li><i class="fa-solid fa-check"></i> Vídeo No Anúncio : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Link Para Site : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Quant. De Imagens : 15</li>
+                            <li><i class="fa-solid fa-check"></i> Espaço para logomarca : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Faixa De Preço : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Horário De Funcionamento : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Permitir Palavras-Chaves : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Criar Cupom desconto : Sim</li>
+                        </ul>
+                        <a href="auth/cadastro.html?plano=semestral" class="btn-choose">CONTRATAR PLANO</a>
+                    </div>
+                </div>
+
+                <div class="plan-card featured">
+                    <div class="plan-card-header">
+                        <div class="plan-price-box">
+                            <span class="currency">R$</span>189<span class="price-cents">,90</span>
+                        </div>
+                        <h3>ANUAL</h3>
+                    </div>
+                    <div class="plan-card-body">
+                        <ul class="plan-features">
+                            <li><i class="fa-solid fa-check"></i> Validade : 12 Meses</li>
+                            <li><i class="fa-solid fa-check"></i> Vídeo No Anúncio : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Link Para Site : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Quant. De Imagens : 15</li>
+                            <li><i class="fa-solid fa-check"></i> Espaço para logomarca : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Faixa De Preço : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Horário De Funcionamento : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Permitir Palavras-Chaves : Sim</li>
+                            <li><i class="fa-solid fa-check"></i> Criar Cupom desconto : Sim</li>
+                        </ul>
+                        <a href="auth/cadastro.html?plano=anual" class="btn-choose btn-highlight">CONTRATAR PLANO</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="special-boost-box">
+                <div class="boost-content">
+                    <div class="boost-icon">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="boost-text">
+                        <h3>ANÚNCIOS ESPECIAIS (Destaque no Topo)</h3>
+                        <p>Apareça no topo da página inicial para todos os visitantes durante 15 dias.</p>
+                    </div>
+                </div>
+                <div class="boost-price-action">
+                    <div class="boost-price">R$ 120,00 <span>/ 15 dias</span></div>
+                    <a href="auth/cadastro.html?add=especial" class="btn-boost">ADICIONAR DESTAQUE</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 Guia Comercial Alfenas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
