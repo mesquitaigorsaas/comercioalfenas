@@ -9,6 +9,8 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/regras.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -397,10 +399,32 @@
             font-weight: 600;
         }
 
+        /* Quatro por fileira, duas fileiras: os 8 destaques da home.
+           Antes era "auto-fill" com 320px mínimos, o que dava 3 por
+           fileira no computador e deixava a segunda com um buraco. */
         .listings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .listings-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 820px) {
+            .listings-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .listings-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .listing-card {
@@ -565,6 +589,66 @@
                 font-size: 0.8rem;
             }
         }
+    
+        /* ==========================================================
+           FAIXA DA PROMOÇÃO DE LANÇAMENTO
+           Aparece só enquanto a data de GRATIS_ATE não passou. A
+           regra fica no JavaScript, no fim da página: assim, quando
+           01/11/2026 chegar, a faixa some sozinha e ninguém precisa
+           lembrar de tirar.
+           ========================================================== */
+        .faixa-promocao {
+            background-color: #ff6600;
+            color: #ffffff;
+            text-align: center;
+            padding: 14px 20px;
+            display: none;
+        }
+
+        .faixa-promocao.visivel {
+            display: block;
+        }
+
+        .faixa-promocao .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .faixa-promocao p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .faixa-promocao p span {
+            font-weight: 400;
+            opacity: 0.92;
+        }
+
+        .faixa-promocao a {
+            background-color: #ffffff;
+            color: #ff6600;
+            padding: 9px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .faixa-promocao a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .faixa-promocao p { font-size: 0.92rem; }
+            .faixa-promocao .container { gap: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -582,8 +666,8 @@
             <nav class="nav-links" id="navLinks">
                 <a href="index.html">INÍCIO</a>
                 <a href="planos.html">PLANOS</a>
-                <a href="#">SOBRE NÓS</a>
-                <a href="#">FALE CONOSCO</a>
+                <a href="sobrenos.html">SOBRE NÓS</a>
+                <a href="fale-conosco.html">FALE CONOSCO</a>
             </nav>
 
             <div class="header-actions">
@@ -592,6 +676,23 @@
             </div>
         </div>
     </header>
+
+    <section class="faixa-promocao" id="faixaPromocao">
+        <div class="container">
+            <p>
+                CADASTRE SUA LOJA GRÁTIS
+                <span>até 31/10/2026 — sem cartão, sem cobrança</span>
+            </p>
+            <!-- Vai direto para o cadastro, e não para os planos: enquanto
+                 a promoção vale não há o que escolher nem o que pagar, e
+                 mostrar uma tabela de preços a quem acabou de ler "grátis"
+                 só faz a pessoa desconfiar e desistir.
+                 Esta faixa some sozinha em 01/11/2026 (a data está em
+                 assets/js/regras.js), e o caminho curto morre com ela. -->
+            <a href="auth/cadastro.html">QUERO ANUNCIAR</a>
+        </div>
+    </section>
+
     <section class="banner-carousel-section">
         <div class="banner-wrapper">
             <div class="banner-slides-container" id="bannerSlides">
@@ -771,9 +872,24 @@
         // Cliente único do Supabase, acessível por TODOS os scripts desta página
         // (antes ele era criado dentro de um <script type="module">, o que o isolava
         // e impedia o popup do anúncio de funcionar, pois ele não enxergava essa variável).
-        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const SUPABASE_URL = window.CONFIG_SUPABASE.url;
+        const SUPABASE_ANON_KEY = window.CONFIG_SUPABASE.chavePublica;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================================
+        // PROMOÇÃO DE LANÇAMENTO
+        // ==========================================================
+        // A data mora em assets/js/regras.js, junto com o limite de
+        // fotos — as duas coisas mudam no mesmo dia, então mudam no
+        // mesmo lugar. Aqui só perguntamos se a promoção ainda vale.
+        //
+        // A faixa some sozinha em 01/11/2026, sem ninguém precisar
+        // lembrar de tirar.
+        if (window.REGRAS.promocaoValendo()) {
+            document.getElementById("faixaPromocao").classList.add("visivel");
+        }
+
+
 
         // 1. Lógica do Carrossel / Banner Rotativo
         const slidesContainer = document.getElementById('bannerSlides');
@@ -854,7 +970,22 @@
             container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Buscando estabelecimentos...</p>';
 
             try {
-                let query = supabaseClient.from('anuncios').select('*');
+                // Ordem de cadastro: quem entrou primeiro aparece
+                // primeiro. Não é sorteio nem alfabética — é o combinado
+                // com quem apostou no guia antes dos outros.
+                //
+                // O teto de 8 (duas fileiras de quatro) está em
+                // assets/js/regras.js.
+                //
+                // PENDENTE: quando a promoção acabar, o destaque no topo
+                // vira produto pago (a caixa de R$120 por 15 dias, na
+                // página de planos). Até isso existir, a home continua
+                // mostrando os 8 primeiros de cada cidade.
+                let query = supabaseClient
+                    .from('anuncios')
+                    .select('*')
+                    .order('criado_em', { ascending: true })
+                    .limit(window.REGRAS.destaquesNaHome);
 
                 if (cidadeFiltro) {
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());

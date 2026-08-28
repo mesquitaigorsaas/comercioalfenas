@@ -7,6 +7,7 @@
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -314,8 +315,8 @@
             <nav class="nav-links" id="navLinks">
                 <a href="index.html">INÍCIO</a>
                 <a href="planos.html">PLANOS</a>
-                <a href="#">SOBRE NÓS</a>
-                <a href="#">FALE CONOSCO</a>
+                <a href="sobrenos.html">SOBRE NÓS</a>
+                <a href="fale-conosco.html">FALE CONOSCO</a>
             </nav>
             <div class="header-actions">
                 <a href="auth/login.html" class="btn-icon-login" title="Entrar"><i class="fa-solid fa-key"></i></a>
@@ -344,8 +345,8 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const SUPABASE_URL = window.CONFIG_SUPABASE.url;
+        const SUPABASE_ANON_KEY = window.CONFIG_SUPABASE.chavePublica;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Menu sanduíche (mobile)
@@ -381,8 +382,12 @@
                 return;
             }
 
-            // Incrementa visualizações (não bloqueia a exibição se falhar)
-            supabaseClient.from('anuncios').update({ visualizacoes: (anuncio.visualizacoes || 0) + 1 }).eq('id', id).then(() => {});
+            // Soma uma visualização. Quem visita o guia não tem login, então
+            // a conta é feita por uma função do banco que só sabe somar 1 —
+            // liberar alteração direta na tabela deixaria qualquer visitante
+            // reescrever o anúncio de qualquer loja.
+            // Não trava a exibição da página se falhar.
+            supabaseClient.rpc('registrar_visualizacao', { p_anuncio: id }).then(() => {});
 
             document.title = `${anuncio.titulo || 'Anúncio'} | Guia Comercial Alfenas e Região`;
             breadcrumb.innerHTML = `<a href="index.html">Início</a> <i class="fa-solid fa-chevron-right"></i> ${anuncio.categoria || ''} <i class="fa-solid fa-chevron-right"></i> ${anuncio.titulo || ''}`;
@@ -392,6 +397,13 @@
             const enderecoMapsLink = anuncio.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(anuncio.endereco)}` : '';
             const mapaEmbedSrc = anuncio.endereco ? `https://www.google.com/maps?q=${encodeURIComponent(anuncio.endereco)}&output=embed` : '';
             const instagramLink = anuncio.instagram ? (anuncio.instagram.startsWith('http') ? anuncio.instagram : 'https://instagram.com/' + anuncio.instagram.replace('@', '')) : '';
+
+            // O lojista pode digitar o link inteiro da fanpage ou só o
+            // nome dela. Aceitamos os dois: exigir o endereço completo
+            // faria muita gente colar errado e o botão não abrir nada.
+            const facebookLink = anuncio.facebook
+                ? (anuncio.facebook.startsWith('http') ? anuncio.facebook : 'https://facebook.com/' + anuncio.facebook.replace(/^@/, ''))
+                : '';
 
             // Imagem principal: primeira foto da galeria; se não tiver fotos, usa a logo
             const imagemPrincipal = (anuncio.fotos && anuncio.fotos.length > 0) ? anuncio.fotos[0] : (anuncio.imagem_url || 'https://via.placeholder.com/900x500?text=Sem+Imagem');
@@ -451,9 +463,10 @@
                                 ${anuncio.site ? `<a href="${anuncio.site}" target="_blank" rel="noopener" class="contato-btn btn-site"><i class="fa-solid fa-globe"></i> Ver site</a>` : ''}
                             </div>
 
-                            ${instagramLink ? `
+                            ${instagramLink || facebookLink ? `
                                 <div class="contato-social">
-                                    <a href="${instagramLink}" target="_blank" rel="noopener" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                                    ${instagramLink ? `<a href="${instagramLink}" target="_blank" rel="noopener" title="Instagram"><i class="fa-brands fa-instagram"></i></a>` : ''}
+                                    ${facebookLink ? `<a href="${facebookLink}" target="_blank" rel="noopener" title="Facebook"><i class="fa-brands fa-facebook"></i></a>` : ''}
                                 </div>` : ''}
 
                             <div class="contato-stats" id="contatoStats">
@@ -529,14 +542,17 @@
         }
 
         async function registrarCliqueWhats(id) {
-            const { data } = await supabaseClient.from('anuncios').select('cliques_whatsapp').eq('id', id).single();
-            if (data) {
-                const novoTotal = (data.cliques_whatsapp || 0) + 1;
-                await supabaseClient.from('anuncios').update({ cliques_whatsapp: novoTotal }).eq('id', id);
+            // A soma acontece dentro do banco, pelo mesmo motivo das
+            // visualizações. E somar lá também não perde contagem quando
+            // duas pessoas clicam no zap da mesma loja no mesmo segundo —
+            // ler o total aqui e devolver ler+1 perderia uma das duas.
+            const { error } = await supabaseClient.rpc('registrar_clique_whatsapp', { p_anuncio: id });
+            if (error) return;
 
-                const contador = document.getElementById('contadorCliquesWhats');
-                if (contador) contador.textContent = novoTotal;
-            }
+            // Na tela, só adianta o número que já está à vista. O valor de
+            // verdade é o do banco, e ele aparece no próximo carregamento.
+            const contador = document.getElementById('contadorCliquesWhats');
+            if (contador) contador.textContent = (parseInt(contador.textContent, 10) || 0) + 1;
         }
 
         // Troca a imagem principal ao clicar em uma miniatura

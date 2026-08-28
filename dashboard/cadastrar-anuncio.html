@@ -68,6 +68,33 @@
             text-transform: uppercase;
         }
 
+        /* Botão de sair. É <button> e não <a> porque ele precisa
+           encerrar a sessão antes de sair — um link levaria a pessoa
+           para a index ainda logada. */
+        .btn-sair {
+            background: none;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-family: inherit;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sair:hover {
+            border-color: #e11d48;
+            color: #e11d48;
+        }
+
+        .btn-sair:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
         .page-title { padding: 30px 0 10px 0; }
         .page-title h1 { font-size: 1.8rem; color: #0f172a; }
         .page-title p { color: #64748b; font-size: 0.9rem; }
@@ -221,6 +248,9 @@
             <nav class="nav-links">
                 <a href="../index.html">INÍCIO</a>
                 <a href="../planos.html">PLANOS</a>
+                <button type="button" class="btn-sair" id="btnSair">
+                    <i class="fa-solid fa-right-from-bracket"></i> SAIR
+                </button>
             </nav>
         </div>
     </header>
@@ -341,6 +371,13 @@
                         <input type="text" id="instagram" placeholder="Ex: @suaempresa ou link do perfil">
                     </div>
                     <div class="form-group">
+                        <label for="facebook">Facebook</label>
+                        <input type="text" id="facebook" placeholder="Ex: suaempresa ou link da fanpage">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="site">Site (opcional)</label>
                         <input type="url" id="site" placeholder="Ex: https://www.suaempresa.com.br">
                     </div>
@@ -370,10 +407,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="uploadFotos">Fotos (até 8 imagens)</label>
+                    <!-- O número sai de assets/js/regras.js e é escrito
+                         aqui pelo JavaScript: durante a promoção são 6,
+                         depois passa a depender do plano. -->
+                    <label for="uploadFotos">Fotos <span id="rotuloLimiteFotos"></span></label>
                     <input type="file" id="uploadFotos" accept="image/png, image/jpeg, image/jpg" multiple>
                     <div id="previewFotosContainer" class="preview-container"></div>
-                    <p class="form-hint" id="contadorFotos">0 de 8 fotos selecionadas.</p>
+                    <p class="form-hint" id="contadorFotos"></p>
                 </div>
 
                 <button type="submit" class="btn-submit">SALVAR E PUBLICAR ANÚNCIO</button>
@@ -381,12 +421,14 @@
         </div>
     </div>
 
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/regras.js"></script>
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         // Configurações do Supabase
-        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const SUPABASE_URL = window.CONFIG_SUPABASE.url;
+        const SUPABASE_ANON_KEY = window.CONFIG_SUPABASE.chavePublica;
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let usuarioAtual = null;
@@ -396,6 +438,28 @@
         let fotosExistentes = [];     // URLs já salvas no banco (modo edição)
         let modoEdicao = false;
         let anuncioIdEdicao = null;
+
+        // ===== Quantas fotos esta loja pode ter =====
+        //
+        // Enquanto a promoção vale são 6 fotos para todo mundo, mais a
+        // logomarca à parte: 7 imagens no total. Depois de 01/11/2026
+        // quem manda é o plano contratado.
+        //
+        // O plano vem no endereço quando a pessoa chega pelos planos
+        // (?plano=anual) e fica guardado no anúncio, para que uma
+        // edição feita meses depois continue respeitando o que ela
+        // contratou.
+        let planoDaLoja = new URLSearchParams(window.location.search).get('plano') || null;
+
+        const limiteDeFotos = () => window.REGRAS.limiteDeFotos(planoDaLoja);
+
+        function escreverLimiteDeFotos() {
+            const limite = limiteDeFotos();
+            const total = fotosExistentes.length + fotosNovas.length;
+
+            document.getElementById('rotuloLimiteFotos').textContent = `(até ${limite} imagens)`;
+            document.getElementById('contadorFotos').textContent = `${total} de ${limite} fotos selecionadas.`;
+        }
 
         // ===== Monta as 7 linhas de horário (Seg a Dom) =====
         const DIAS_SEMANA = [
@@ -452,6 +516,20 @@
 
         // As linhas de horário são montadas dentro de verificarAcesso() (com ou sem dados existentes)
 
+        // ===== Sair da conta =====
+        //
+        // Encerra a sessão de verdade antes de voltar para a página
+        // inicial. Só mandar para a index deixaria a pessoa logada — e
+        // num computador compartilhado, o próximo a sentar ali entraria
+        // no anúncio dela.
+        document.getElementById('btnSair').addEventListener('click', async function () {
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SAINDO...';
+
+            await supabase.auth.signOut();
+            window.location.href = '../index.html';
+        });
+
         // ===== Verifica login; se tiver ?id= na URL, entra em modo de edição =====
         async function verificarAcesso() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -505,18 +583,28 @@
                 }
             }
 
+            // Só agora dá para escrever o limite: em modo de edição ele
+            // depende do plano que veio junto com o anúncio.
+            escreverLimiteDeFotos();
+
             document.getElementById('telaVerificando').style.display = 'none';
             document.getElementById('conteudoFormulario').style.display = 'block';
         }
 
         // Preenche o formulário com os dados de um anúncio existente (modo edição)
         function preencherFormulario(anuncio) {
+            // O plano que vale é o que está salvo no anúncio, não o que
+            // por acaso veio no endereço: quem edita a loja meses depois
+            // costuma chegar aqui pelo painel, sem ?plano= nenhum.
+            planoDaLoja = anuncio.plano || planoDaLoja;
+
             document.getElementById('nomeEmpresa').value = anuncio.titulo || '';
             document.getElementById('descricao').value = anuncio.descricao || '';
             document.getElementById('endereco').value = anuncio.endereco || '';
             document.getElementById('telefone').value = anuncio.telefone || '';
             document.getElementById('whatsapp').value = anuncio.whatsapp || '';
             document.getElementById('instagram').value = anuncio.instagram || '';
+            document.getElementById('facebook').value = anuncio.facebook || '';
             document.getElementById('site').value = anuncio.site || '';
 
             // Cidade e categoria: seleciona a opção comparando sem diferenciar maiúsculas/minúsculas
@@ -582,8 +670,7 @@
                 });
             });
 
-            const total = fotosExistentes.length + fotosNovas.length;
-            document.getElementById('contadorFotos').textContent = `${total} de 8 fotos selecionadas.`;
+            escreverLimiteDeFotos();
         }
 
         function adicionarThumbPreview(container, srcUrl, aoRemover) {
@@ -608,10 +695,13 @@
         document.getElementById('uploadFotos').addEventListener('change', function(e) {
             const arquivos = Array.from(e.target.files);
             const totalAtual = fotosExistentes.length + fotosNovas.length;
-            const vagasDisponiveis = 8 - totalAtual;
+            const limite = limiteDeFotos();
+            const vagasDisponiveis = limite - totalAtual;
 
             if (arquivos.length > vagasDisponiveis) {
-                alert(`Você só pode adicionar mais ${vagasDisponiveis} foto(s). O limite é 8 fotos no total.`);
+                alert(vagasDisponiveis > 0
+                    ? `Você só pode adicionar mais ${vagasDisponiveis} foto(s). O limite é ${limite} fotos, além da logomarca.`
+                    : `Você já usou as ${limite} fotos do seu anúncio. Remova alguma para colocar outra no lugar.`);
             }
 
             const arquivosParaAdicionar = arquivos.slice(0, vagasDisponiveis);
@@ -674,10 +764,15 @@
                     telefone: document.getElementById('telefone').value.trim(),
                     whatsapp: document.getElementById('whatsapp').value.trim(),
                     instagram: document.getElementById('instagram').value.trim(),
+                    facebook: document.getElementById('facebook').value.trim(),
                     site: document.getElementById('site').value.trim(),
                     horarios: coletarHorarios(),
                     imagem_url: logoUrlFinal || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
-                    fotos: fotosUrlsFinais
+                    fotos: fotosUrlsFinais,
+                    // Fica gravado no anúncio para a edição futura saber
+                    // a quantas fotos esta loja tem direito. Durante a
+                    // promoção vai nulo — ninguém escolheu plano.
+                    plano: planoDaLoja
                 };
 
                 if (!modoEdicao) {

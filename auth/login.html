@@ -10,6 +10,8 @@
     
     <link rel="stylesheet" href="../assets/css/style.css">
 
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/regras.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -122,6 +124,29 @@
             font-size: 13px;
         }
 
+        /* Olhinho de mostrar/esconder a senha, dentro do campo. */
+        .btn-olho {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 8px 10px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .btn-olho:hover {
+            color: #475569;
+        }
+
+        .input-with-icon input.com-olho {
+            padding-right: 44px;
+        }
+
         .forgot-link {
             color: #2563eb;
             text-decoration: none;
@@ -191,7 +216,7 @@
     <header class="main-header">
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+                <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
             </a>
             
             <nav class="nav-links">
@@ -232,7 +257,10 @@
                         <label for="login-password">Senha *</label>
                         <div class="input-with-icon">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="login-password" placeholder="••••••••" required>
+                            <input type="password" id="login-password" class="com-olho" placeholder="••••••••" required>
+                            <button type="button" class="btn-olho" id="olhoLogin" aria-label="Mostrar senha">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -248,7 +276,10 @@
                     </button>
 
                     <p style="text-align: center; font-size: 13px; color: #64748b; margin-top: 8px;">
-                        Ainda não tem conta? <a href="../planos.html" class="forgot-link">Veja os planos e anuncie</a>
+                        <!-- O destino muda com a promoção: enquanto for
+                             grátis vai direto ao cadastro, depois passa
+                             pelos planos. Escrito pelo JavaScript. -->
+                        Ainda não tem conta? <a href="cadastro.html" class="forgot-link" id="linkCriarConta">Cadastre sua loja</a>
                     </p>
                 </form>
 
@@ -264,8 +295,8 @@
 
     <script>
         // Cliente Supabase (mesmo projeto usado no restante do site)
-        const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+        const SUPABASE_URL = window.CONFIG_SUPABASE.url;
+        const SUPABASE_ANON_KEY = window.CONFIG_SUPABASE.chavePublica;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         function showAlert(type, message) {
@@ -292,6 +323,50 @@
                 button.innerHTML = button.dataset.originalHtml;
             }
         }
+
+        // ===== Olhinho da senha =====
+        document.getElementById('olhoLogin').addEventListener('click', function () {
+            const campo = document.getElementById('login-password');
+            const escondida = campo.type === 'password';
+
+            campo.type = escondida ? 'text' : 'password';
+            this.querySelector('i').className = escondida ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            this.setAttribute('aria-label', escondida ? 'Esconder senha' : 'Mostrar senha');
+        });
+
+        // ===== Onde fica o "ainda não tem conta" =====
+        // Na promoção não há plano para escolher, então mandar a pessoa
+        // para a tabela de preços seria colocar um obstáculo no meio de
+        // algo que é de graça.
+        if (!window.REGRAS.promocaoValendo()) {
+            const link = document.getElementById('linkCriarConta');
+            link.href = '../planos.html';
+            link.textContent = 'Veja os planos e anuncie';
+        }
+
+        // =============================================================
+        // QUEM CHEGA PELO LINK DO E-MAIL JÁ ESTÁ ENTRANDO
+        // =============================================================
+        // O link de confirmação traz a sessão no próprio endereço. Sem
+        // isto, a pessoa acabava de confirmar a conta e caía numa tela
+        // pedindo a senha que ela tinha criado dois minutos antes.
+        //
+        // Vale também para quem já estava logado e clicou em "Entrar"
+        // por engano: em vez do formulário, vai direto ao painel.
+        //
+        // Usa getUser(), que pergunta ao servidor se a sessão presta.
+        // getSession() só olha o que está guardado aqui, e uma sessão
+        // vencida faria esta tela e a do painel ficarem se empurrando
+        // uma para a outra sem parar.
+        (async () => {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) return;
+
+            showAlert('success', 'Tudo certo! Levando você para o seu painel...');
+            setTimeout(() => {
+                window.location.href = '../dashboard/cadastrar-anuncio.html';
+            }, 900);
+        })();
 
         // ===== LOGIN =====
         document.getElementById('form-login').addEventListener('submit', async (e) => {

@@ -20,7 +20,11 @@
             </a>
             <div class="user-info">
                 <span>Bem-vindo ao seu painel</span>
-                <a href="../index.html" class="btn-exit"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+                <!-- Era um link direto para a index, o que só parecia
+                     sair: a sessão continuava aberta e bastava voltar
+                     para o painel para estar logado de novo. Agora
+                     encerra a sessão antes de sair. -->
+                <a href="../index.html" class="btn-exit" id="btnSair"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
             </div>
         </div>
     </header>
@@ -86,10 +90,11 @@
     </main>
 
 </body>
+<script src="../assets/js/supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = 'https://dhzvooheiitfqhgjlooz.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_mLq9pmlI05qwGYyrly5m8g_z6E4juKK';
+    const SUPABASE_URL = window.CONFIG_SUPABASE.url;
+    const SUPABASE_ANON_KEY = window.CONFIG_SUPABASE.chavePublica;
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function carregarPainelRestrito() {
@@ -180,6 +185,16 @@
             `;
         }
     }
+
+    // ===== Sair da conta =====
+    // Encerra a sessão antes de ir para a index. Sem isto o "Sair" só
+    // trocava de página: a pessoa continuava logada, e num computador
+    // compartilhado o próximo a sentar ali entraria no anúncio dela.
+    document.getElementById('btnSair').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabaseClient.auth.signOut();
+        window.location.href = '../index.html';
+    });
 
     window.addEventListener('DOMContentLoaded', carregarPainelRestrito);
 </script>
