@@ -239,7 +239,7 @@
 
             <div class="auth-body">
 
-                <form action="../dashboard/cadastrar-anuncio.html" method="GET" id="form-login" class="auth-form active">
+                <form action="../dashboard/dashboard.html" method="GET" id="form-login" class="auth-form active">
                     <div class="auth-header-text">
                         <h2>Bem-vindo de volta!</h2>
                         <p>Acesse seu painel para gerenciar seus anúncios.</p>
@@ -364,7 +364,7 @@
 
             showAlert('success', 'Tudo certo! Levando você para o seu painel...');
             setTimeout(() => {
-                window.location.href = '../dashboard/cadastrar-anuncio.html';
+                window.location.href = '../dashboard/dashboard.html';
             }, 900);
         })();
 
@@ -386,9 +386,12 @@
                 return;
             }
 
-            // Um login já é de um cliente com cadastro (loja) e pagamento feitos,
-            // então vai direto para a página do anúncio para ele ver/alterar o que já cadastrou.
-            window.location.href = '../dashboard/cadastrar-anuncio.html';
+            // Quem faz login já tem conta, e na maioria das vezes já tem
+            // loja. O painel mostra o anúncio, os números dele e o botão
+            // de editar — cair direto no formulário de edição pulava
+            // essa visão geral e dava a impressão de que a única coisa a
+            // fazer ali era mexer no cadastro de novo.
+            window.location.href = '../dashboard/dashboard.html';
         });
     </script>
 </body>
