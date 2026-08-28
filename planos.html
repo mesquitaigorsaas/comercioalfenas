@@ -341,7 +341,62 @@
             font-size: 0.85rem;
             border-top: 1px solid #1e293b;
         }
+        .faixa-promocao {
+            background-color: #ff6600;
+            color: #ffffff;
+            text-align: center;
+            padding: 14px 20px;
+            display: none;
+        }
+
+        .faixa-promocao.visivel {
+            display: block;
+        }
+
+        .faixa-promocao .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .faixa-promocao p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .faixa-promocao p span {
+            font-weight: 400;
+            opacity: 0.92;
+        }
+
+        .faixa-promocao a {
+            background-color: #ffffff;
+            color: #ff6600;
+            padding: 9px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .faixa-promocao a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .faixa-promocao p { font-size: 0.92rem; }
+            .faixa-promocao .container { gap: 12px; }
+        }
+
     </style>
+    <script src="assets/js/regras.js"></script>
+    <script src="assets/js/menu-promocao.js"></script>
 </head>
 <body>
 
@@ -364,6 +419,20 @@
             </div>
         </div>
     </header>
+
+    <!-- Mesma faixa da página inicial. Sem ela, quem chega direto
+         aqui vê R$ 29,70 e não fica sabendo que até 31/10 não paga
+         nada. Some sozinha em 01/11/2026, junto com a promoção. -->
+    <section class="faixa-promocao" id="faixaPromocao">
+        <div class="container">
+            <p>
+                ATÉ 31/10/2026 O CADASTRO É GRÁTIS
+                <span>&mdash; estes valores passam a valer em 01/11</span>
+            </p>
+            <a href="auth/cadastro.html">CADASTRAR AGORA</a>
+        </div>
+    </section>
+
 
     <section class="plans-hero">
         <div class="container">
@@ -468,6 +537,15 @@
             <p>&copy; 2026 Guia Comercial Alfenas. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+
+    <script>
+        // A faixa nasce escondida e só aparece enquanto a promoção
+        // vale. A data mora em assets/js/regras.js.
+        if (window.REGRAS.promocaoValendo()) {
+            document.getElementById('faixaPromocao').classList.add('visivel');
+        }
+    </script>
 
 </body>
 </html>
