@@ -16,7 +16,7 @@
     <header class="dashboard-header">
         <div class="container dash-nav">
             <a href="../index.html" class="logo">
-                <i class="fa-solid fa-location-dot"></i> GUIA<span>ALFENAS</span>
+                <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 52px; width: auto;">
             </a>
             <div class="user-info">
                 <span>Bem-vindo ao seu painel</span>
@@ -62,13 +62,16 @@
                     </div>
                 </div>
 
+                <!-- Contar anúncios não fazia sentido: cada anunciante
+                     tem uma loja só, então o número seria sempre 1.
+                     No lugar, a situação do anúncio. -->
                 <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="fa-solid fa-star"></i>
+                    <div class="stat-icon green" id="iconeSituacao">
+                        <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <div class="stat-info">
-                        <span>Anúncios Ativos</span>
-                        <h4>0</h4>
+                        <span>Situação do anúncio</span>
+                        <h4 id="situacaoAnuncio">—</h4>
                     </div>
                 </div>
             </div>
@@ -139,6 +142,12 @@
                         <a href="cadastrar-anuncio.html" class="btn-primary-dash" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px;">Cadastrar Minha Loja</a>
                     </div>
                 `;
+
+                // Ainda não há loja: o cartão de situação diz isso, em
+                // cinza, em vez de continuar com o traço inicial.
+                document.getElementById('situacaoAnuncio').innerText = 'Não cadastrado';
+                document.getElementById('iconeSituacao').className = 'stat-icon orange';
+                document.getElementById('iconeSituacao').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
                 return;
             }
 
@@ -154,7 +163,11 @@
             // Atualiza as métricas reais com base no banco de dados
             document.querySelector('.stat-card:nth-child(1) h4').innerText = anuncio.visualizacoes || 0;
             document.querySelector('.stat-card:nth-child(2) h4').innerText = anuncio.cliques_whatsapp || 0;
-            document.querySelector('.stat-card:nth-child(3) h4').innerText = anuncios.length; // conta anúncios ativos de verdade
+            // Situação: o anúncio existe no banco, e a leitura dos
+            // anúncios é pública — então ele está sendo mostrado no
+            // site. Hoje não há como tirar do ar sem apagar, então
+            // aqui só aparece "No ar".
+            document.getElementById('situacaoAnuncio').innerText = 'No ar';
 
             container.innerHTML = `
                 <div class="listing-item-dash" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">

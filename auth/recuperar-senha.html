@@ -9,6 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f8fafc; color: #333333; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .card { background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .logo-topo { display: block; text-align: center; margin-bottom: 22px; }
+        .logo-topo img { max-height: 52px; width: auto; }
         h2 { font-size: 1.5rem; color: #0f172a; margin-bottom: 8px; }
         p { color: #64748b; font-size: 0.9rem; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -23,6 +25,14 @@
 <body>
 
     <div class="card">
+        <!-- Esta era a única página sem a logo. Quem chega aqui vem de
+             um link no meio de um problema — reconhecer a marca é o que
+             dá segurança de que está no lugar certo, e não numa página
+             falsa pedindo o e-mail. -->
+        <a href="../index.html" class="logo-topo">
+            <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas">
+        </a>
+
         <h2>Recuperar Senha</h2>
         <p>Digite seu e-mail cadastrado para receber as instruções de redefinição.</p>
         
