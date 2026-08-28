@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre Nós | Guia Comercial Alfenas e Região</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1E1912;
+    --paper:#F6EFE2;
+    --coffee:#4A3225;
+    --caramel:#C17F2E;
+    --leaf:#35533F;
+    --card:#FFFBF3;
+    --line: rgba(30,25,18,0.12);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  .paper-texture{
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(74,50,37,0.035) 0, transparent 45%),
+      radial-gradient(circle at 80% 60%, rgba(53,83,63,0.04) 0, transparent 40%);
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    color:var(--coffee);
+    letter-spacing:-0.01em;
+  }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--leaf);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .eyebrow::before{
+    content:"";
+    width:22px;
+    height:1px;
+    background:var(--leaf);
+    display:inline-block;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  .hero{
+    position:relative;
+    padding:120px 0 90px;
+    overflow:hidden;
+  }
+
+  .hero .wrap{ position:relative; z-index:2; }
+
+  .hero-net{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    opacity:0.55;
+    pointer-events:none;
+  }
+
+  .hero h1{
+    font-size:clamp(2.4rem, 5.4vw, 4.2rem);
+    line-height:1.05;
+    max-width:820px;
+    margin:22px 0 26px;
+  }
+
+  .hero h1 em{ font-style:italic; color:var(--caramel); }
+
+  .hero p.lede{
+    font-size:1.18rem;
+    max-width:600px;
+    color:var(--coffee);
+    opacity:0.88;
+  }
+
+  .hero-scale{
+    margin-top:56px;
+    display:flex;
+    gap:48px;
+    flex-wrap:wrap;
+    border-top:1px solid var(--line);
+    padding-top:28px;
+  }
+
+  .hero-scale div{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    color:var(--coffee);
+    opacity:0.75;
+  }
+
+  .hero-scale strong{
+    display:block;
+    font-family:'Fraunces', serif;
+    font-size:1.7rem;
+    font-weight:600;
+    color:var(--coffee);
+    opacity:1;
+  }
+
+  section{ padding:72px 0; }
+
+  .section-head{ max-width:640px; margin-bottom:44px; }
+  .section-head h2{ font-size:clamp(1.7rem, 3.4vw, 2.5rem); margin-top:14px; }
+
+  .quem-somos{
+    background:var(--card);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+
+  .quem-somos .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:56px;
+    align-items:start;
+  }
+
+  .quem-somos p{ font-size:1.06rem; color:var(--ink); opacity:0.86; }
+  .quem-somos p + p{ margin-top:18px; }
+
+  .mvv-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:2px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+  }
+
+  .mvv-card{
+    background:var(--card);
+    padding:38px 34px;
+    transition:background 0.35s ease;
+  }
+
+  .mvv-card:hover{ background:var(--paper); }
+
+  .mvv-card .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--caramel);
+  }
+
+  .mvv-card h3{ font-size:1.45rem; margin:12px 0 14px; }
+  .mvv-card p{ font-size:0.98rem; opacity:0.82; }
+
+  .lados{ background:var(--coffee); color:var(--paper); }
+  .lados .section-head h2{ color:var(--paper); }
+  .lados .eyebrow{ color:var(--caramel); }
+  .lados .eyebrow::before{ background:var(--caramel); }
+
+  .lados-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid rgba(246,239,226,0.16);
+  }
+
+  .lado{ padding:46px 42px; }
+
+  .lado:first-child{
+    border-right:1px solid rgba(246,239,226,0.16);
+    background:rgba(246,239,226,0.04);
+  }
+
+  .lado .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--caramel);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+
+  .lado h3{
+    font-family:'Fraunces', serif;
+    color:var(--paper);
+    font-size:1.7rem;
+    margin:12px 0 18px;
+  }
+
+  .lado ul{ list-style:none; margin-top:20px; }
+
+  .lado li{
+    position:relative;
+    padding-left:26px;
+    margin-bottom:14px;
+    font-size:1rem;
+    opacity:0.92;
+  }
+
+  .lado li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:10px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--caramel);
+  }
+
+  .lado p.intro{ font-size:1.02rem; opacity:0.85; max-width:440px; }
+
+  .cta{ text-align:center; padding:100px 0 110px; }
+  .cta h2{ font-size:clamp(1.9rem, 4vw, 2.9rem); max-width:680px; margin:18px auto 30px; }
+
+  .cta-buttons{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    display:inline-block;
+    padding:15px 30px;
+    border-radius:100px;
+    font-weight:600;
+    font-size:0.98rem;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .btn-primary{ background:var(--coffee); color:var(--paper); }
+
+  .btn-secondary{
+    background:transparent;
+    color:var(--coffee);
+    border:1.5px solid var(--coffee);
+  }
+
+  .btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 22px rgba(74,50,37,0.18);
+  }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:30px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--coffee);
+    opacity:0.6;
+    text-align:center;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:760px){
+    .quem-somos .grid{grid-template-columns:1fr; gap:34px;}
+    .mvv-grid{grid-template-columns:1fr;}
+    .lados-grid{grid-template-columns:1fr;}
+    .lado:first-child{border-right:none; border-bottom:1px solid rgba(246,239,226,0.16);}
+    .hero{padding:90px 0 60px;}
+    .wrap{padding:0 22px;}
+    .hero-scale{gap:28px;}
+  }
+
+  :focus-visible{ outline:2px solid var(--leaf); outline-offset:3px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body class="paper-texture">
+
+  <header class="hero">
+    <svg class="hero-net" viewBox="0 0 1080 520" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#4A3225" stroke-width="1" opacity="0.35" fill="none">
+        <path d="M120,90 C260,140 300,260 470,230 C620,205 640,320 800,300 C900,288 940,360 1010,340"/>
+        <path d="M60,300 C180,260 220,380 360,360 C480,344 520,420 660,400 C780,384 820,300 960,120"/>
+        <path d="M40,460 C220,410 300,470 430,440 C560,410 620,470 760,450"/>
+      </g>
+      <g fill="#C17F2E">
+        <circle cx="120" cy="90" r="5"/>
+        <circle cx="470" cy="230" r="6"/>
+        <circle cx="800" cy="300" r="4.5"/>
+        <circle cx="1010" cy="340" r="5"/>
+        <circle cx="360" cy="360" r="4.5"/>
+        <circle cx="660" cy="400" r="6"/>
+        <circle cx="960" cy="120" r="4.5"/>
+        <circle cx="430" cy="440" r="5"/>
+        <circle cx="760" cy="450" r="4.5"/>
+      </g>
+    </svg>
+    <div class="wrap">
+      <span class="eyebrow">Sobre nós</span>
+      <h1>O ponto de encontro entre <em>quem faz</em> e <em>quem procura</em> em Alfenas e no Sul de Minas.</h1>
+      <p class="lede">Somos o Guia Comercial Alfenas e Região: um só endereço digital onde comércios, prestadores de serviço e estabelecimentos locais se encontram com quem está pesquisando, comparando e decidindo — agora.</p>
+      <div class="hero-scale">
+        <div><strong>1</strong>plataforma para toda a região</div>
+        <div><strong>+</strong>visibilidade real para quem anuncia</div>
+        <div><strong>0</strong>complicação para quem busca</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="quem-somos">
+    <div class="wrap">
+      <div class="grid">
+        <div class="reveal">
+          <span class="eyebrow">Quem somos</span>
+          <h2>Nascemos de uma pergunta simples — e ela é sua.</h2>
+        </div>
+        <div class="reveal">
+          <p>"Onde eu acho isso aqui perto?" Essa é a pergunta que move o comércio local todos os dias — e é também a pergunta que fundou o Guia Comercial Alfenas e Região.</p>
+          <p>Vimos negócios de verdade, com histórias de verdade, se perdendo em redes sociais lotadas e buscas genéricas que não enxergam a cidade onde as pessoas realmente vivem, compram e confiam. E vimos moradores cansados de rolar feed atrás de um serviço que deveria estar a um clique de distância.</p>
+          <p>Criamos uma plataforma pensada para Alfenas e para as cidades da nossa região — organizada, confiável e feita para gerar movimento de verdade: mais gente encontrando, mais negócio fechando.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">O que nos guia</span>
+        <h2>Missão, visão e valores não são moldura. São a régua de tudo que construímos.</h2>
+      </div>
+      <div class="mvv-grid reveal">
+        <div class="mvv-card">
+          <span class="tag">Missão</span>
+          <h3>Aproximar quem oferece de quem precisa.</h3>
+          <p>Conectar comércios, prestadores de serviço e estabelecimentos da nossa região a pessoas que estão, agora, decidindo onde comprar, comer, contratar ou resolver — de forma simples, rápida e sem ruído.</p>
+        </div>
+        <div class="mvv-card">
+          <span class="tag">Visão</span>
+          <h3>Ser a referência do Sul de Minas.</h3>
+          <p>Ser reconhecidos como o guia comercial de referência de Alfenas e da região — o primeiro lugar que vem à cabeça quando alguém precisa encontrar ou divulgar um negócio local.</p>
+        </div>
+        <div class="mvv-card">
+          <span class="tag">Valores</span>
+          <h3>Local, transparente, útil.</h3>
