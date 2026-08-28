@@ -971,26 +971,25 @@
             container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Buscando estabelecimentos...</p>';
 
             try {
-                // Ordem de cadastro: quem entrou primeiro aparece
-                // primeiro. Não é sorteio nem alfabética — é o combinado
-                // com quem apostou no guia antes dos outros.
+                // Sem teto: entram todas as lojas da cidade, quatro por
+                // fileira, quantas fileiras forem precisas. Havia um
+                // limite de 8, e ele deixaria de fora quem se cadastrou
+                // de graça e nunca soube que existia fila.
                 //
-                // O teto de 8 (duas fileiras de quatro) está em
-                // assets/js/regras.js.
+                // Ordem: destacados na frente e, entre iguais, ordem de
+                // cadastro — quem entrou primeiro aparece primeiro.
                 //
-                // PENDENTE: quando a promoção acabar, o destaque no topo
-                // vira produto pago (a caixa de R$120 por 15 dias, na
-                // página de planos). Até isso existir, a home continua
-                // mostrando os 8 primeiros de cada cidade.
+                // PENDENTE: quando a promoção acabar, o destaque vira
+                // produto pago (a caixa de R$ 120 por 15 dias, na página
+                // de planos), e aí ele passa a decidir quem aparece
+                // aqui, não só em que ordem.
                 let query = supabaseClient
                     .from('anuncios')
                     .select('*')
                     // Quem o administrador tirou do ar não aparece.
                     .eq('ativo', true)
-                    // Destaques primeiro; entre iguais, ordem de cadastro.
                     .order('destaque', { ascending: false })
-                    .order('criado_em', { ascending: true })
-                    .limit(window.REGRAS.destaquesNaHome);
+                    .order('criado_em', { ascending: true });
 
                 if (cidadeFiltro) {
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());

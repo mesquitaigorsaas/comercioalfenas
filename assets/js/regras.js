@@ -33,14 +33,17 @@ window.REGRAS = {
         anual: 15
     },
 
-    // Quantos anúncios cabem em "Anúncios em destaque", na página
-    // inicial. São duas fileiras de quatro.
+    // "Anúncios em destaque", na página inicial, não tem teto: são
+    // quatro por fileira e quantas fileiras forem precisas.
     //
-    // Enquanto a promoção vale, todo mundo passa por ali, na ordem em
-    // que se cadastrou: quem chegou primeiro aparece primeiro. É o que
-    // faz o guia parecer vivo enquanto ainda tem poucas lojas, e é
-    // justo com quem apostou no site antes de todo mundo.
-    destaquesNaHome: 8,
+    // Havia um limite de 8. Ele criava um problema que só apareceria
+    // depois: com a nona loja cadastrada, alguém que também entrou de
+    // graça ficaria fora da vitrine sem nunca ter sido avisado disso.
+    // Numa promoção de lançamento, é o contrário do que se quer — cada
+    // loja nova é uma razão a mais para o morador voltar ao guia.
+    //
+    // A ordem continua sendo a de cadastro, com os destacados na
+    // frente: quem chegou primeiro aparece primeiro.
 
     /**
      * Quantas fotos esta loja pode ter (fora a logomarca).
