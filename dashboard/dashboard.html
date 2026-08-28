@@ -19,6 +19,11 @@
                 <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 52px; width: auto;">
             </a>
             <div class="user-info">
+                <!-- Só aparece para quem é administrador do guia; o
+                     JavaScript pergunta ao banco antes de mostrar. -->
+                <a href="../admin/painel.html" class="btn-exit" id="linkAdmin" style="display:none;">
+                    <i class="fa-solid fa-sliders"></i> Administração
+                </a>
                 <span>Bem-vindo ao seu painel</span>
                 <!-- Era um link direto para a index, o que só parecia
                      sair: a sessão continuava aberta e bastava voltar
@@ -114,6 +119,15 @@
                 .select('*')
                 .eq('user_id', user.id);
 
+            // Atalho para a administração, só para quem é administrador.
+            // Quem decide é o banco; se responder que não, o link
+            // simplesmente não aparece.
+            supabaseClient.rpc('eh_admin').then(({ data }) => {
+                if (data === true) {
+                    document.getElementById('linkAdmin').style.display = '';
+                }
+            });
+
             const container = document.getElementById('user-listings-container');
             const botaoTopoWrapper = document.getElementById('botaoTopoWrapper');
 
@@ -163,11 +177,17 @@
             // Atualiza as métricas reais com base no banco de dados
             document.querySelector('.stat-card:nth-child(1) h4').innerText = anuncio.visualizacoes || 0;
             document.querySelector('.stat-card:nth-child(2) h4').innerText = anuncio.cliques_whatsapp || 0;
-            // Situação: o anúncio existe no banco, e a leitura dos
-            // anúncios é pública — então ele está sendo mostrado no
-            // site. Hoje não há como tirar do ar sem apagar, então
-            // aqui só aparece "No ar".
-            document.getElementById('situacaoAnuncio').innerText = 'No ar';
+            // Situação de verdade: o administrador do guia pode ter
+            // tirado este anúncio do ar. Nesse caso o anunciante precisa
+            // saber, em vez de achar que está aparecendo no site.
+            const noAr = anuncio.ativo !== false;
+            const icone = document.getElementById('iconeSituacao');
+
+            document.getElementById('situacaoAnuncio').innerText = noAr ? 'No ar' : 'Fora do ar';
+            icone.className = noAr ? 'stat-icon green' : 'stat-icon orange';
+            icone.innerHTML = noAr
+                ? '<i class="fa-solid fa-circle-check"></i>'
+                : '<i class="fa-solid fa-circle-minus"></i>';
 
             container.innerHTML = `
                 <div class="listing-item-dash" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">

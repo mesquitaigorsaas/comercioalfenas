@@ -391,6 +391,18 @@
             // Não trava a exibição da página se falhar.
             supabaseClient.rpc('registrar_visualizacao', { p_anuncio: id }).then(() => {});
 
+            // Anúncio fora do ar: some da vitrine, mas continua abrindo
+            // por link direto — é assim que o administrador consegue
+            // conferir o que tirou do ar, e o anunciante consegue ver a
+            // própria loja. O aviso deixa claro que ninguém mais a
+            // encontra pelo site.
+            if (anuncio.ativo === false) {
+                const faixa = document.createElement('div');
+                faixa.style.cssText = 'background:#fef3c7;color:#92400e;padding:14px 20px;text-align:center;font-size:0.9rem;font-weight:600;';
+                faixa.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Este anúncio está fora do ar e não aparece nas buscas do guia.';
+                document.body.insertBefore(faixa, document.body.firstChild);
+            }
+
             document.title = `${anuncio.titulo || 'Anúncio'} | Guia Comercial Alfenas e Região`;
             breadcrumb.innerHTML = `<a href="index.html">Início</a> <i class="fa-solid fa-chevron-right"></i> ${anuncio.categoria || ''} <i class="fa-solid fa-chevron-right"></i> ${anuncio.titulo || ''}`;
 

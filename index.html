@@ -985,6 +985,10 @@
                 let query = supabaseClient
                     .from('anuncios')
                     .select('*')
+                    // Quem o administrador tirou do ar não aparece.
+                    .eq('ativo', true)
+                    // Destaques primeiro; entre iguais, ordem de cadastro.
+                    .order('destaque', { ascending: false })
                     .order('criado_em', { ascending: true })
                     .limit(window.REGRAS.destaquesNaHome);
 

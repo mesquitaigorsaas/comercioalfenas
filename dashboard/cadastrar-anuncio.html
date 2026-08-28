@@ -438,6 +438,10 @@
         let fotosExistentes = [];     // URLs já salvas no banco (modo edição)
         let modoEdicao = false;
         let anuncioIdEdicao = null;
+        let souAdmin = false;
+        // Dono do anuncio em edicao. Em geral e o proprio usuario; quando
+        // o administrador edita a loja de outra pessoa, e o dono dela.
+        let donoDoAnuncio = null;
 
         // ===== Quantas fotos esta loja pode ter =====
         //
@@ -545,14 +549,26 @@
             const params = new URLSearchParams(window.location.search);
             const idParam = params.get('id');
 
+            // O administrador do guia edita o anúncio de qualquer loja,
+            // a partir do painel de administração. Quem garante isso é o
+            // banco (a regra "admin edita qualquer anuncio"); aqui só
+            // perguntamos para saber como montar a tela.
+            const { data: ehAdmin } = await supabase.rpc('eh_admin');
+            souAdmin = ehAdmin === true;
+
             if (idParam) {
                 // ===== MODO EDIÇÃO =====
-                const { data: anuncioExistente, error } = await supabase
-                    .from('anuncios')
-                    .select('*')
-                    .eq('id', idParam)
-                    .eq('user_id', user.id)
-                    .single();
+                let consulta = supabase.from('anuncios').select('*').eq('id', idParam);
+
+                // O anunciante comum só alcança o anúncio dele. Sem este
+                // filtro, trocar o número no endereço abriria a loja dos
+                // outros — o banco barraria o salvamento, mas os dados
+                // já teriam aparecido na tela.
+                if (!souAdmin) {
+                    consulta = consulta.eq('user_id', user.id);
+                }
+
+                const { data: anuncioExistente, error } = await consulta.single();
 
                 if (error || !anuncioExistente) {
                     alert('Não foi possível carregar este anúncio para edição, ou ele não pertence à sua conta.');
@@ -562,10 +578,22 @@
 
                 modoEdicao = true;
                 anuncioIdEdicao = anuncioExistente.id;
+
+                // Guarda o dono de verdade. Sem isto, o administrador
+                // salvando a edição passaria a loja para o nome dele.
+                donoDoAnuncio = anuncioExistente.user_id;
+
                 preencherFormulario(anuncioExistente);
 
-                document.querySelector('.page-title h1').innerText = 'Editar Anúncio da Empresa';
-                document.querySelector('.page-title p').innerText = 'Atualize as informações do seu anúncio no portal.';
+                if (souAdmin && donoDoAnuncio !== user.id) {
+                    document.querySelector('.page-title h1').innerText = 'Editando: ' + (anuncioExistente.titulo || 'anúncio');
+                    document.querySelector('.page-title p').innerHTML =
+                        '<strong style="color:#c2410c;">Você está editando o anúncio de outro anunciante, como administrador.</strong>';
+                } else {
+                    document.querySelector('.page-title h1').innerText = 'Editar Anúncio da Empresa';
+                    document.querySelector('.page-title p').innerText = 'Atualize as informações do seu anúncio no portal.';
+                }
+
                 document.querySelector('.btn-submit').innerText = 'SALVAR ALTERAÇÕES';
             } else {
                 // ===== MODO CRIAÇÃO: verifica se já existe loja cadastrada =====
@@ -755,7 +783,10 @@
                 btnSubmit.innerText = modoEdicao ? 'Salvando Alterações...' : 'Salvando no Banco de Dados...';
 
                 const dadosAnuncio = {
-                    user_id: usuarioAtual.id,
+                    // Em modo de edicao, mantem quem ja era o dono: se
+                    // o administrador salvasse com o proprio id, a loja
+                    // mudaria de dono sem ninguem pedir.
+                    user_id: donoDoAnuncio || usuarioAtual.id,
                     titulo: document.getElementById('nomeEmpresa').value.trim(),
                     cidade: document.getElementById('cidade').value.toLowerCase().trim(),
                     categoria: document.getElementById('categoria').value.trim(),
@@ -797,8 +828,16 @@
                     throw resultado.error;
                 }
 
-                alert(modoEdicao ? 'Anúncio atualizado com sucesso!' : 'Anúncio cadastrado e publicado com sucesso no Supabase!');
-                window.location.href = 'dashboard.html';
+                alert(modoEdicao ? 'Anúncio atualizado com sucesso!' : 'Anúncio cadastrado e publicado com sucesso!');
+
+                // O administrador que veio editar a loja de outra pessoa
+                // volta para o painel de onde saiu, e não para o painel
+                // dele — que nem tem loja para mostrar.
+                const voltarPara = (souAdmin && donoDoAnuncio && donoDoAnuncio !== usuarioAtual.id)
+                    ? '../admin/painel.html'
+                    : 'dashboard.html';
+
+                window.location.href = voltarPara;
 
             } catch (err) {
                 console.error('Erro detalhado do Supabase:', err);
