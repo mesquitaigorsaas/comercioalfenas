@@ -125,16 +125,26 @@
         }
 
         /* Olhinho de mostrar/esconder a senha, dentro do campo. */
+        /* Tamanho fixo em vez de padding: o botão encolhia até 20px de
+           largura e o desenho do olho transbordava por cima da borda
+           direita do campo. Com medida própria e o conteúdo centrado,
+           ele para onde deve, com folga da linha. Os 32px também dão
+           um alvo de toque decente no celular. */
         .btn-olho {
             position: absolute;
-            right: 6px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
             background: none;
             border: none;
             color: #94a3b8;
             cursor: pointer;
-            padding: 8px 10px;
             font-size: 14px;
             line-height: 1;
         }

@@ -750,35 +750,14 @@
             <div class="search-box-wrapper">
                 <form class="search-form" id="searchForm">
                     <select name="cidade" id="searchCidade">
-                        <option value="">Selecione a cidade</option>
+                        <!-- Só Alfenas por enquanto. O guia nasce numa cidade
+                             só, e oferecer trinta na busca faz o visitante
+                             procurar em Varginha e não achar nada — o que
+                             ensina que o guia é vazio, e ele não volta.
+                             A segunda linha não é escolhível: está ali para
+                             dizer que virá mais, não para virar busca vazia. -->
                         <option value="alfenas" selected>Alfenas</option>
-                        <option value="alterosa">Alterosa</option>
-                        <option value="areado">Areado</option>
-                        <option value="boa-esperanca">Boa Esperança</option>
-                        <option value="borda-da-mata">Borda da Mata</option>
-                        <option value="cabo-verde">Cabo Verde</option>
-                        <option value="cambui">Cambuí</option>
-                        <option value="campestre">Campestre</option>
-                        <option value="campo-do-meio">Campo do Meio</option>
-                        <option value="campos-gerais">Campos Gerais</option>
-                        <option value="carmo-do-rio-claro">Carmo do Rio Claro</option>
-                        <option value="fama">Fama</option>
-                        <option value="guaxupe">Guaxupé</option>
-                        <option value="itajuba">Itajubá</option>
-                        <option value="itau-de-minas">Itaú de Minas</option>
-                        <option value="machado">Machado</option>
-                        <option value="muzambinho">Muzambinho</option>
-                        <option value="paraguacu">Paraguaçu</option>
-                        <option value="passos">Passos</option>
-                        <option value="pocos-de-caldas">Poços de Caldas</option>
-                        <option value="pouso-alegre">Pouso Alegre</option>
-                        <option value="santa-rita-do-sapucai">Santa Rita do Sapucaí</option>
-                        <option value="sao-lourenco">São Lourenço</option>
-                        <option value="sao-sebastiao-do-paraiso">São Sebastião do Paraíso</option>
-                        <option value="serrania">Serrania</option>
-                        <option value="tres-coracoes">Três Corações</option>
-                        <option value="tres-pontas">Três Pontas</option>
-                        <option value="varginha">Varginha</option>
+                        <option value="" disabled>Em breve mais cidades</option>
                     </select>
 
                     <select name="categoria" id="searchCategoria">

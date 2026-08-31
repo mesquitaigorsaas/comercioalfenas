@@ -284,35 +284,13 @@
                     <div class="form-group">
                         <label for="cidade">Cidade *</label>
                         <select id="cidade" required>
-                            <option value="">Selecione a cidade...</option>
-                            <option value="Alfenas">Alfenas</option>
-                            <option value="Alterosa">Alterosa</option>
-                            <option value="Areado">Areado</option>
-                            <option value="Boa Esperança">Boa Esperança</option>
-                            <option value="Borda da Mata">Borda da Mata</option>
-                            <option value="Cabo Verde">Cabo Verde</option>
-                            <option value="Cambuí">Cambuí</option>
-                            <option value="Campestre">Campestre</option>
-                            <option value="Campo do Meio">Campo do Meio</option>
-                            <option value="Campos Gerais">Campos Gerais</option>
-                            <option value="Carmo do Rio Claro">Carmo do Rio Claro</option>
-                            <option value="Fama">Fama</option>
-                            <option value="Guaxupé">Guaxupé</option>
-                            <option value="Itajubá">Itajubá</option>
-                            <option value="Itaú de Minas">Itaú de Minas</option>
-                            <option value="Machado">Machado</option>
-                            <option value="Muzambinho">Muzambinho</option>
-                            <option value="Paraguaçu">Paraguaçu</option>
-                            <option value="Passos">Passos</option>
-                            <option value="Poços de Caldas">Poços de Caldas</option>
-                            <option value="Pouso Alegre">Pouso Alegre</option>
-                            <option value="Santa Rita do Sapucaí">Santa Rita do Sapucaí</option>
-                            <option value="São Lourenço">São Lourenço</option>
-                            <option value="São Sebastião do Paraíso">São Sebastião do Paraíso</option>
-                            <option value="Serrania">Serrania</option>
-                            <option value="Três Corações">Três Corações</option>
-                            <option value="Três Pontas">Três Pontas</option>
-                            <option value="Varginha">Varginha</option>
+                            <!-- Só Alfenas por enquanto, já escolhida: é a
+                                 única cidade que o guia cobre, e deixar o
+                                 anunciante marcar Varginha criaria anúncio
+                                 numa cidade onde ninguém procura.
+                                 A segunda linha não é escolhível. -->
+                            <option value="Alfenas" selected>Alfenas</option>
+                            <option value="" disabled>Em breve mais cidades</option>
                         </select>
                     </div>
 
