@@ -14,8 +14,8 @@
    que cada visitante pode ver e mexer são as regras de segurança (RLS)
    escritas em supabase/schema.sql, do lado do banco.
 
-   A senha do banco NÃO está aqui e nunca deve estar. Ela mora só no
-   arquivo "Dados do Site.txt", que o .gitignore mantém fora do GitHub.
+   A senha do banco NÃO está aqui e nunca deve estar. Ela vive só no
+   painel do Supabase, e de lá pode ser redefinida quando for preciso.
    ===================================================================== */
 window.CONFIG_SUPABASE = {
     url: 'https://qnnjvgjtmdolwyxrgghp.supabase.co',

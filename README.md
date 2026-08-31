@@ -119,5 +119,6 @@ o navegador de quem visita, e qualquer um pode lê-la. Não é descuido —
 ver e mexer são as regras acima, do lado do banco.
 
 **A senha do banco não está no repositório e não deve entrar nele.**
-Ela fica no arquivo `Dados do Site.txt`, que o `.gitignore` mantém de
-fora.
+Ela vive só no painel do Supabase, e de lá pode ser redefinida quando
+for preciso, em *Project Settings → Database*. Se um dia for guardá-la
+num arquivo aqui, use um nome que o `.gitignore` já cubra.
