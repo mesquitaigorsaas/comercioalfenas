@@ -14,3 +14,6 @@ desktop.ini
 # Editores
 .vscode/
 .idea/
+
+# Documentos comerciais: ficam na maquina, nao vao para o site publicado
+patrocinio.md
