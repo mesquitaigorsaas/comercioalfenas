@@ -121,6 +121,29 @@
         .form-section-title:not(:first-child) { margin-top: 34px; }
 
         .form-group { margin-bottom: 20px; }
+
+        /* Recado curto embaixo do CEP: diz o que vai acontecer antes de
+           acontecer, e depois vira o resultado da busca. */
+        .aviso-cep {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin: -10px 0 20px;
+            font-size: 0.8rem;
+            line-height: 1.45;
+            color: #64748b;
+        }
+
+        .aviso-cep i {
+            margin-top: 3px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .aviso-cep.erro,
+        .aviso-cep.erro i {
+            color: #dc2626;
+        }
         .form-hint { color: #64748b; font-size: 0.8rem; margin-top: 5px; }
 
         .form-row {
@@ -327,9 +350,41 @@
                     <i class="fa-solid fa-map-location-dot" style="color: #2563eb;"></i> 2. Contato e Localização
                 </div>
 
+                <!-- O endereço vem em partes, e não numa linha só. O CEP
+                     preenche rua e bairro sozinho, então no balcão da loja
+                     são dois campos digitados em vez de uma frase inteira.
+                     E, separado, o bairro serve para a busca do guia e o
+                     endereço monta um mapa que acerta o lugar. -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cep">CEP *</label>
+                        <input type="text" id="cep" placeholder="Ex: 37130-000" inputmode="numeric" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numero">Número *</label>
+                        <input type="text" id="numero" placeholder="Ex: 123" required>
+                    </div>
+                </div>
+
+                <p class="aviso-cep" id="avisoCep">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Digite o CEP e a rua e o bairro se preenchem sozinhos.</span>
+                </p>
+
                 <div class="form-group">
-                    <label for="endereco">Endereço Completo *</label>
-                    <input type="text" id="endereco" placeholder="Ex: Rua Coronel José Justino, 123 - Centro, Alfenas - MG" required>
+                    <label for="logradouro">Rua / Avenida *</label>
+                    <input type="text" id="logradouro" placeholder="Ex: Rua Coronel José Justino" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bairro">Bairro *</label>
+                        <input type="text" id="bairro" placeholder="Ex: Centro" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" placeholder="Ex: Loja 2, Galeria Central">
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -597,6 +652,87 @@
             document.getElementById('conteudoFormulario').style.display = 'block';
         }
 
+        // =============================================================
+        // ENDEREÇO
+        //
+        // O CEP consulta o ViaCEP, serviço público e gratuito, e traz
+        // rua e bairro. Se ele estiver fora do ar ou o CEP não existir,
+        // nada trava: os campos continuam lá para digitar à mão.
+        // =============================================================
+        const soNumeros = (valor) => (valor || '').replace(/\D/g, '');
+
+        const formatarCep = (valor) => {
+            const d = soNumeros(valor).slice(0, 8);
+            return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+        };
+
+        // Junta as partes na linha que a página da loja mostra e que o
+        // Google Maps recebe. Cada pedaço só entra se existir, senão
+        // sobrariam vírgulas soltas em endereço sem complemento.
+        function montarEndereco() {
+            const v = (id) => document.getElementById(id).value.trim();
+            const rua = [v('logradouro'), v('numero')].filter(Boolean).join(', ');
+            const partes = [rua, v('complemento'), v('bairro')].filter(Boolean);
+            return partes.join(' - ');
+        }
+
+        const campoCep = document.getElementById('cep');
+        const avisoCep = document.getElementById('avisoCep');
+        const avisoCepOriginal = avisoCep.innerHTML;
+
+        function recadoCep(texto, erro, icone) {
+            avisoCep.classList.toggle('erro', erro);
+            avisoCep.innerHTML = `<i class="fa-solid ${icone}"></i><span>${texto}</span>`;
+        }
+
+        campoCep.addEventListener('input', () => {
+            campoCep.value = formatarCep(campoCep.value);
+        });
+
+        // A busca acontece ao sair do campo. No meio da digitação, todo
+        // CEP estaria incompleto e seria acusado de errado.
+        campoCep.addEventListener('blur', async () => {
+            const cep = soNumeros(campoCep.value);
+
+            if (!cep) {
+                avisoCep.classList.remove('erro');
+                avisoCep.innerHTML = avisoCepOriginal;
+                return;
+            }
+
+            if (cep.length !== 8) {
+                recadoCep('O CEP tem 8 números.', true, 'fa-circle-exclamation');
+                return;
+            }
+
+            recadoCep('Buscando endereço...', false, 'fa-spinner fa-spin');
+
+            try {
+                const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const endereco = await resposta.json();
+
+                if (endereco.erro) {
+                    recadoCep('CEP não encontrado. Preencha o endereço à mão.', true, 'fa-circle-exclamation');
+                    return;
+                }
+
+                // Só preenche o que estiver vazio: se a pessoa já
+                // corrigiu algum campo, não passamos por cima.
+                const preencher = (id, valor) => {
+                    const campo = document.getElementById(id);
+                    if (valor && !campo.value.trim()) campo.value = valor;
+                };
+
+                preencher('logradouro', endereco.logradouro);
+                preencher('bairro', endereco.bairro);
+
+                recadoCep('Endereço encontrado. Confira e complete o número.', false, 'fa-circle-check');
+                document.getElementById('numero').focus();
+            } catch {
+                recadoCep('Não deu para buscar o CEP agora. Preencha o endereço à mão.', true, 'fa-circle-exclamation');
+            }
+        });
+
         // Preenche o formulário com os dados de um anúncio existente (modo edição)
         function preencherFormulario(anuncio) {
             // O plano que vale é o que está salvo no anúncio, não o que
@@ -606,7 +742,15 @@
 
             document.getElementById('nomeEmpresa').value = anuncio.titulo || '';
             document.getElementById('descricao').value = anuncio.descricao || '';
-            document.getElementById('endereco').value = anuncio.endereco || '';
+            // Endereço em partes. O anúncio cadastrado antes destes
+            // campos existirem só tem a linha antiga: em vez de deixar
+            // o formulário vazio e obrigar a redigitar tudo, ela entra
+            // na rua, para a pessoa separar o que for preciso.
+            document.getElementById('cep').value = formatarCep(anuncio.cep || '');
+            document.getElementById('numero').value = anuncio.numero || '';
+            document.getElementById('bairro').value = anuncio.bairro || '';
+            document.getElementById('complemento').value = anuncio.complemento || '';
+            document.getElementById('logradouro').value = anuncio.logradouro || anuncio.endereco || '';
             document.getElementById('telefone').value = anuncio.telefone || '';
             document.getElementById('whatsapp').value = anuncio.whatsapp || '';
             document.getElementById('instagram').value = anuncio.instagram || '';
@@ -769,7 +913,17 @@
                     cidade: document.getElementById('cidade').value.toLowerCase().trim(),
                     categoria: document.getElementById('categoria').value.trim(),
                     descricao: document.getElementById('descricao').value.trim(),
-                    endereco: document.getElementById('endereco').value.trim(),
+                    cep: soNumeros(document.getElementById('cep').value) || null,
+                    logradouro: document.getElementById('logradouro').value.trim(),
+                    numero: document.getElementById('numero').value.trim(),
+                    complemento: document.getElementById('complemento').value.trim() || null,
+                    bairro: document.getElementById('bairro').value.trim(),
+
+                    // Continua sendo gravado, montado a partir das partes.
+                    // É ele que a página da loja mostra e que o Google Maps
+                    // recebe — escrever nas duas formas evita mexer em
+                    // três telas que já funcionam.
+                    endereco: montarEndereco(),
                     telefone: document.getElementById('telefone').value.trim(),
                     whatsapp: document.getElementById('whatsapp').value.trim(),
                     instagram: document.getElementById('instagram').value.trim(),

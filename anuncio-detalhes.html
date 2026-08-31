@@ -408,8 +408,15 @@
 
             const whatsappLink = anuncio.whatsapp ? `https://wa.me/55${anuncio.whatsapp.replace(/\D/g, '')}` : '';
             const telefoneLink = anuncio.telefone ? `tel:${anuncio.telefone.replace(/\D/g, '')}` : '';
-            const enderecoMapsLink = anuncio.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(anuncio.endereco)}` : '';
-            const mapaEmbedSrc = anuncio.endereco ? `https://www.google.com/maps?q=${encodeURIComponent(anuncio.endereco)}&output=embed` : '';
+            // O endereço guardado vai até o bairro, sem a cidade — ela é
+            // coluna própria do anúncio. Para o mapa, porém, endereço sem
+            // cidade acha rua de nome parecido em outro estado, então a
+            // cidade e o UF entram aqui, só na busca.
+            const enderecoParaMapa = anuncio.endereco
+                ? `${anuncio.endereco}, ${anuncio.cidade || ''} - MG`.replace(/\s+-\s+MG$/, ' - MG')
+                : '';
+            const enderecoMapsLink = enderecoParaMapa ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(enderecoParaMapa)}` : '';
+            const mapaEmbedSrc = enderecoParaMapa ? `https://www.google.com/maps?q=${encodeURIComponent(enderecoParaMapa)}&output=embed` : '';
             const instagramLink = anuncio.instagram ? (anuncio.instagram.startsWith('http') ? anuncio.instagram : 'https://instagram.com/' + anuncio.instagram.replace('@', '')) : '';
 
             // O lojista pode digitar o link inteiro da fanpage ou só o
