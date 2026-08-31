@@ -312,14 +312,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="reg-doc">CPF ou CNPJ *</label>
+                        <label for="reg-doc">CPF ou CNPJ</label>
                         <div class="input-with-icon">
                             <i class="fa-solid fa-id-card"></i>
-                            <input type="text" id="reg-doc" placeholder="000.000.000-00" inputmode="numeric" required>
+                            <input type="text" id="reg-doc" placeholder="Pode deixar em branco" inputmode="numeric">
                         </div>
                         <p class="aviso-campo" id="avisoDoc">
                             <i class="fa-solid fa-lock"></i>
-                            <span>Usamos apenas para identificar o responsável pela loja. <strong>Não aparece no seu anúncio</strong> e nunca é mostrado a quem visita o site.</span>
+                            <span>Opcional. Serve só para identificar o responsável pela loja quando houver cobrança. <strong>Não aparece no seu anúncio</strong> e nunca é mostrado a quem visita o site.</span>
                         </p>
                     </div>
 
@@ -820,8 +820,11 @@
                 return;
             }
 
-            if (!documentoValido(documento)) {
-                showAlert('error', 'O CPF ou CNPJ informado não é válido. Confira os números.');
+            // O documento é opcional: quem deixou em branco passa
+            // direto. Quem preencheu tem o que escreveu conferido —
+            // meio CPF digitado às pressas no balcão é pior que nenhum.
+            if (documento && !documentoValido(documento)) {
+                showAlert('error', 'O CPF ou CNPJ informado não é válido. Confira os números, ou deixe o campo em branco para preencher depois.');
                 campoDoc.focus();
                 return;
             }
@@ -854,12 +857,17 @@
             // só falharia lá dentro do banco, e o erro chegaria aqui
             // como "Database error saving new user" — que não ajuda
             // ninguém a entender o que fazer.
-            const { data: jaExiste } = await supabaseClient.rpc('documento_ja_cadastrado', { p_documento: documento });
+            //
+            // Sem documento não há o que perguntar: no banco, cadastros
+            // sem documento não disputam lugar entre si.
+            if (documento) {
+                const { data: jaExiste } = await supabaseClient.rpc('documento_ja_cadastrado', { p_documento: documento });
 
-            if (jaExiste) {
-                setLoading(btn, false);
-                showAlert('error', 'Já existe uma conta com este CPF/CNPJ. Cada anunciante pode ter um cadastro. Acesse sua conta ou recupere a senha.');
-                return;
+                if (jaExiste) {
+                    setLoading(btn, false);
+                    showAlert('error', 'Já existe uma conta com este CPF/CNPJ. Cada anunciante pode ter um cadastro. Acesse sua conta ou recupere a senha.');
+                    return;
+                }
             }
 
             setLoading(btn, true, 'Criando conta...');

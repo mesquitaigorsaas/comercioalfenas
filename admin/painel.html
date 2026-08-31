@@ -623,11 +623,14 @@
 
                     <div class="janela-campo">
                         <label for="ed-documento">CPF / CNPJ</label>
-                        <!-- Só leitura: o documento é conferido pelos
-                             dígitos na hora do cadastro e é único no
-                             banco. Trocar por aqui abriria a porta para
-                             desfazer justamente essa trava. -->
-                        <input type="text" id="ed-documento" readonly>
+                        <!-- Trava só depois de preenchido. O documento
+                             é conferido pelos dígitos e é único no
+                             banco; deixar trocar um que já existe
+                             abriria a porta para desfazer essa trava.
+                             Mas quem se cadastrou sem informar precisa
+                             de um lugar para informar depois, e é aqui.
+                             Quem decide é o JavaScript, ao abrir. -->
+                        <input type="text" id="ed-documento" placeholder="Ainda não informado">
                     </div>
 
                     <div class="janela-campo">
@@ -848,7 +851,9 @@
 
                 <td class="celula-pessoa">
                     <strong>${escapar(a.nome_completo)}</strong>
-                    <small>${a.tipo_documento === 'cnpj' ? 'CNPJ' : 'CPF'} ${formatarDocumento(a.documento)}</small>
+                    <small>${a.documento
+                        ? `${a.tipo_documento === 'cnpj' ? 'CNPJ' : 'CPF'} ${formatarDocumento(a.documento)}`
+                        : 'Documento não informado'}</small>
                 </td>
 
                 <td class="celula-pessoa">
@@ -999,8 +1004,15 @@
             a.titulo ? `Responsável por ${a.titulo}` : 'Ainda sem loja cadastrada';
 
         document.getElementById('ed-nome').value = a.nome_completo || '';
-        document.getElementById('ed-documento').value = formatarDocumento(a.documento);
         document.getElementById('ed-email').value = a.email || '';
+
+        // O documento abre para digitar só quando está em branco. Uma
+        // vez gravado, vira só leitura de novo: é ele que impede a
+        // mesma pessoa de abrir várias contas enquanto o guia é grátis.
+        const campoDoc = document.getElementById('ed-documento');
+        campoDoc.value = a.documento ? formatarDocumento(a.documento) : '';
+        campoDoc.readOnly = Boolean(a.documento);
+
         document.getElementById('ed-telefone').value = a.telefone || '';
         document.getElementById('ed-cep').value = a.cep || '';
         document.getElementById('ed-logradouro').value = a.logradouro || '';
@@ -1049,6 +1061,16 @@
             uf: document.getElementById('ed-uf').value.trim().toUpperCase()
         };
 
+        // Só entra na atualização quando o campo estava aberto para
+        // digitar, ou seja, quando o cadastro veio sem documento. Em
+        // branco continua em branco: nulo, e não texto vazio, senão o
+        // segundo cadastro sem documento bateria de frente com este no
+        // índice único.
+        const campoDoc = document.getElementById('ed-documento');
+        if (!campoDoc.readOnly) {
+            mudancas.documento = soNumeros(campoDoc.value) || null;
+        }
+
         const { error } = await supabaseClient
             .from('perfis')
             .update(mudancas)
@@ -1058,7 +1080,14 @@
         botao.innerText = 'Salvar cadastro';
 
         if (error) {
-            recado('erro', 'Não foi possível salvar o cadastro: ' + error.message);
+            // O banco confere o documento pelos dígitos. A recusa dele
+            // chega como texto técnico; aqui vira recado de gente.
+            const recadoErro = /perfis_documento_check/.test(error.message)
+                ? 'Este CPF/CNPJ não é válido. Confira os números, ou deixe o campo em branco.'
+                : /duplicate key|unique/i.test(error.message)
+                    ? 'Este CPF/CNPJ já está em outro cadastro do guia.'
+                    : 'Não foi possível salvar o cadastro: ' + error.message;
+            recado('erro', recadoErro);
             return;
         }
 

@@ -92,6 +92,12 @@ Supabase, **nesta ordem**, num projeto novo:
 1. `schema.sql` — tabela `anuncios`, segurança e o depósito de imagens
 2. `perfis.sql` — dados do responsável, com CPF/CNPJ conferido
 3. `003-facebook.sql` — coluna do Facebook
+4. `004-admin.sql` — quem é administrador e o que o painel enxerga
+5. `005-cadastro-rapido.sql` — CPF/CNPJ deixa de ser obrigatório
+
+O `004` tem, no fim do arquivo, um comando comentado que diz quem é o
+administrador. Sem rodá-lo, ninguém entra no painel de administração —
+nem você.
 
 ### Como a segurança funciona
 
@@ -106,10 +112,16 @@ lê nem escreve nada. O que vale é:
   banco, não por escrita direta. Liberar alteração da tabela para o
   visitante anônimo — que é quem dispara essa contagem — deixaria
   qualquer um reescrever o anúncio de qualquer loja.
-- **CPF/CNPJ** é conferido pelos dígitos verificadores duas vezes: na
-  tela, para avisar na hora, e no banco, que é o que garante. E é
-  único, para uma pessoa não abrir várias contas e ocupar o guia
-  sozinha enquanto o cadastro é grátis.
+- **CPF/CNPJ é opcional**, porque as primeiras lojas do guia entram por
+  visita ao comércio, e pedir o documento de alguém numa primeira
+  conversa trava a conversa. Quem informar tem os dígitos conferidos
+  duas vezes — na tela, para avisar na hora, e no banco, que é o que
+  garante — e não pode repetir o de outro, para uma pessoa não abrir
+  várias contas e ocupar o guia sozinha enquanto o cadastro é grátis.
+  Quem não informar fica com o campo em branco, e o administrador
+  completa depois pelo painel. Em branco o valor é *nulo*, nunca texto
+  vazio: dois textos vazios brigariam entre si na regra de "não pode
+  repetir", e o segundo cadastro sem documento seria recusado.
 
 ### A chave que aparece no código
 
