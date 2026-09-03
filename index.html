@@ -595,7 +595,7 @@
            FAIXA DA PROMOÇÃO DE LANÇAMENTO
            Aparece só enquanto a data de GRATIS_ATE não passou. A
            regra fica no JavaScript, no fim da página: assim, quando
-           01/11/2026 chegar, a faixa some sozinha e ninguém precisa
+           01/10/2026 chegar, a faixa some sozinha e ninguém precisa
            lembrar de tirar.
            ========================================================== */
         .faixa-promocao {
@@ -682,13 +682,13 @@
         <div class="container">
             <p>
                 CADASTRE SUA LOJA GRÁTIS
-                <span>até 31/10/2026 — sem cartão, sem cobrança</span>
+                <span>até 30/09/2026 — sem cartão, sem cobrança</span>
             </p>
             <!-- Vai direto para o cadastro, e não para os planos: enquanto
                  a promoção vale não há o que escolher nem o que pagar, e
                  mostrar uma tabela de preços a quem acabou de ler "grátis"
                  só faz a pessoa desconfiar e desistir.
-                 Esta faixa some sozinha em 01/11/2026 (a data está em
+                 Esta faixa some sozinha em 01/10/2026 (a data está em
                  assets/js/regras.js), e o caminho curto morre com ela. -->
             <a href="auth/cadastro.html">QUERO ANUNCIAR</a>
         </div>
@@ -705,17 +705,7 @@
                     </div>
                 </div>
                 <div class="banner-slide">
-                    <img src="assets/img/Banner.png" alt="Onde a tradição encontra o futuro">
-                    <div class="banner-caption">
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <img src="assets/img/Banner0.png" alt="Onde a tradição encontra o futuro">
-                    <div class="banner-caption">
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <img src="assets/img/Banner3.png" alt="Onde a tradição encontra o futuro">
+                    <img src="assets/img/Banner0.png" alt="Mesquita Auto Peças: peças automotivas nacionais e importadas em Alfenas, com parcelamento em até 10x. Avenida Governador Valadares, 1134. Telefone (35) 3291-4040">
                     <div class="banner-caption">
                     </div>
                 </div>
@@ -727,15 +717,13 @@
             <div class="banner-dots" id="bannerDots">
                 <span class="banner-dot active" data-index="0"></span>
                 <span class="banner-dot" data-index="1"></span>
-                <span class="banner-dot" data-index="2"></span>
-                <span class="banner-dot" data-index="3"></span>
             </div>
         </div>
     </section>
 
     <section class="hero-section">
         <div class="container">
-            <h1>Encontre os melhores estabelecimentos da região</h1>
+            <h1>Encontre os melhores estabelecimentos de Alfenas</h1>
             
             <div class="search-box-wrapper">
                 <form class="search-form" id="searchForm">
@@ -769,7 +757,9 @@
                         <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
                         <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
                         <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
+                        <option value="Táxi e Moto Táxi">Táxi e Moto Táxi</option>
                         <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
+                        <option value="Web e Tecnologia">Web e Tecnologia</option>
                     </select>
 
                     <button type="submit" class="btn-search">BUSCAR</button>
@@ -821,7 +811,7 @@
         <div class="container">
             <div class="section-header">
                 <h2>ANÚNCIOS EM DESTAQUE</h2>
-                <p>Confira os principais estabelecimentos da nossa região</p>
+                <p>Confira os principais estabelecimentos de Alfenas</p>
             </div>
 
             <div class="listings-grid" id="listingsContainer">
@@ -855,7 +845,7 @@
         // fotos — as duas coisas mudam no mesmo dia, então mudam no
         // mesmo lugar. Aqui só perguntamos se a promoção ainda vale.
         //
-        // A faixa some sozinha em 01/11/2026, sem ninguém precisar
+        // A faixa some sozinha em 01/10/2026, sem ninguém precisar
         // lembrar de tirar.
         if (window.REGRAS.promocaoValendo()) {
             document.getElementById("faixaPromocao").classList.add("visivel");

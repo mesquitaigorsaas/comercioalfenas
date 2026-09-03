@@ -99,6 +99,7 @@
 
 </body>
 <script src="../assets/js/supabase-config.js"></script>
+<script src="../assets/js/regras.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     const SUPABASE_URL = window.CONFIG_SUPABASE.url;
@@ -189,6 +190,15 @@
                 ? '<i class="fa-solid fa-circle-check"></i>'
                 : '<i class="fa-solid fa-circle-minus"></i>';
 
+            // Até quando o plano desta loja vale. A conta começa na data
+            // do cadastro e mora em regras.js, a mesma que o painel do
+            // administrador usa — para não existirem duas versões da
+            // mesma data dizendo coisas diferentes.
+            const validadePlano = window.REGRAS.validadeEscrita(anuncio.criado_em, anuncio.plano, anuncio.categoria);
+            const nomeDoPlano = anuncio.plano
+                ? anuncio.plano.charAt(0).toUpperCase() + anuncio.plano.slice(1)
+                : '';
+
             container.innerHTML = `
                 <div class="listing-item-dash" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
                     <div style="display: flex; align-items: center; gap: 15px;">
@@ -196,6 +206,7 @@
                         <div>
                             <h4 style="font-size: 18px; color: #1e293b; margin-bottom: 4px;">${anuncio.titulo || 'Estabelecimento'}</h4>
                             <p style="color: #64748b; font-size: 14px;"><i class="fa-solid fa-tag"></i> ${anuncio.categoria || 'Geral'}</p>
+                            ${validadePlano ? `<p style="color: #64748b; font-size: 14px; margin-top: 2px;"><i class="fa-solid fa-calendar-check"></i> Plano ${nomeDoPlano} &middot; válido até ${validadePlano}</p>` : ''}
                             <span style="display: inline-block; margin-top: 6px; padding: 2px 8px; background: #dcfce7; color: #166534; border-radius: 4px; font-size: 12px; font-weight: 600;">${anuncio.status || 'Anúncio ativo ou pendente de regularização'}</span>
                         </div>
                     </div>

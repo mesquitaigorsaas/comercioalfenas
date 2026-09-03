@@ -6,10 +6,10 @@
    antes é um desvio que só faz perder gente no caminho.
 
    O menu PLANOS não muda. Ali a pessoa vai de propósito, para saber
-   quanto vai custar depois de 31/10 — e esconder isso durante uma
+   quanto vai custar depois de 30/09 — e esconder isso durante uma
    promoção gratuita levanta a suspeita de cobrança escondida.
 
-   Em 01/11/2026 esta troca deixa de acontecer sozinha e os botões
+   Em 01/10/2026 esta troca deixa de acontecer sozinha e os botões
    voltam a levar para os planos, sem ninguém precisar mexer em nada.
 
    Precisa de regras.js carregado antes.

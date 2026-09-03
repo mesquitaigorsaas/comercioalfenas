@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/regras.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -865,6 +866,16 @@
                     <select class="plano-select" data-plano="${a.anuncio_id || ''}" ${temLoja ? '' : 'disabled'}>
                         ${opcoesPlano}
                     </select>
+                    ${(() => {
+                        // Até quando o plano vale, contado da data em que a
+                        // loja se cadastrou. Some quando não há plano, para
+                        // a coluna não ficar com um "vence em" solto embaixo
+                        // de um select vazio.
+                        const ate = window.REGRAS.validadeEscrita(a.anuncio_criado_em, a.plano, a.categoria);
+                        return ate
+                            ? `<small style="display:block; margin-top:4px; color:#64748b;">vence em ${ate}</small>`
+                            : '';
+                    })()}
                 </td>
 
                 <td>

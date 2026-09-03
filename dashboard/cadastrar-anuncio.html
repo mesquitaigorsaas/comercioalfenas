@@ -338,6 +338,7 @@
                             <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
                             <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
                             <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
+                            <option value="Táxi e Moto Táxi">Táxi e Moto Táxi</option>
                             <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
                         </select>
                     </div>
@@ -349,7 +350,8 @@
                 </div>
 
                 <div class="form-section-title">
-                    <i class="fa-solid fa-map-location-dot" style="color: #2563eb;"></i> 2. Contato e Localização
+                    <i class="fa-solid fa-map-location-dot" style="color: #2563eb;"></i>
+                    <span id="tituloSecaoContato">2. Contato e Localização</span>
                 </div>
 
                 <!-- O endereço vem em partes, e não numa linha só. O CEP
@@ -418,23 +420,30 @@
                     </div>
                 </div>
 
-                <div class="form-section-title">
-                    <i class="fa-solid fa-clock" style="color: #2563eb;"></i> 3. Horário de Funcionamento
+                <!-- Horário e logomarca somem para a categoria gratuita:
+                     táxi não abre e fecha, e não tem logo. Quem esconde
+                     é o JavaScript, em aplicarFormularioDaCategoria(). -->
+                <div id="secaoHorarios">
+                    <div class="form-section-title">
+                        <i class="fa-solid fa-clock" style="color: #2563eb;"></i> 3. Horário de Funcionamento
+                    </div>
+
+                    <div class="form-group">
+                        <div id="horariosSemana" class="horarios-grid"></div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <div id="horariosSemana" class="horarios-grid"></div>
-                </div>
+                <div id="secaoLogo">
+                    <div class="form-section-title">
+                        <i class="fa-solid fa-image" style="color: #2563eb;"></i> 4. Logo da Empresa
+                    </div>
 
-                <div class="form-section-title">
-                    <i class="fa-solid fa-image" style="color: #2563eb;"></i> 4. Logo da Empresa
-                </div>
-
-                <div class="form-group">
-                    <label for="uploadLogo">Logo da Empresa (PNG ou JPEG)</label>
-                    <input type="file" id="uploadLogo" accept="image/png, image/jpeg, image/jpg">
-                    <div id="previewLogoContainer" class="preview-container"></div>
-                    <p class="form-hint">Recomendado: imagem quadrada, ex: 500x500px.</p>
+                    <div class="form-group">
+                        <label for="uploadLogo">Logo da Empresa (PNG ou JPEG)</label>
+                        <input type="file" id="uploadLogo" accept="image/png, image/jpeg, image/jpg">
+                        <div id="previewLogoContainer" class="preview-container"></div>
+                        <p class="form-hint">Recomendado: imagem quadrada, ex: 500x500px.</p>
+                    </div>
                 </div>
 
                 <div class="form-section-title">
@@ -443,7 +452,7 @@
 
                 <div class="form-group">
                     <!-- O número sai de assets/js/regras.js e é escrito
-                         aqui pelo JavaScript: durante a promoção são 6,
+                         aqui pelo JavaScript: durante a promoção são 5,
                          depois passa a depender do plano. -->
                     <label for="uploadFotos">Fotos <span id="rotuloLimiteFotos"></span></label>
                     <input type="file" id="uploadFotos" accept="image/png, image/jpeg, image/jpg" multiple>
@@ -480,17 +489,83 @@
 
         // ===== Quantas fotos esta loja pode ter =====
         //
-        // Enquanto a promoção vale são 6 fotos para todo mundo, mais a
-        // logomarca à parte: 7 imagens no total. Depois de 01/11/2026
+        // Enquanto a promoção vale são 5 fotos para todo mundo, mais a
+        // logomarca à parte: 6 imagens no total. Depois de 01/10/2026
         // quem manda é o plano contratado.
         //
         // O plano vem no endereço quando a pessoa chega pelos planos
         // (?plano=anual) e fica guardado no anúncio, para que uma
         // edição feita meses depois continue respeitando o que ela
         // contratou.
-        let planoDaLoja = new URLSearchParams(window.location.search).get('plano') || null;
+        //
+        // Quem entra pela promoção não passa pela tabela de preços e
+        // chega aqui sem plano no endereço. Esse pessoal é gravado como
+        // trimestral: é o combinado da promoção, e deixa o anúncio já
+        // nascer com o plano que vai valer quando a cobrança começar,
+        // em vez de virar um registro sem plano para consertar depois.
+        let planoDaLoja = new URLSearchParams(window.location.search).get('plano')
+            || (window.REGRAS.promocaoValendo() ? 'trimestral' : null);
 
-        const limiteDeFotos = () => window.REGRAS.limiteDeFotos(planoDaLoja);
+        // ===== O formulário curto da categoria gratuita =====
+        //
+        // Taxista não tem vitrine. Não tem descrição de produtos, nem
+        // endereço para o cliente visitar, nem horário de funcionamento,
+        // nem logomarca. Pedir tudo isso afastaria exatamente quem o
+        // guia quer ter listado desde o primeiro dia — e o cadastro
+        // terminaria cheio de campo vazio ou inventado.
+        //
+        // Sobram três coisas: nome, telefone e uma foto, se quiser.
+        const CAMPOS_QUE_SOMEM_NO_TAXI = [
+            'descricao', 'cep', 'numero', 'logradouro', 'bairro',
+            'complemento', 'instagram', 'facebook', 'site'
+        ];
+
+        function categoriaDaLoja() {
+            const select = document.getElementById('categoria');
+            return select ? select.value : '';
+        }
+
+        function aplicarFormularioDaCategoria() {
+            const gratuita = window.REGRAS.ehGratuita(categoriaDaLoja());
+
+            CAMPOS_QUE_SOMEM_NO_TAXI.forEach((id) => {
+                const campo = document.getElementById(id);
+                if (!campo) return;
+
+                const bloco = campo.closest('.form-group');
+                if (bloco) bloco.style.display = gratuita ? 'none' : '';
+
+                // O `required` sai junto com o campo. Um campo
+                // obrigatório invisível trava o envio sem dizer por quê,
+                // e a pessoa fica clicando no botão sem entender nada.
+                // Guardo no próprio elemento que ele era obrigatório,
+                // para devolver caso a categoria mude de novo.
+                if (campo.required) campo.dataset.eraObrigatorio = '1';
+                campo.required = gratuita ? false : campo.dataset.eraObrigatorio === '1';
+
+                // Campo escondido não leva lixo para o banco.
+                if (gratuita) campo.value = '';
+            });
+
+            ['secaoHorarios', 'secaoLogo'].forEach((id) => {
+                const secao = document.getElementById(id);
+                if (secao) secao.style.display = gratuita ? 'none' : '';
+            });
+
+            const titulo = document.getElementById('tituloSecaoContato');
+            if (titulo) {
+                titulo.textContent = gratuita ? '2. Contato' : '2. Contato e Localização';
+            }
+
+            const rotuloNome = document.querySelector('label[for="nomeEmpresa"]');
+            if (rotuloNome) {
+                rotuloNome.textContent = gratuita ? 'Seu Nome *' : 'Nome Fantasia da Empresa *';
+            }
+
+            escreverLimiteDeFotos();
+        }
+
+        const limiteDeFotos = () => window.REGRAS.limiteDeFotos(planoDaLoja, categoriaDaLoja());
 
         function escreverLimiteDeFotos() {
             const limite = limiteDeFotos();
@@ -645,6 +720,18 @@
                     return;
                 }
             }
+
+            // A caixa "sou da categoria táxi", marcada lá na criação da
+            // conta, chega aqui pelo endereço. Deixa a categoria já
+            // escolhida para a pessoa não ter que procurá-la na lista.
+            if (!modoEdicao && new URLSearchParams(window.location.search).get('categoria') === 'taxi') {
+                document.getElementById('categoria').value = window.REGRAS.categoriaGratuita;
+            }
+
+            // Enxuga o formulário se a categoria for a gratuita, e
+            // reage a quem trocar a categoria no meio do preenchimento.
+            aplicarFormularioDaCategoria();
+            document.getElementById('categoria').addEventListener('change', aplicarFormularioDaCategoria);
 
             // Só agora dá para escrever o limite: em modo de edição ele
             // depende do plano que veio junto com o anúncio.
@@ -935,9 +1022,17 @@
                     imagem_url: logoUrlFinal || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
                     fotos: fotosUrlsFinais,
                     // Fica gravado no anúncio para a edição futura saber
-                    // a quantas fotos esta loja tem direito. Durante a
-                    // promoção vai nulo — ninguém escolheu plano.
-                    plano: planoDaLoja
+                    // a quantas fotos esta loja tem direito. Na promoção
+                    // vai "trimestral", que é o plano combinado para
+                    // quem entrou de graça.
+                    //
+                    // A categoria gratuita é a exceção: vai sem plano,
+                    // porque não existe prazo correndo nem cobrança à
+                    // frente. Gravar "trimestral" nela faria o painel
+                    // anunciar um vencimento que ninguém vai cobrar.
+                    plano: window.REGRAS.ehGratuita(document.getElementById('categoria').value.trim())
+                        ? null
+                        : planoDaLoja
                 };
 
                 if (!modoEdicao) {

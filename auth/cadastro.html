@@ -185,6 +185,35 @@
 
         /* Separador entre "quem é você" e "onde você está" — sem isto o
            formulário vira uma coluna de dez campos sem respiro. */
+        /* A caixa da categoria de táxi. Fica em cima de uma linha
+           divisória, como as seções, porque é uma pergunta à parte e
+           não mais um campo do endereço. */
+        .opcao-taxi {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            cursor: pointer;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 18px;
+            margin-top: 6px;
+        }
+
+        .opcao-taxi span {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: 0.2px;
+        }
+
+        .opcao-taxi input {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            accent-color: #2563eb;
+            cursor: pointer;
+        }
+
         .form-secao {
             font-size: 12px;
             font-weight: 700;
@@ -415,6 +444,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Táxi e moto táxi têm cadastro próprio: mais
+                         curto, e sem cobrança nenhuma. A caixa fica no
+                         fim porque é exceção — quem não é taxista passa
+                         reto sem precisar entender o que ela significa. -->
+                    <label class="opcao-taxi" for="reg-taxi">
+                        <span>SOU DA CATEGORIA TÁXI / MOTO TÁXI</span>
+                        <input type="checkbox" id="reg-taxi">
+                    </label>
 
                     <p class="form-secao">Acesso</p>
 
@@ -914,8 +952,15 @@
                 return;
             }
 
-            // Monta a próxima URL levando o plano escolhido para o cadastro do comércio
-            const proximaUrl = '../dashboard/cadastrar-anuncio.html' + (planoEscolhido ? '?plano=' + encodeURIComponent(planoEscolhido) : '');
+            // Monta a próxima URL levando o plano escolhido para o
+            // cadastro do comércio. Quem marcou a caixa de táxi vai por
+            // outro caminho: leva a categoria em vez do plano, porque
+            // essa categoria não paga e não escolhe plano nenhum.
+            const ehTaxi = document.getElementById('reg-taxi').checked;
+            const parametro = ehTaxi
+                ? '?categoria=taxi'
+                : (planoEscolhido ? '?plano=' + encodeURIComponent(planoEscolhido) : '');
+            const proximaUrl = '../dashboard/cadastrar-anuncio.html' + parametro;
 
             if (data.session) {
                 // Projeto sem confirmação de e-mail: já entra logado e
