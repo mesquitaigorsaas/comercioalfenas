@@ -172,19 +172,33 @@
 
                     <div class="linha">
                         <div class="campo">
-                            <label for="documento">CPF ou CNPJ</label>
-                            <input type="text" id="documento" readonly>
+                            <label for="documento">CPF ou CNPJ *</label>
+                            <input type="text" id="documento" inputmode="numeric" required>
                             <span class="campo-nota">
-                                Não muda por aqui. Se estiver errado, fale com o guia
-                                pelo <a href="../fale-conosco.html">Fale Conosco</a>.
+                                Um CPF ou CNPJ vale por uma conta só, para sempre.
+                                Depois de usado no guia, não serve para outro cadastro.
                             </span>
                         </div>
 
                         <div class="campo">
-                            <label for="email">E-mail</label>
-                            <input type="email" id="email" readonly>
+                            <label for="email">E-mail *</label>
+                            <input type="email" id="email" required>
                             <span class="campo-nota">É o e-mail de acesso à sua conta.</span>
                         </div>
+                    </div>
+
+                    <!-- Só aparece quando o e-mail ou o documento mudam.
+                         Trocar qualquer um dos dois é mexer em quem a
+                         pessoa é para o guia; num computador emprestado
+                         e ainda logado, seria o caminho para tomar a
+                         conta de alguém. -->
+                    <div class="campo" id="blocoSenha" style="display:none;">
+                        <label for="senhaAtual">Confirme sua senha *</label>
+                        <input type="password" id="senhaAtual" placeholder="Sua senha de acesso" autocomplete="current-password">
+                        <span class="campo-nota">
+                            Pedimos a senha porque você está alterando o e-mail
+                            ou o documento da conta.
+                        </span>
                     </div>
 
                     <div class="campo">
@@ -259,6 +273,12 @@
 
     const soNumeros = (valor) => (valor || '').replace(/\D/g, '');
 
+    // O que estava gravado quando a tela abriu. É a comparação que diz
+    // se o e-mail ou o documento mudaram — e, portanto, se a senha
+    // precisa ser confirmada antes de salvar.
+    let emailOriginal = '';
+    let documentoOriginal = '';
+
     function recado(tipo, texto) {
         document.getElementById('recado').innerHTML = `
             <div class="aviso ${tipo}">
@@ -297,6 +317,9 @@
             return;
         }
 
+        emailOriginal = (user.email || '').toLowerCase();
+        documentoOriginal = soNumeros(perfil.documento);
+
         document.getElementById('email').value = user.email || '';
         document.getElementById('documento').value = formatarDocumento(perfil.documento);
         document.getElementById('nome').value = perfil.nome_completo || '';
@@ -308,6 +331,48 @@
         document.getElementById('bairro').value = perfil.bairro || '';
         document.getElementById('cidade').value = perfil.cidade || '';
         document.getElementById('uf').value = perfil.uf || '';
+    }
+
+    // ===== CPF / CNPJ =====
+    //
+    // A mesma conta que a função documento_valido() faz no banco. Aqui
+    // ela serve para avisar antes de enviar, com uma frase que a pessoa
+    // entende; quem garante de verdade é o banco, que recusa a gravação
+    // venha ela desta tela ou de uma chamada direta à API.
+    function documentoValido(valor) {
+        const d = soNumeros(valor);
+
+        if (d.length !== 11 && d.length !== 14) return false;
+
+        // 111.111.111-11 e parentes fecham a conta por acaso, mas não
+        // são documento de ninguém.
+        if (d === d[0].repeat(d.length)) return false;
+
+        if (d.length === 11) {
+            for (let corte = 9; corte <= 10; corte++) {
+                let soma = 0;
+                for (let i = 0; i < corte; i++) {
+                    soma += Number(d[i]) * (corte + 1 - i);
+                }
+                let digito = (soma * 10) % 11;
+                if (digito === 10) digito = 0;
+                if (digito !== Number(d[corte])) return false;
+            }
+            return true;
+        }
+
+        const pesos = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        for (let corte = 12; corte <= 13; corte++) {
+            const usados = pesos.slice(pesos.length - corte);
+            let soma = 0;
+            for (let i = 0; i < corte; i++) {
+                soma += Number(d[i]) * usados[i];
+            }
+            const resto = soma % 11;
+            const digito = resto < 2 ? 0 : 11 - resto;
+            if (digito !== Number(d[corte])) return false;
+        }
+        return true;
     }
 
     function formatarDocumento(doc) {
@@ -352,19 +417,68 @@
         }
     });
 
+    // ===== A senha só é pedida quando muda quem a pessoa é =====
+    //
+    // Nome, telefone e endereço se corrigem sem cerimônia. E-mail e
+    // documento não: são o que identifica a conta. Pedir a senha ali
+    // fecha o caso do computador emprestado, ainda logado, em que
+    // bastaria trocar o e-mail para tomar a conta de alguém.
+    function mudouIdentidade() {
+        return document.getElementById('email').value.trim().toLowerCase() !== emailOriginal
+            || soNumeros(document.getElementById('documento').value) !== documentoOriginal;
+    }
+
+    function atualizarBlocoSenha() {
+        document.getElementById('blocoSenha').style.display = mudouIdentidade() ? '' : 'none';
+    }
+
+    document.getElementById('email').addEventListener('input', atualizarBlocoSenha);
+    document.getElementById('documento').addEventListener('input', atualizarBlocoSenha);
+
     // ===== Salvar =====
     document.getElementById('formCadastro').addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const botao = document.getElementById('btnSalvar');
-        botao.disabled = true;
+        const emailNovo = document.getElementById('email').value.trim().toLowerCase();
+        const documentoNovo = soNumeros(document.getElementById('documento').value);
 
+        if (!documentoValido(documentoNovo)) {
+            recado('erro', 'Confira o CPF ou CNPJ: os números não fecham. Digite sem pontos ou com eles, tanto faz.');
+            return;
+        }
+
+        // Confere a senha antes de mexer em e-mail ou documento. Quem
+        // decide se ela presta é o servidor, não esta tela.
+        if (mudouIdentidade()) {
+            const senha = document.getElementById('senhaAtual').value;
+
+            if (!senha) {
+                recado('erro', 'Digite sua senha para confirmar a alteração do e-mail ou do documento.');
+                return;
+            }
+
+            botao.disabled = true;
+            const { error: erroSenha } = await supabaseClient.auth.signInWithPassword({
+                email: emailOriginal,
+                password: senha
+            });
+
+            if (erroSenha) {
+                botao.disabled = false;
+                recado('erro', 'Senha incorreta. O cadastro não foi alterado.');
+                return;
+            }
+        }
+
+        botao.disabled = true;
         const { data: { user } } = await supabaseClient.auth.getUser();
 
         const { error } = await supabaseClient
             .from('perfis')
             .update({
                 nome_completo: document.getElementById('nome').value.trim(),
+                documento: documentoNovo,
                 telefone: document.getElementById('telefone').value.trim(),
                 cep: soNumeros(document.getElementById('cep').value),
                 logradouro: document.getElementById('logradouro').value.trim(),
@@ -376,25 +490,59 @@
             })
             .eq('id', user.id);
 
-        botao.disabled = false;
-
         if (error) {
-            // O banco recusa nome curto demais, telefone fora do
-            // formato e CEP incompleto. A mensagem crua dele cita o
-            // nome da regra, que não diz nada a quem está na tela.
-            const texto = /nome_completo/.test(error.message)
-                ? 'O nome precisa ter pelo menos 5 letras.'
-                : /telefone/.test(error.message)
-                    ? 'Confira o telefone: precisa ter DDD e o número completo.'
-                    : /cep/.test(error.message)
-                        ? 'Confira o CEP: são 8 números.'
-                        : 'Não foi possível salvar: ' + error.message;
-            recado('erro', texto);
+            botao.disabled = false;
+            recado('erro', mensagemDoBanco(error.message));
             return;
         }
 
+        documentoOriginal = documentoNovo;
+
+        // O e-mail mora na conta de login, e não no perfil: é outra
+        // chamada. Fica por último de propósito — se falhar, o resto do
+        // cadastro já está salvo, e a pessoa só precisa tentar o e-mail
+        // de novo em vez de preencher tudo outra vez.
+        if (emailNovo !== emailOriginal) {
+            const { error: erroEmail } = await supabaseClient.auth.updateUser({ email: emailNovo });
+
+            botao.disabled = false;
+
+            if (erroEmail) {
+                recado('erro', 'Os dados foram salvos, mas o e-mail não mudou: ' + erroEmail.message);
+                return;
+            }
+
+            emailOriginal = emailNovo;
+            atualizarBlocoSenha();
+            document.getElementById('senhaAtual').value = '';
+            recado('ok', 'Cadastro atualizado. Se o guia pedir confirmação, ela chega no e-mail novo.');
+            return;
+        }
+
+        botao.disabled = false;
+        atualizarBlocoSenha();
+        document.getElementById('senhaAtual').value = '';
         recado('ok', 'Cadastro atualizado.');
     });
+
+    // As mensagens cruas do banco citam o nome da regra que falhou, que
+    // não diz nada a quem está na tela.
+    function mensagemDoBanco(bruta) {
+        if (/já foi usado no guia/i.test(bruta)) {
+            return 'Este CPF/CNPJ já foi usado no guia e não pode ser cadastrado de novo. '
+                 + 'Se ele é seu e você acha que houve engano, fale com o guia pelo Fale Conosco.';
+        }
+        if (/perfis_documento_key|duplicate key/i.test(bruta)) {
+            return 'Este CPF/CNPJ já está em outra conta do guia.';
+        }
+        if (/documento_valido|perfis_documento_check/i.test(bruta)) {
+            return 'Confira o CPF ou CNPJ: os números não fecham.';
+        }
+        if (/nome_completo/.test(bruta)) return 'O nome precisa ter pelo menos 5 letras.';
+        if (/telefone/.test(bruta)) return 'Confira o telefone: precisa ter DDD e o número completo.';
+        if (/cep/.test(bruta)) return 'Confira o CEP: são 8 números.';
+        return 'Não foi possível salvar: ' + bruta;
+    }
 
     // ===== Sair =====
     document.getElementById('btnSair').addEventListener('click', async (e) => {
