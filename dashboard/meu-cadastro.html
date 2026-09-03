@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Cadastro - Guia Alfenas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+
+    <style>
+        .cadastro-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 28px;
+            max-width: 720px;
+        }
+
+        .cadastro-secao {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 18px;
+            margin: 26px 0 16px;
+        }
+
+        .cadastro-secao:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .campo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+
+        .campo label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .campo input {
+            padding: 11px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .campo input:focus { border-color: #2563eb; }
+
+        /* Documento e e-mail não se editam por aqui. Ficam visíveis
+           porque a pessoa precisa conferir o que está gravado, mas
+           apagados o suficiente para não parecerem um campo comum. */
+        .campo input[readonly] {
+            background: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .campo-nota {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .linha-cep { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        @media (max-width: 620px) {
+            .linha, .linha-cep { grid-template-columns: 1fr; }
+        }
+
+        .aviso {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .aviso.ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .aviso.erro { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .aviso.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        .rodape-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 26px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-salvar {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 22px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-salvar:hover { background: #1d4ed8; }
+        .btn-salvar:disabled { opacity: 0.6; cursor: wait; }
+
+        .btn-voltar {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-voltar:hover { color: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <header class="dashboard-header">
+        <div class="container dash-nav">
+            <a href="../index.html" class="logo">
+                <img src="../assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 52px; width: auto;">
+            </a>
+            <div class="user-info">
+                <a href="dashboard.html" class="btn-admin">
+                    <i class="fa-solid fa-gauge-high"></i> Meu painel
+                </a>
+                <a href="../index.html" class="btn-exit" id="btnSair"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main section-padding">
+        <div class="container">
+
+            <div class="dash-welcome">
+                <div>
+                    <h2>Meu Cadastro</h2>
+                    <p>Seus dados de responsável pela loja. Não aparecem no anúncio.</p>
+                </div>
+            </div>
+
+            <div id="carregando" class="empty-state" style="text-align:center; padding:40px; color:#64748b;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:30px; margin-bottom:12px; color:#cbd5e1;"></i>
+                <p>Carregando seu cadastro...</p>
+            </div>
+
+            <div class="cadastro-card" id="cartao" style="display:none;">
+                <div id="recado"></div>
+
+                <form id="formCadastro">
+                    <p class="cadastro-secao">Quem é você</p>
+
+                    <div class="campo">
+                        <label for="nome">Nome Completo *</label>
+                        <input type="text" id="nome" required minlength="5">
+                    </div>
+
+                    <div class="linha">
+                        <div class="campo">
+                            <label for="documento">CPF ou CNPJ</label>
+                            <input type="text" id="documento" readonly>
+                            <span class="campo-nota">
+                                Não muda por aqui. Se estiver errado, fale com o guia
+                                pelo <a href="../fale-conosco.html">Fale Conosco</a>.
+                            </span>
+                        </div>
+
+                        <div class="campo">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" readonly>
+                            <span class="campo-nota">É o e-mail de acesso à sua conta.</span>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="telefone">WhatsApp / Telefone *</label>
+                        <input type="tel" id="telefone" placeholder="(35) 99999-9999" required>
+                    </div>
+
+                    <p class="cadastro-secao">Endereço do responsável</p>
+
+                    <div class="linha-cep">
+                        <div class="campo">
+                            <label for="cep">CEP *</label>
+                            <input type="text" id="cep" placeholder="37130-000" inputmode="numeric" required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="numero">Número *</label>
+                            <input type="text" id="numero" placeholder="62" required>
+                        </div>
+                    </div>
+
+                    <p class="campo-nota" id="recadoCep" style="margin: -8px 0 16px;">
+                        Digite o CEP e a rua e o bairro se preenchem sozinhos.
+                    </p>
+
+                    <div class="campo">
+                        <label for="logradouro">Endereço *</label>
+                        <input type="text" id="logradouro" placeholder="Rua, avenida ou praça" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" placeholder="Sala, apto, fundos (opcional)">
+                    </div>
+
+                    <div class="campo">
+                        <label for="bairro">Bairro *</label>
+                        <input type="text" id="bairro" placeholder="Centro" required>
+                    </div>
+
+                    <div class="linha">
+                        <div class="campo">
+                            <label for="cidade">Cidade *</label>
+                            <input type="text" id="cidade" placeholder="Alfenas" required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="uf">Estado *</label>
+                            <input type="text" id="uf" placeholder="MG" maxlength="2" required>
+                        </div>
+                    </div>
+
+                    <div class="rodape-form">
+                        <button type="submit" class="btn-salvar" id="btnSalvar">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar alterações
+                        </button>
+                        <a href="dashboard.html" class="btn-voltar">Voltar ao painel</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+<script src="../assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const supabaseClient = window.supabase.createClient(
+        window.CONFIG_SUPABASE.url,
+        window.CONFIG_SUPABASE.chavePublica
+    );
+
+    const soNumeros = (valor) => (valor || '').replace(/\D/g, '');
+
+    function recado(tipo, texto) {
+        document.getElementById('recado').innerHTML = `
+            <div class="aviso ${tipo}">
+                <i class="fa-solid ${tipo === 'ok' ? 'fa-circle-check' : tipo === 'erro' ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i>
+                <span>${texto}</span>
+            </div>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== Carrega o perfil =====
+    //
+    // O banco só devolve a linha de quem pediu: a política "cada um vê
+    // o próprio perfil" cuida disso. Não é preciso filtrar por id aqui
+    // para ficar seguro — mas filtro mesmo assim, porque deixa claro no
+    // código o que se espera receber.
+    async function carregar() {
+        const { data: { user }, error: erroAuth } = await supabaseClient.auth.getUser();
+
+        if (erroAuth || !user) {
+            window.location.href = '../auth/login.html';
+            return;
+        }
+
+        const { data: perfil, error } = await supabaseClient
+            .from('perfis')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        document.getElementById('carregando').style.display = 'none';
+        document.getElementById('cartao').style.display = '';
+
+        if (error || !perfil) {
+            recado('erro', 'Não foi possível carregar seu cadastro. Recarregue a página.');
+            document.getElementById('formCadastro').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('email').value = user.email || '';
+        document.getElementById('documento').value = formatarDocumento(perfil.documento);
+        document.getElementById('nome').value = perfil.nome_completo || '';
+        document.getElementById('telefone').value = perfil.telefone || '';
+        document.getElementById('cep').value = perfil.cep || '';
+        document.getElementById('logradouro').value = perfil.logradouro || '';
+        document.getElementById('numero').value = perfil.numero || '';
+        document.getElementById('complemento').value = perfil.complemento || '';
+        document.getElementById('bairro').value = perfil.bairro || '';
+        document.getElementById('cidade').value = perfil.cidade || '';
+        document.getElementById('uf').value = perfil.uf || '';
+    }
+
+    function formatarDocumento(doc) {
+        const n = soNumeros(doc);
+        if (n.length === 11) return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        if (n.length === 14) return n.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        return doc || '';
+    }
+
+    // ===== CEP =====
+    //
+    // Mesmo serviço que o cadastro da conta usa. Se ele estiver fora do
+    // ar, nada trava: os campos continuam lá para digitar à mão.
+    document.getElementById('cep').addEventListener('blur', async (e) => {
+        const cep = soNumeros(e.target.value);
+        const nota = document.getElementById('recadoCep');
+
+        if (cep.length !== 8) return;
+
+        nota.textContent = 'Procurando o endereço...';
+
+        try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const endereco = await resposta.json();
+
+            if (endereco.erro) {
+                nota.textContent = 'CEP não encontrado. Preencha o endereço à mão.';
+                return;
+            }
+
+            // Sobrescreve, e não só preenche o vazio: aqui a pessoa está
+            // corrigindo um cadastro que já existe, e trocar o CEP quer
+            // dizer que mudou de endereço.
+            document.getElementById('logradouro').value = endereco.logradouro || '';
+            document.getElementById('bairro').value = endereco.bairro || '';
+            document.getElementById('cidade').value = endereco.localidade || '';
+            document.getElementById('uf').value = endereco.uf || '';
+
+            nota.textContent = 'Endereço preenchido. Confira o número e o complemento.';
+        } catch (err) {
+            nota.textContent = 'Não deu para consultar o CEP agora. Preencha à mão.';
+        }
+    });
+
+    // ===== Salvar =====
+    document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const botao = document.getElementById('btnSalvar');
+        botao.disabled = true;
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        const { error } = await supabaseClient
+            .from('perfis')
+            .update({
+                nome_completo: document.getElementById('nome').value.trim(),
+                telefone: document.getElementById('telefone').value.trim(),
+                cep: soNumeros(document.getElementById('cep').value),
+                logradouro: document.getElementById('logradouro').value.trim(),
+                numero: document.getElementById('numero').value.trim(),
+                complemento: document.getElementById('complemento').value.trim() || null,
+                bairro: document.getElementById('bairro').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                uf: document.getElementById('uf').value.trim().toUpperCase()
+            })
+            .eq('id', user.id);
+
+        botao.disabled = false;
+
+        if (error) {
+            // O banco recusa nome curto demais, telefone fora do
+            // formato e CEP incompleto. A mensagem crua dele cita o
+            // nome da regra, que não diz nada a quem está na tela.
+            const texto = /nome_completo/.test(error.message)
+                ? 'O nome precisa ter pelo menos 5 letras.'
+                : /telefone/.test(error.message)
+                    ? 'Confira o telefone: precisa ter DDD e o número completo.'
+                    : /cep/.test(error.message)
+                        ? 'Confira o CEP: são 8 números.'
+                        : 'Não foi possível salvar: ' + error.message;
+            recado('erro', texto);
+            return;
+        }
+
+        recado('ok', 'Cadastro atualizado.');
+    });
+
+    // ===== Sair =====
+    document.getElementById('btnSair').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabaseClient.auth.signOut();
+        window.location.href = '../index.html';
+    });
+
+    window.addEventListener('DOMContentLoaded', carregar);
+</script>
+</body>
+</html>
