@@ -1034,6 +1034,12 @@
                 // 2) Salva o anúncio com as URLs (leves) em vez das imagens inteiras
                 btnSubmit.innerText = modoEdicao ? 'Salvando Alterações...' : 'Salvando no Banco de Dados...';
 
+                // A categoria decide três campos aqui embaixo, então é
+                // perguntada uma vez só.
+                const gratuita = window.REGRAS.ehGratuita(
+                    document.getElementById('categoria').value.trim()
+                );
+
                 const dadosAnuncio = {
                     // Em modo de edicao, mantem quem ja era o dono: se
                     // o administrador salvasse com o proprio id, a loja
@@ -1059,8 +1065,23 @@
                     instagram: document.getElementById('instagram').value.trim(),
                     facebook: document.getElementById('facebook').value.trim(),
                     site: document.getElementById('site').value.trim(),
-                    horarios: coletarHorarios(),
-                    imagem_url: logoUrlFinal || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
+                    // Táxi não tem horário de funcionamento. As linhas da
+                    // semana continuam montadas na página, só escondidas,
+                    // e chegariam aqui com o 08:00–18:00 que vem por
+                    // padrão — desenhando na página do anúncio um
+                    // expediente que ninguém informou.
+                    horarios: gratuita ? {} : coletarHorarios(),
+
+                    // A logomarca do táxi é a foto que ele mandou, a
+                    // mesma que aparece grande. Não há campo de logo no
+                    // cadastro dele, e sem isto caía no desenho de
+                    // vitrine que vem por padrão: o anúncio mostrava a
+                    // foto do motorista de um lado e a loja genérica de
+                    // outro. Sem foto nenhuma, fica sem imagem nos dois
+                    // lugares — a página já sabe desenhar assim.
+                    imagem_url: gratuita
+                        ? (fotosUrlsFinais[0] || null)
+                        : (logoUrlFinal || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop'),
                     fotos: fotosUrlsFinais,
                     // Fica gravado no anúncio para a edição futura saber
                     // a quantas fotos esta loja tem direito. Na promoção
@@ -1071,9 +1092,7 @@
                     // porque não existe prazo correndo nem cobrança à
                     // frente. Gravar "trimestral" nela faria o painel
                     // anunciar um vencimento que ninguém vai cobrar.
-                    plano: window.REGRAS.ehGratuita(document.getElementById('categoria').value.trim())
-                        ? null
-                        : planoDaLoja
+                    plano: gratuita ? null : planoDaLoja
                 };
 
                 if (!modoEdicao) {
