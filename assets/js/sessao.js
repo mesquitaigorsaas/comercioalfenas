@@ -7,11 +7,11 @@
    Agora, com sessão aberta, um "Sair" aparece no cabeçalho. Sem
    sessão, nada muda.
 
-   O estilo vem junto, injetado por este arquivo. O cabeçalho está
-   escrito à mão em cada uma das seis páginas, com o CSS repetido
-   dentro de cada uma; acrescentar um botão pelo caminho normal seria
-   editar seis blocos iguais e manter os seis em dia daqui para
-   frente.
+   O estilo vem junto, injetado por este arquivo. Estes dois botões
+   não existem no HTML de nenhuma página: nascem aqui, só quando há
+   sessão. Guardá-los no assets/css/header.css junto com o resto do
+   cabeçalho separaria o desenho de quem os cria, e quem mexesse num
+   teria de lembrar do outro.
 
    Precisa de supabase-config.js e da biblioteca do Supabase antes.
    ===================================================================== */

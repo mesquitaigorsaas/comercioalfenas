@@ -41,6 +41,8 @@ E abra o endereço que ele mostrar.
 | `anuncio-detalhes.html` | A página de uma loja |
 | `auth/` | Criar conta, entrar e recuperar senha |
 | `dashboard/` | Painel do anunciante e o formulário do anúncio |
+| `assets/css/header.css` | O cabeçalho e o menu sanduíche, para o site inteiro |
+| `assets/js/menu.js` | Abre e fecha esse menu no celular |
 | `assets/js/supabase-config.js` | Endereço e chave pública do banco |
 | `assets/js/regras.js` | Datas e limites da promoção |
 | `assets/js/menu-promocao.js` | Para onde aponta o botão de cadastrar |
