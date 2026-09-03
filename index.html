@@ -720,16 +720,16 @@
                         <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
                         <option value="Lanche, Pizza e outros">Lanche, Pizza e outros</option>
                         <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
+                        <option value="Moda Feminina|Moda Masculina|Moda Unissex">Moda (todas)</option>
+                        <option value="Moda Feminina">Moda Feminina</option>
+                        <option value="Moda Masculina">Moda Masculina</option>
+                        <option value="Moda Unissex">Moda Unissex</option>
                         <option value="Padarias">Padarias</option>
                         <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
                         <option value="Serviços Gerais">Serviços Gerais</option>
                         <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
                         <option value="Táxi e Moto Táxi">Táxi e Moto Táxi</option>
                         <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
-                        <option value="Vestuário Feminino|Vestuário Masculino|Vestuário Unissex">Vestuário (todos)</option>
-                        <option value="Vestuário Feminino">Vestuário Feminino</option>
-                        <option value="Vestuário Masculino">Vestuário Masculino</option>
-                        <option value="Vestuário Unissex">Vestuário Unissex</option>
                         <option value="Web e Tecnologia">Web e Tecnologia</option>
                     </select>
 
@@ -770,7 +770,7 @@
                     <i class="fa-solid fa-house"></i>
                     <span>Imóveis</span>
                 </a>
-                <a onclick="filtrarCategoria('Vestuário Feminino|Vestuário Masculino|Vestuário Unissex')" class="category-card cat-moda">
+                <a onclick="filtrarCategoria('Moda Feminina|Moda Masculina|Moda Unissex')" class="category-card cat-moda">
                     <i class="fa-solid fa-shirt"></i>
                     <span>Moda</span>
                 </a>
@@ -986,18 +986,16 @@
                     .from('anuncios')
                     .select('*')
                     // Quem o administrador tirou do ar não aparece.
-                    .eq('ativo', true)
-                    .order('destaque', { ascending: false })
-                    .order('criado_em', { ascending: true });
+                    .eq('ativo', true);
 
                 if (cidadeFiltro) {
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());
                 }
                 if (categoriaFiltro) {
                     // Um atalho pode valer por mais de uma categoria. O
-                    // azulejo Moda leva aos três vestuários de uma vez:
-                    // quem clica em Moda quer ver roupa, e não escolher
-                    // antes se é masculina, feminina ou unissex.
+                    // azulejo Moda leva às três categorias de moda de
+                    // uma vez: quem clica em Moda quer ver roupa, e não
+                    // escolher antes se é masculina, feminina ou unissex.
                     //
                     // Vêm separadas por barra vertical no endereço. Barra,
                     // e não vírgula: três categorias já têm vírgula no
@@ -1007,10 +1005,28 @@
                         .map((c) => c.trim())
                         .filter(Boolean);
 
-                    query = categorias.length > 1
-                        ? query.in('categoria', categorias)
-                        : query.eq('categoria', categorias[0]);
+                    if (categorias.length > 1) {
+                        // Vieram várias de uma vez, e aí elas aparecem
+                        // agrupadas: primeiro as de Moda Feminina, depois
+                        // as de Masculina, depois as de Unissex. Uma lista
+                        // com as três embaralhadas obriga quem procura a
+                        // ler a etiqueta de cada card para separar o que
+                        // interessa.
+                        query = query.in('categoria', categorias)
+                                     .order('categoria', { ascending: true });
+                    } else {
+                        query = query.eq('categoria', categorias[0]);
+                    }
                 }
+
+                // Estas duas vêm por último de propósito. A ordem em que
+                // se pede é a que vale, então o agrupamento por categoria
+                // acima manda primeiro; dentro de cada grupo é que valem
+                // o destaque e a ordem de cadastro. Sem filtro, ou com uma
+                // categoria só, elas continuam sendo as únicas.
+                query = query
+                    .order('destaque', { ascending: false })
+                    .order('criado_em', { ascending: true });
 
                 const { data, error } = await query;
 
