@@ -352,6 +352,22 @@
             pointer-events: none;
         }
 
+        /* Falar é o único que sai do painel e vai para outro aplicativo,
+           e é o mais usado numa mesa de trabalho: o guia se constrói
+           conversando com lojista. Verde desde o começo, para o olho
+           achar sem ler os cinco botões da linha. */
+        .btn-acao.falar {
+            border-color: #86efac;
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .btn-acao.falar:hover {
+            border-color: #16a34a;
+            background: #dcfce7;
+            color: #15803d;
+        }
+
         select.plano-select {
             padding: 6px 8px;
             border: 1px solid #cbd5e1;
@@ -841,6 +857,46 @@
         corpo.innerHTML = lista.map(linha).join('');
     }
 
+    // ===================================================================
+    // FALAR COM O LOJISTA
+    //
+    // Abre o WhatsApp já na conversa certa, com um "olá" escrito. O
+    // guia se constrói por visita e por conversa, e sem isto era copiar
+    // o número da tela, abrir o WhatsApp, colar, e escrever tudo de novo
+    // a cada loja.
+    //
+    // Vale também para quem ainda não cadastrou loja nenhuma. Essa
+    // pessoa é justamente a que mais precisa de um empurrão: criou a
+    // conta e parou no meio.
+    //
+    // O telefone é o do responsável, do cadastro dele — não o WhatsApp
+    // da loja, que é o número de atendimento ao cliente e pode ser o
+    // do balcão, com outra pessoa do outro lado.
+    function botaoFalar(a) {
+        const digitos = soNumeros(a.telefone);
+
+        // Onze dígitos é celular. Dez é fixo, e WhatsApp de número fixo
+        // abre uma conversa que não existe: o botão fica apagado, com o
+        // motivo no title, em vez de prometer o que não entrega.
+        if (digitos.length !== 11) {
+            return `<span class="btn-acao falar desligado"
+                          title="${digitos.length === 10
+                              ? 'Telefone fixo: não dá para chamar no WhatsApp'
+                              : 'Sem telefone cadastrado'}">
+                        <i class="fa-brands fa-whatsapp"></i> Falar
+                    </span>`;
+        }
+
+        const primeiroNome = (a.nome_completo || '').trim().split(/\s+/)[0] || '';
+        const texto = `Olá, ${primeiroNome}! Aqui é do Guia Comercial Alfenas e Região.`;
+        const link = `https://wa.me/55${digitos}?text=${encodeURIComponent(texto)}`;
+
+        return `<a class="btn-acao falar" href="${link}" target="_blank" rel="noopener"
+                   title="Chamar ${escapar(a.nome_completo || '')} no WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> Falar
+                </a>`;
+    }
+
     function linha(a) {
         const temLoja = Boolean(a.anuncio_id);
 
@@ -921,6 +977,8 @@
 
                 <td>
                     <div class="acoes-linha">
+                        ${botaoFalar(a)}
+
                         <a class="btn-acao ${temLoja ? '' : 'desligado'}"
                            href="${temLoja ? '../anuncio-detalhes.html?id=' + a.anuncio_id : '#'}"
                            target="_blank" rel="noopener" title="Ver anúncio publicado">
