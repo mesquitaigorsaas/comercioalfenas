@@ -31,6 +31,36 @@ body {
     font-weight: bold;
 }
 
+/* O atalho para a administração. Era um link vermelho solto, da mesma
+   cor do "Sair" — duas coisas muito diferentes vestidas igual, e o
+   vermelho pedindo atenção para uma navegação corriqueira.
+
+   Agora é um botão de contorno, no mesmo desenho do "Painel de
+   Controle" que fica no cabeçalho da administração: os dois lados do
+   caminho de ida e volta se parecem. Cinza parado, laranja quando o
+   mouse chega, que é a cor da marca. */
+.btn-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    background: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-admin:hover {
+    border-color: #ff6600;
+    color: #ff6600;
+}
+
 /* ==========================================================================
    2. VISÃO GERAL (DASHBOARD.HTML)
    ========================================================================== */
