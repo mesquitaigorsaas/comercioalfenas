@@ -33,96 +33,6 @@
             padding: 0 20px;
         }
 
-        /* 1. CABEÇALHO / NAVBAR */
-        .main-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #e11d48;
-        }
-
-        /* Botão do menu sanduíche (escondido no desktop) */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: #27272a;
-            cursor: pointer;
-            padding: 6px 10px;
-            z-index: 1100;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-icon-login {
-            background-color: #2563eb;
-            color: #ffffff;
-            width: 38px;
-            height: 38px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-add-listing {
-            background-color: #27272a;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-listing:hover {
-            background-color: #000000;
-        }
-
         /* 1.1. BANNER ROTATIVO (CARROSSEL INSTITUCIONAL) */
         .banner-carousel-section {
             background-color: #f1f5f9;
@@ -517,50 +427,6 @@
             color: #e11d48;
         }
 
-        /* MENU SANDUÍCHE - MOBILE */
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-                order: 2;
-            }
-
-            .nav-container {
-                flex-wrap: wrap;
-            }
-
-            .logo {
-                order: 1;
-            }
-
-            /* No mobile, os botões saem do header e vão para o rodapé */
-            .main-header .header-actions {
-                display: none;
-            }
-
-            .nav-links {
-                order: 3;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0;
-                width: 100%;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.3s ease-in-out;
-            }
-
-            .nav-links.active {
-                max-height: 300px;
-                margin-top: 15px;
-                border-top: 1px solid #e2e8f0;
-            }
-
-            .nav-links a {
-                width: 100%;
-                padding: 14px 5px;
-                border-bottom: 1px solid #f1f5f9;
-            }
-        }
-
         /* FOOTER */
         .main-footer {
             background-color: #0f172a;
@@ -576,7 +442,7 @@
             display: none;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .footer-actions {
                 display: flex;
                 justify-content: center;
@@ -654,13 +520,16 @@
     <!-- Troca a chave de Entrar pelo atalho do painel e mostra o Sair,
          quando ha sessao aberta. -->
     <script src="assets/js/sessao.js" defer></script>
+    <!-- Cabecalho e menu sanduiche: um arquivo so para o site inteiro. -->
+    <link rel="stylesheet" href="assets/css/header.css">
+    <script src="assets/js/menu.js" defer></script>
 </head>
 <body>
 
     <header class="main-header">
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas">
             </a>
             
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
@@ -1008,29 +877,6 @@ card.innerHTML = `
     </script>
 
     <script>
-        // Menu sanduíche (mobile)
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
-
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            const isOpen = navLinks.classList.contains('active');
-            const icon = menuToggle.querySelector('i');
-            icon.classList.toggle('fa-bars', !isOpen);
-            icon.classList.toggle('fa-xmark', isOpen);
-            menuToggle.setAttribute('aria-expanded', isOpen);
-        });
-
-        // Fecha o menu ao clicar em um link
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                const icon = menuToggle.querySelector('i');
-                icon.classList.add('fa-bars');
-                icon.classList.remove('fa-xmark');
-            });
-        });
-
         function filtrarCategoria(nomeCategoria) {
             const selectCidade = document.getElementById('searchCidade');
             let cidade = (selectCidade && selectCidade.value) ? selectCidade.value : 'alfenas';

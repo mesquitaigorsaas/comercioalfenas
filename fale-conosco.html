@@ -32,91 +32,6 @@
             padding: 0 20px;
         }
 
-        /* 1. CABEÇALHO / NAVBAR (Padronizado com a Index) */
-        .main-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 900;
-            font-size: 1.8rem;
-            color: #e11d48;
-        }
-
-        .logo span {
-            color: #0f172a;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: #e11d48;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-icon-login {
-            background-color: #2563eb;
-            color: #ffffff;
-            width: 38px;
-            height: 38px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-add-listing {
-            background-color: #27272a;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-listing:hover {
-            background-color: #000000;
-        }
-
         /* 2. HERO / BANNER DA PÁGINA PLANOS */
         .plans-hero {
             background-color: #27272a;
@@ -558,16 +473,23 @@
     <!-- Troca a chave de Entrar pelo atalho do painel e mostra o Sair,
          quando ha sessao aberta. -->
     <script src="assets/js/sessao.js" defer></script>
+    <!-- Cabecalho e menu sanduiche: um arquivo so para o site inteiro. -->
+    <link rel="stylesheet" href="assets/css/header.css">
+    <script src="assets/js/menu.js" defer></script>
 </head>
 <body>
 
     <header class="main-header">
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas" style="max-height: 60px; width: auto;">
+                <img src="assets/img/ComercioAlfenasLogo.png" alt="Guia Comercial Alfenas">
             </a>
 
-            <nav class="nav-links">
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-links" id="navLinks">
                 <a href="index.html">INÍCIO</a>
                 <a href="planos.html">PLANOS</a>
                 <a href="sobrenos.html">SOBRE NÓS</a>
