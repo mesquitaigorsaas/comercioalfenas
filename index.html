@@ -241,10 +241,37 @@
             margin-bottom: 60px;
         }
 
+        /* São dez categorias na grade, e dez só fecha em fileira cheia
+           com 2 ou com 5 colunas. Por isso as duas pontas são fixas, e
+           não deixadas por conta do auto-fit:
+
+             celular  -> 2 colunas, 2+2+2+2+2
+             desktop  -> 5 colunas, 5+5
+
+           No meio, entre 600 e 900, o auto-fit resolve (4+4+2). É a
+           faixa do tablet, onde uma fileira menor não incomoda.
+
+           As duas colunas do celular são fixas por um motivo prático:
+           com auto-fit e mínimo de 125px, um aparelho de 320px fica em
+           cima do limite e às vezes cai para UMA coluna — dez fileiras
+           de um azulejo cada, uma tira comprida que empurra os anúncios
+           para fora da tela. */
         .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+        }
+
+        @media (min-width: 600px) {
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+            }
+        }
+
+        @media (min-width: 900px) {
+            .categories-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
         }
 
         .category-card {
@@ -285,6 +312,7 @@
         .cat-moda { background-color: #ec4899; }
         .cat-pet { background-color: #14b8a6; }
         .cat-sorvete { background-color: #6366f1; }
+        .cat-agro { background-color: #a16207; }
 
         /* 4. LISTAGEM DE ANÚNCIOS DA CIDADE */
         .listings-section {
@@ -710,6 +738,10 @@
     <section class="categories-container">
         <div class="container">
             <div class="categories-grid">
+                <a onclick="filtrarCategoria('Agropecuária')" class="category-card cat-agro">
+                    <i class="fa-solid fa-tractor"></i>
+                    <span>Agropecuária</span>
+                </a>
                 <a onclick="filtrarCategoria('Automotivo e Peças')" class="category-card cat-auto">
                     <i class="fa-solid fa-car"></i>
                     <span>Automotivo</span>
