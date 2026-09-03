@@ -991,14 +991,101 @@
             e.target.value = '';
         });
 
+        // =============================================================
+        // ENCOLHER A IMAGEM ANTES DE SUBIR
+        //
+        // A foto de um celular de hoje pesa de 3 a 8 MB e tem uns 4000
+        // pixels de largura. O site nunca mostra mais que uns 900, então
+        // esse peso todo é jogado fora na hora de exibir — mas continua
+        // ocupando espaço no depósito para sempre.
+        //
+        // Com seis imagens por anunciante, cem lojas passariam de 2 GB.
+        // Encolhendo aqui, as mesmas cem ficam em pouco mais de 150 MB,
+        // e ninguém vê diferença na tela.
+        //
+        // O trabalho é do navegador de quem envia: desenha a imagem
+        // menor num canvas e exporta de novo. Nada disso chega a pesar
+        // para o celular da pessoa, e a internet dela agradece — sobe um
+        // arquivo de 200 KB em vez de um de 5 MB.
+        // =============================================================
+        // As chaves são os nomes das pastas do depósito. A logomarca
+        // aparece pequena e redonda, num selo de 60px: 600 já é folga
+        // de sobra para tela retina.
+        const LARGURA_MAXIMA = { logos: 600, fotos: 1600 };
+        const QUALIDADE_JPEG = 0.82;
+
+        function encolherImagem(file, larguraMaxima) {
+            return new Promise((resolve) => {
+                // Arquivo que não é imagem, ou já é pequeno, passa
+                // direto: recomprimir um arquivo leve só piora.
+                if (!file.type.startsWith('image/') || file.size < 300 * 1024) {
+                    resolve(file);
+                    return;
+                }
+
+                const leitor = new FileReader();
+
+                leitor.onload = () => {
+                    const img = new Image();
+
+                    img.onload = () => {
+                        const escala = Math.min(1, larguraMaxima / img.width);
+                        const largura = Math.round(img.width * escala);
+                        const altura = Math.round(img.height * escala);
+
+                        const tela = document.createElement('canvas');
+                        tela.width = largura;
+                        tela.height = altura;
+
+                        const pincel = tela.getContext('2d');
+
+                        // JPEG não guarda transparência: sem este fundo,
+                        // o que era transparente numa logomarca PNG sairia
+                        // preto. Branco é o fundo das telas onde ela
+                        // aparece.
+                        pincel.fillStyle = '#ffffff';
+                        pincel.fillRect(0, 0, largura, altura);
+                        pincel.drawImage(img, 0, 0, largura, altura);
+
+                        tela.toBlob(
+                            (blob) => {
+                                // Se por acaso o resultado ficou maior que
+                                // o original — acontece com imagem já
+                                // otimizada —, fica com o original.
+                                resolve(blob && blob.size < file.size ? blob : file);
+                            },
+                            'image/jpeg',
+                            QUALIDADE_JPEG
+                        );
+                    };
+
+                    // Arquivo corrompido ou formato que o navegador não
+                    // abre: sobe como veio, em vez de travar o cadastro.
+                    img.onerror = () => resolve(file);
+                    img.src = leitor.result;
+                };
+
+                leitor.onerror = () => resolve(file);
+                leitor.readAsDataURL(file);
+            });
+        }
+
         // ===== Envia um arquivo para o Supabase Storage e devolve a URL pública =====
         async function enviarArquivoParaStorage(file, pasta) {
-            const extensao = file.name.split('.').pop();
+            const enviar = await encolherImagem(file, LARGURA_MAXIMA[pasta] || LARGURA_MAXIMA.fotos);
+
+            // A extensão precisa combinar com o que está sendo enviado:
+            // encolhida, a imagem virou JPEG, mesmo que o original fosse
+            // PNG. Um .png com conteúdo JPEG confunde quem for baixar.
+            const extensao = enviar === file
+                ? file.name.split('.').pop()
+                : 'jpg';
+
             const nomeArquivo = `${pasta}/${usuarioAtual.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
 
             const { error: erroUpload } = await supabase.storage
                 .from('anuncios')
-                .upload(nomeArquivo, file, { cacheControl: '3600', upsert: false });
+                .upload(nomeArquivo, enviar, { cacheControl: '3600', upsert: false });
 
             if (erroUpload) {
                 throw new Error(`Falha ao enviar imagem (${file.name}): ${erroUpload.message}`);
