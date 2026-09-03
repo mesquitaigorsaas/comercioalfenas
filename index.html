@@ -722,10 +722,11 @@
                         <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
                         <option value="Padarias">Padarias</option>
                         <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
-                        <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
+                        <option value="Serviços Gerais">Serviços Gerais</option>
                         <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
                         <option value="Táxi e Moto Táxi">Táxi e Moto Táxi</option>
                         <option value="Turismo e Hospedagem">Turismo e Hospedagem</option>
+                        <option value="Vestuário Feminino|Vestuário Masculino|Vestuário Unissex">Vestuário (todos)</option>
                         <option value="Vestuário Feminino">Vestuário Feminino</option>
                         <option value="Vestuário Masculino">Vestuário Masculino</option>
                         <option value="Vestuário Unissex">Vestuário Unissex</option>
@@ -769,7 +770,7 @@
                     <i class="fa-solid fa-house"></i>
                     <span>Imóveis</span>
                 </a>
-                <a onclick="filtrarCategoria('Comércio e Compras')" class="category-card cat-moda">
+                <a onclick="filtrarCategoria('Vestuário Feminino|Vestuário Masculino|Vestuário Unissex')" class="category-card cat-moda">
                     <i class="fa-solid fa-shirt"></i>
                     <span>Moda</span>
                 </a>
@@ -993,7 +994,22 @@
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());
                 }
                 if (categoriaFiltro) {
-                    query = query.eq('categoria', categoriaFiltro);
+                    // Um atalho pode valer por mais de uma categoria. O
+                    // azulejo Moda leva aos três vestuários de uma vez:
+                    // quem clica em Moda quer ver roupa, e não escolher
+                    // antes se é masculina, feminina ou unissex.
+                    //
+                    // Vêm separadas por barra vertical no endereço. Barra,
+                    // e não vírgula: três categorias já têm vírgula no
+                    // nome ("Sorvete, Açaí e Picolé"), e elas se partiriam
+                    // no meio.
+                    const categorias = categoriaFiltro.split('|')
+                        .map((c) => c.trim())
+                        .filter(Boolean);
+
+                    query = categorias.length > 1
+                        ? query.in('categoria', categorias)
+                        : query.eq('categoria', categorias[0]);
                 }
 
                 const { data, error } = await query;
