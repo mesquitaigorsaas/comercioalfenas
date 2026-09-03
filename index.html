@@ -12,6 +12,7 @@
     <script src="assets/js/supabase-config.js"></script>
     <script src="assets/js/regras.js"></script>
     <script src="assets/js/menu-promocao.js"></script>
+    <script src="assets/js/loja.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -345,7 +346,18 @@
             border: 1px solid #e2e8f0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: transform 0.2s;
+
+            /* Card em coluna, com o pé empurrado para baixo: numa
+               fileira de quatro lojas, uma com descrição curta e outra
+               com descrição longa, os selos e os botões ficam na mesma
+               altura em vez de subir e descer de card para card. */
+            display: flex;
+            flex-direction: column;
         }
+
+        .listing-card > a { flex: 1 1 auto; }
+
+        .listing-card .listing-footer { margin-top: auto; }
 
         .listing-card:hover {
             transform: translateY(-4px);
@@ -405,27 +417,78 @@
             line-height: 1.5;
         }
 
+        /* O pé do card responde, sem abrir a loja, as duas perguntas de
+           quem procura às sete da noite — está aberto? entrega? — e dá
+           os dois caminhos que a pessoa vai querer em seguida: chamar no
+           WhatsApp e ver onde fica.
+
+           Ele fica FORA do <a> que embrulha o card. Link dentro de link
+           o navegador não aceita: ele fecha o primeiro por conta
+           própria, e o card inteiro deixa de abrir a loja. */
         .listing-footer {
             border-top: 1px solid #f1f5f9;
-            padding: 12px 20px;
+            padding: 12px 14px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .selo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 0.7rem;
             font-weight: 700;
-            color: #475569;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
         }
 
-        .listing-actions i {
-            margin-left: 10px;
-            cursor: pointer;
-            color: #64748b;
-            transition: color 0.2s;
+        .selo i { font-size: 0.6rem; }
+
+        .selo-aberto  { background: #dcfce7; color: #15803d; }
+        .selo-fechado { background: #f1f5f9; color: #64748b; }
+
+        /* A entrega puxa o laranja da marca. É o selo que faz alguém
+           parar de rolar a lista, e ele não pode se confundir com o
+           verde de "aberto" logo ao lado. */
+        .selo-entrega {
+            background: #ff6600;
+            color: #ffffff;
         }
 
-        .listing-actions i:hover {
-            color: #e11d48;
+        .selo-entrega i { font-size: 0.78rem; }
+
+        .listing-actions {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
         }
+
+        /* Redondos e coloridos: são botões, e precisam parecer botões
+           mesmo no canto de um card. */
+        .listing-actions a {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: transform 0.15s, filter 0.15s;
+        }
+
+        .listing-actions a:hover {
+            transform: scale(1.1);
+            filter: brightness(1.08);
+        }
+
+        .acao-whats { background: #25d366; }
+        .acao-mapa  { background: #ea4335; }
 
         /* FOOTER */
         .main-footer {
@@ -614,6 +677,7 @@
                         <option value="">Todas as Categorias</option>
                         <option value="Academias e Esportes">Academias e Esportes</option>
                         <option value="Advocacia e Contabilidade">Advocacia e Contabilidade</option>
+                        <option value="Agropecuária">Agropecuária</option>
                         <option value="Alimentação e Gastronomia">Alimentação e Gastronomia</option>
                         <option value="Automotivo e Peças">Automotivo e Peças</option>
                         <option value="Bares e Distribuidoras">Bares e Distribuidoras</option>
@@ -626,6 +690,8 @@
                         <option value="Farmácias e Saúde">Farmácias e Saúde</option>
                         <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
                         <option value="Lanche, Pizza e outros">Lanche, Pizza e outros</option>
+                        <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
+                        <option value="Padarias">Padarias</option>
                         <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
                         <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
                         <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
@@ -799,6 +865,65 @@
         if(document.getElementById('searchCidade')) document.getElementById('searchCidade').value = cidadeUrl;
         if(document.getElementById('searchCategoria')) document.getElementById('searchCategoria').value = categoriaUrl;
 
+        // ===== O pé do card =====
+        //
+        // Só entra o que a loja de fato informou. Um selo "Fechado" numa
+        // loja que nunca preencheu horário, ou um botão de mapa que abre
+        // uma busca vazia, valem menos que espaço em branco: ensinam
+        // quem procura a desconfiar do guia inteiro.
+        function montarPeDoCard(anuncio) {
+            const partes = [];
+
+            const aberta = window.LOJA.estaAbertaAgora(anuncio.horarios);
+            if (aberta !== null) {
+                partes.push(aberta
+                    ? '<span class="selo selo-aberto"><i class="fa-solid fa-circle"></i> ABERTO</span>'
+                    : '<span class="selo selo-fechado"><i class="fa-solid fa-circle"></i> FECHADO</span>');
+            }
+
+            if (anuncio.entrega) {
+                partes.push('<span class="selo selo-entrega"><i class="fa-solid fa-motorcycle"></i> ENTREGA</span>');
+            }
+
+            const acoes = [];
+
+            const whats = window.LOJA.linkWhatsapp(anuncio.whatsapp);
+            if (whats) {
+                // O data-anuncio é lido pelo container na hora do clique,
+                // para somar o mesmo contador que a página da loja soma.
+                acoes.push(`<a href="${whats}" target="_blank" rel="noopener"
+                    class="acao-whats" data-anuncio="${anuncio.id}"
+                    title="Chamar no WhatsApp" aria-label="Chamar ${anuncio.titulo} no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`);
+            }
+
+            const mapa = window.LOJA.linkMapa(anuncio.endereco, anuncio.cidade);
+            if (mapa) {
+                acoes.push(`<a href="${mapa}" target="_blank" rel="noopener"
+                    class="acao-mapa" title="Ver no Google Maps"
+                    aria-label="Ver ${anuncio.titulo} no Google Maps"><i class="fa-solid fa-location-dot"></i></a>`);
+            }
+
+            if (acoes.length) partes.push(`<div class="listing-actions">${acoes.join('')}</div>`);
+            if (!partes.length) return '';
+
+            return `<div class="listing-footer">${partes.join('')}</div>`;
+        }
+
+        // Um ouvinte só, no container, em vez de um por card: a lista é
+        // remontada a cada busca, e ouvintes presos aos cards antigos
+        // ficariam para trás a cada troca de filtro.
+        document.getElementById('listingsContainer').addEventListener('click', (evento) => {
+            const botao = evento.target.closest('.acao-whats');
+            if (!botao) return;
+
+            // Não segura o link: a soma acontece no banco e a pessoa vai
+            // para o WhatsApp na mesma hora. Se a chamada falhar, o que
+            // se perde é uma contagem, não a conversa com a loja.
+            supabaseClient.rpc('registrar_clique_whatsapp', {
+                p_anuncio: botao.dataset.anuncio
+            }).then(() => {}, () => {});
+        });
+
         async function carregarAnuncios(cidadeFiltro, categoriaFiltro) {
             const container = document.getElementById('listingsContainer');
             container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Buscando estabelecimentos...</p>';
@@ -846,7 +971,7 @@
                     card.className = 'listing-card';
                     // Onde o card do anúncio é construído, adicione a tag <a> ao redor ou no container:
 card.innerHTML = `
-    <a href="anuncio-detalhes.html?id=${anuncio.id}" style="cursor: pointer; text-decoration: none; color: inherit; display: block; height: 100%;">
+    <a href="anuncio-detalhes.html?id=${anuncio.id}" style="cursor: pointer; text-decoration: none; color: inherit; display: block;">
         <div class="listing-image-wrapper">
             <img src="${anuncio.imagem_url}" class="listing-img" alt="${anuncio.titulo}">
         </div>
@@ -856,6 +981,7 @@ card.innerHTML = `
             <p class="listing-description">${anuncio.descricao ? anuncio.descricao.substring(0, 90) + '...' : ''}</p>
         </div>
     </a>
+    ${montarPeDoCard(anuncio)}
 `;
                     container.appendChild(card);
                 });

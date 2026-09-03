@@ -146,6 +146,44 @@
         }
         .form-hint { color: #64748b; font-size: 0.8rem; margin-top: 5px; }
 
+        /* Sim ou não, um ao lado do outro.
+
+           Dois botões, e não uma caixinha sozinha: caixa desmarcada
+           tanto vale "não entrego" quanto "não vi essa pergunta", e o
+           card da vitrine promete entrega para o cliente com base
+           nisso. Aqui a pessoa precisa apontar para uma das duas. */
+        .escolha-sim-nao {
+            display: flex;
+            gap: 10px;
+        }
+
+        .escolha-sim-nao label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 11px 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .escolha-sim-nao label:hover { border-color: #94a3b8; }
+
+        .escolha-sim-nao input { accent-color: #2563eb; }
+
+        .escolha-sim-nao input:checked + span { color: #1d4ed8; }
+
+        .escolha-sim-nao label:has(input:checked) {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -323,6 +361,7 @@
                             <option value="">Selecione a categoria...</option>
                             <option value="Academias e Esportes">Academias e Esportes</option>
                             <option value="Advocacia e Contabilidade">Advocacia e Contabilidade</option>
+                            <option value="Agropecuária">Agropecuária</option>
                             <option value="Alimentação e Gastronomia">Alimentação e Gastronomia</option>
                             <option value="Automotivo e Peças">Automotivo e Peças</option>
                             <option value="Bares e Distribuidoras">Bares e Distribuidoras</option>
@@ -335,6 +374,8 @@
                             <option value="Farmácias e Saúde">Farmácias e Saúde</option>
                             <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
                             <option value="Lanche, Pizza e outros">Lanche, Pizza e outros</option>
+                            <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
+                            <option value="Padarias">Padarias</option>
                             <option value="Pet Shop e Veterinária">Pet Shop e Veterinária</option>
                             <option value="Serviços Gerais e Manutenção">Serviços Gerais e Manutenção</option>
                             <option value="Sorvete, Açaí e Picolé">Sorvete, Açaí e Picolé</option>
@@ -348,6 +389,25 @@
                 <div class="form-group">
                     <label for="descricao">Sobre a Empresa / Descrição do Anúncio *</label>
                     <textarea id="descricao" placeholder="Escreva aqui os detalhes sobre seus produtos, serviços e diferenciais..." required></textarea>
+                </div>
+
+                <!-- Fica junto da descrição, e não lá embaixo perto das
+                     fotos: é informação sobre o que a loja faz, e é a
+                     segunda pergunta de quem procura no fim da tarde,
+                     logo depois de "está aberto?". -->
+                <div class="form-group" id="grupoEntrega">
+                    <label>Serviço de entrega?</label>
+                    <div class="escolha-sim-nao">
+                        <label>
+                            <input type="radio" name="entrega" value="sim">
+                            <span><i class="fa-solid fa-motorcycle"></i> Sim, entrego</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="entrega" value="nao" checked>
+                            <span>Não entrego</span>
+                        </label>
+                    </div>
+                    <p class="form-hint">Marcando "sim", sua loja ganha o selo de entrega no card da vitrine.</p>
                 </div>
 
                 <div class="form-section-title">
@@ -574,7 +634,7 @@
             // A dica do CEP explica um campo que, na categoria gratuita,
             // não está mais na tela. Sozinha ela vira instrução para
             // procurar o que não existe.
-            ['secaoHorarios', 'secaoLogo', 'avisoCep'].forEach((id) => {
+            ['secaoHorarios', 'secaoLogo', 'avisoCep', 'grupoEntrega'].forEach((id) => {
                 const secao = document.getElementById(id);
                 if (secao) secao.style.display = gratuita ? 'none' : '';
             });
@@ -639,6 +699,22 @@
                     linha.querySelector('.input-fecha').disabled = this.checked;
                 });
             });
+        }
+
+        // O radio marcado, como sim/não. Nenhum marcado é "não": o
+        // anúncio antigo, cadastrado antes desta pergunta existir, não
+        // tem resposta nenhuma no banco, e o guia não pode prometer
+        // entrega que ninguém ofereceu.
+        function entregaEscolhida() {
+            const marcado = document.querySelector('input[name="entrega"]:checked');
+            return marcado ? marcado.value === 'sim' : false;
+        }
+
+        function marcarEntrega(entrega) {
+            const alvo = document.querySelector(
+                `input[name="entrega"][value="${entrega ? 'sim' : 'nao'}"]`
+            );
+            if (alvo) alvo.checked = true;
         }
 
         function coletarHorarios() {
@@ -887,6 +963,7 @@
             document.getElementById('instagram').value = anuncio.instagram || '';
             document.getElementById('facebook').value = anuncio.facebook || '';
             document.getElementById('site').value = anuncio.site || '';
+            marcarEntrega(anuncio.entrega === true);
 
             // Cidade e categoria: seleciona a opção comparando sem diferenciar maiúsculas/minúsculas
             selecionarOpcaoIgnorandoCase('cidade', anuncio.cidade);
@@ -1153,6 +1230,10 @@
                     instagram: document.getElementById('instagram').value.trim(),
                     facebook: document.getElementById('facebook').value.trim(),
                     site: document.getElementById('site').value.trim(),
+                    // Táxi não entrega: o campo sai da tela junto com o
+                    // resto, e o valor não pode vir do radio que ficou
+                    // escondido com a resposta de outra categoria.
+                    entrega: gratuita ? false : entregaEscolhida(),
                     // Táxi não tem horário de funcionamento. As linhas da
                     // semana continuam montadas na página, só escondidas,
                     // e chegariam aqui com o 08:00–18:00 que vem por

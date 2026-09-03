@@ -29,6 +29,22 @@
             padding: 0 20px;
         }
 
+        /* O mesmo laranja e o mesmo desenho do selo que trouxe a
+           pessoa até aqui, no card da vitrine. Chegar e não reencontrar
+           a promessa que fez clicar é o que faz duvidar dela. */
+        .selo-entrega-detalhe {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: #ff6600;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
         /* ===== BREADCRUMB ===== */
         .breadcrumb {
             padding: 18px 0;
@@ -269,6 +285,7 @@
          quando ha sessao aberta. -->
     <script src="assets/js/sessao.js" defer></script>
     <!-- Cabecalho e menu sanduiche: um arquivo so para o site inteiro. -->
+    <script src="assets/js/loja.js"></script>
     <link rel="stylesheet" href="assets/css/header.css">
     <script src="assets/js/menu.js" defer></script>
 </head>
@@ -399,6 +416,7 @@
                         <div class="detalhe-meta">
                             ${anuncio.cidade ? `<span><i class="fa-solid fa-location-dot"></i> ${anuncio.cidade}</span>` : ''}
                             <span><i class="fa-solid fa-eye"></i> ${anuncio.visualizacoes || 0} visualizações</span>
+                            ${anuncio.entrega ? '<span class="selo-entrega-detalhe"><i class="fa-solid fa-motorcycle"></i> FAZ ENTREGA</span>' : ''}
                         </div>
                     </div>
 
@@ -492,17 +510,11 @@
             const diaAtualIndex = agora.getDay(); // 0 = domingo
             const mapaIndexParaChave = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
             const chaveHoje = mapaIndexParaChave[diaAtualIndex];
-            const horarioHoje = horarios[chaveHoje];
 
-            let statusAberto = false;
-            if (horarioHoje && horarioHoje.aberto && horarioHoje.abre && horarioHoje.fecha) {
-                const horaAtual = agora.getHours() * 60 + agora.getMinutes();
-                const [hAbre, mAbre] = horarioHoje.abre.split(':').map(Number);
-                const [hFecha, mFecha] = horarioHoje.fecha.split(':').map(Number);
-                const minutosAbre = hAbre * 60 + mAbre;
-                const minutosFecha = hFecha * 60 + mFecha;
-                statusAberto = horaAtual >= minutosAbre && horaAtual < minutosFecha;
-            }
+            // A conta mora em assets/js/loja.js, junto com a do card
+            // da vitrine: as duas telas precisam dizer a mesma coisa
+            // no mesmo minuto.
+            const statusAberto = window.LOJA.estaAbertaAgora(horarios, agora) === true;
 
             const linhas = DIAS_SEMANA_VIEW.map(dia => {
                 const h = horarios[dia.chave];
