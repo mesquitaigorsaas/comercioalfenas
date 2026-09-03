@@ -525,6 +525,29 @@
             return select ? select.value : '';
         }
 
+        // Deixa a categoria fixa em Táxi e Moto Táxi, sem como trocar.
+        //
+        // O select fica desabilitado, e não escondido: a pessoa precisa
+        // ver em que categoria está entrando. Um campo obrigatório
+        // desabilitado não atrapalha o envio — a validação do navegador
+        // pula campo desabilitado, e o valor continua sendo lido pelo
+        // JavaScript na hora de gravar.
+        function travarCategoria() {
+            const select = document.getElementById('categoria');
+            select.disabled = true;
+
+            if (document.getElementById('avisoCategoriaTravada')) return;
+
+            const aviso = document.createElement('p');
+            aviso.id = 'avisoCategoriaTravada';
+            aviso.className = 'form-hint';
+            aviso.innerHTML = '<i class="fa-solid fa-lock"></i> '
+                + 'Categoria do cadastro gratuito de táxi e moto táxi. '
+                + 'Para anunciar outro tipo de negócio, volte e desmarque '
+                + 'a opção de táxi no seu cadastro.';
+            select.parentNode.appendChild(aviso);
+        }
+
         function aplicarFormularioDaCategoria() {
             const gratuita = window.REGRAS.ehGratuita(categoriaDaLoja());
 
@@ -724,8 +747,23 @@
             // A caixa "sou da categoria táxi", marcada lá na criação da
             // conta, chega aqui pelo endereço. Deixa a categoria já
             // escolhida para a pessoa não ter que procurá-la na lista.
-            if (!modoEdicao && new URLSearchParams(window.location.search).get('categoria') === 'taxi') {
-                document.getElementById('categoria').value = window.REGRAS.categoriaGratuita;
+            //
+            // E trava: a isenção é da categoria, não de quem se
+            // cadastrou. Sem a trava bastaria marcar a caixa, chegar
+            // aqui e trocar o assunto para "Alimentação" — saindo com
+            // loja cadastrada por um caminho que nunca foi feito para
+            // loja. Quem se enganou no caminho volta e desmarca a
+            // caixa; quem é taxista mesmo não precisa escolher nada.
+            //
+            // Em edição a trava também vale, pelo mesmo motivo: um
+            // anúncio de táxi não vira loja depois, calado.
+            const veioComoTaxi = new URLSearchParams(window.location.search).get('categoria') === 'taxi';
+            const selectCategoria = document.getElementById('categoria');
+
+            if ((!modoEdicao && veioComoTaxi)
+                || (modoEdicao && window.REGRAS.ehGratuita(selectCategoria.value))) {
+                selectCategoria.value = window.REGRAS.categoriaGratuita;
+                travarCategoria();
             }
 
             // Enxuga o formulário se a categoria for a gratuita, e
