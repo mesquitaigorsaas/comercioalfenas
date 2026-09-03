@@ -107,14 +107,10 @@
                     "lateral"
                     "mapa";
             }
-            /* No mobile o layout empilha em vez de ficar lado a lado,
-               então o "sticky" precisa ser desligado: caso contrário essa
-               caixa fica grudada na tela e sobrepõe a seção de Localização
-               (mapa) que vem logo abaixo dela ao rolar a página. */
-            .sidebar-sticky-wrap {
-                position: static;
-                top: auto;
-            }
+            /* O desligamento do "sticky" no mobile mora junto da regra que
+               o liga, mais abaixo. Aqui em cima ele não funcionava: media
+               query não soma especificidade, então o `position: sticky`
+               declarado depois vencia e a caixa continuava grudada. */
         }
 
         /* Imagem hero */
@@ -211,6 +207,18 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        /* No celular o layout empilha em vez de ficar lado a lado, e aí o
+           "sticky" atrapalha: a caixa de contato e o horário ficam grudados
+           na tela e passam por cima da seção de Localização, que vem logo
+           abaixo. Esta regra tem que vir DEPOIS da de cima — media query não
+           soma especificidade, então quem estiver por último vence. */
+        @media (max-width: 900px) {
+            .sidebar-sticky-wrap {
+                position: static;
+                top: auto;
+            }
         }
 
         .contato-card {
