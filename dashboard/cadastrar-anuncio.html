@@ -570,7 +570,10 @@
                 if (gratuita) campo.value = '';
             });
 
-            ['secaoHorarios', 'secaoLogo'].forEach((id) => {
+            // A dica do CEP explica um campo que, na categoria gratuita,
+            // não está mais na tela. Sozinha ela vira instrução para
+            // procurar o que não existe.
+            ['secaoHorarios', 'secaoLogo', 'avisoCep'].forEach((id) => {
                 const secao = document.getElementById(id);
                 if (secao) secao.style.display = gratuita ? 'none' : '';
             });
