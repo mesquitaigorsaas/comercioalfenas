@@ -337,6 +337,16 @@
             color: #2563eb;
         }
 
+        /* Excluir é o único botão que não tem volta. Fica cinza como os
+           outros até o mouse chegar nele, e só então mostra o vermelho:
+           destacado o tempo todo, viraria o botão mais chamativo de uma
+           linha onde tudo o mais é rotina. */
+        .btn-acao.perigo:hover {
+            border-color: #e11d48;
+            color: #e11d48;
+            background: #fff1f2;
+        }
+
         .btn-acao.desligado {
             opacity: 0.4;
             pointer-events: none;
@@ -923,6 +933,17 @@
                                 title="Ver e editar o cadastro do responsável">
                             <i class="fa-solid fa-id-card"></i> Cadastro
                         </button>
+
+                        <!-- Vale para linha com loja e sem loja: o que se
+                             apaga é o anunciante, e o anúncio vai junto
+                             se existir. -->
+                        <button type="button" class="btn-acao perigo"
+                                data-excluir="${a.perfil_id}"
+                                data-nome="${escapar(a.nome_completo || a.email || 'este cadastro')}"
+                                data-loja="${escapar(a.titulo || '')}"
+                                title="Excluir este anunciante do guia">
+                            <i class="fa-solid fa-trash"></i> Excluir
+                        </button>
                     </div>
                 </td>
             </tr>`;
@@ -983,7 +1004,55 @@
         if (btnCadastro) {
             abrirCadastro(btnCadastro.dataset.cadastro);
         }
+
+        const btnExcluir = e.target.closest('[data-excluir]');
+        if (btnExcluir) {
+            excluirAnunciante(btnExcluir);
+        }
     });
+
+    // ===================================================================
+    // EXCLUIR UM ANUNCIANTE
+    //
+    // Diferente de todo o resto do painel, isto não tem volta: some a
+    // conta de login, o cadastro e o anúncio. Por isso é a única ação
+    // que pergunta antes, e a pergunta diz o nome de quem vai sair —
+    // um "tem certeza?" genérico não impede o clique na linha errada.
+    //
+    // Quem apaga de verdade é a função no banco, que confere se quem
+    // pediu é administrador. A confirmação daqui é para o dedo, não
+    // para a segurança: qualquer um poderia chamar a API direto.
+    // ===================================================================
+    async function excluirAnunciante(botao) {
+        const id = botao.dataset.excluir;
+        const nome = botao.dataset.nome;
+        const loja = botao.dataset.loja;
+
+        const oQueSai = loja
+            ? `o cadastro de ${nome} e o anúncio da loja ${loja}`
+            : `o cadastro de ${nome}`;
+
+        if (!confirm(
+            `Excluir ${oQueSai}?\n\n` +
+            'A conta de login, o cadastro e o anúncio são apagados.\n' +
+            'Não há como desfazer.'
+        )) {
+            return;
+        }
+
+        botao.disabled = true;
+
+        const { error } = await supabaseClient.rpc('admin_excluir_anunciante', { p_id: id });
+
+        if (error) {
+            botao.disabled = false;
+            recado('erro', error.message || 'Não foi possível excluir.');
+            return;
+        }
+
+        recado('ok', 'Cadastro excluído.');
+        await carregarAnunciantes();
+    }
 
     document.addEventListener('change', async (e) => {
         const select = e.target.closest('[data-plano]');
