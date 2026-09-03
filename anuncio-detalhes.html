@@ -107,10 +107,6 @@
                     "lateral"
                     "mapa";
             }
-            /* O desligamento do "sticky" no mobile mora junto da regra que
-               o liga, mais abaixo. Aqui em cima ele não funcionava: media
-               query não soma especificidade, então o `position: sticky`
-               declarado depois vencia e a caixa continuava grudada. */
         }
 
         /* Imagem hero */
@@ -199,26 +195,18 @@
         }
         .detalhe-mapa-frame iframe { width: 100%; height: 100%; border: 0; }
 
-        /* ===== SIDEBAR DE CONTATO ===== */
+        /* ===== SIDEBAR DE CONTATO =====
+           A caixa acompanha a página, como a foto ao lado dela. Já foi
+           "sticky", seguindo a rolagem: numa página curta — a de um
+           taxista, por exemplo, que não tem descrição, endereço nem
+           horário — ela descolava da foto e ficava flutuando sozinha
+           num espaço vazio. O nome da classe ficou como lembrete de
+           que esse caminho já foi tentado. */
         .sidebar-sticky-wrap {
             grid-area: lateral;
-            position: sticky;
-            top: 90px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-
-        /* No celular o layout empilha em vez de ficar lado a lado, e aí o
-           "sticky" atrapalha: a caixa de contato e o horário ficam grudados
-           na tela e passam por cima da seção de Localização, que vem logo
-           abaixo. Esta regra tem que vir DEPOIS da de cima — media query não
-           soma especificidade, então quem estiver por último vence. */
-        @media (max-width: 900px) {
-            .sidebar-sticky-wrap {
-                position: static;
-                top: auto;
-            }
         }
 
         .contato-card {
@@ -311,6 +299,9 @@
     </style>
     <script src="assets/js/regras.js"></script>
     <script src="assets/js/menu-promocao.js"></script>
+    <!-- Troca a chave de Entrar pelo atalho do painel e mostra o Sair,
+         quando ha sessao aberta. -->
+    <script src="assets/js/sessao.js" defer></script>
 </head>
 <body>
 
