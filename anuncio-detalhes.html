@@ -89,12 +89,22 @@
             display: grid;
             grid-template-columns: 1fr 360px;
             grid-template-areas:
+                "titulo    titulo"
                 "principal lateral"
                 "mapa      lateral";
             gap: 32px;
             padding-bottom: 70px;
             align-items: start;
         }
+        /* O título ocupa a largura inteira, acima das duas colunas, para
+           que a foto e a caixa de contato comecem na mesma altura. O
+           espaço embaixo dele vem do "gap" da grade, então o bloco não
+           acrescenta o próprio. */
+        .detalhe-titulo-largo {
+            grid-area: titulo;
+            padding-bottom: 0;
+        }
+
         .detalhe-principal { grid-area: principal; }
         .detalhe-lateral { grid-area: lateral; }
         .detalhe-mapa-secao { grid-area: mapa; }
@@ -103,6 +113,7 @@
             .detalhe-wrapper {
                 grid-template-columns: 1fr;
                 grid-template-areas:
+                    "titulo"
                     "principal"
                     "lateral"
                     "mapa";
@@ -430,15 +441,21 @@
 
             container.innerHTML = `
                 <div class="detalhe-wrapper">
-                    <div class="detalhe-principal">
-                        <div class="detalhe-titulo-bloco detalhe-titulo-bloco-top">
-                            <h1>${anuncio.titulo || 'Estabelecimento'}</h1>
-                            <div class="detalhe-meta">
-                                ${anuncio.cidade ? `<span><i class="fa-solid fa-location-dot"></i> ${anuncio.cidade}</span>` : ''}
-                                <span><i class="fa-solid fa-eye"></i> ${anuncio.visualizacoes || 0} visualizações</span>
-                            </div>
+                    <!-- O título atravessa as duas colunas. Dentro da
+                         coluna da esquerda ele empurrava a foto para
+                         baixo, e a caixa de contato — que começa no topo
+                         da própria coluna — ficava mais alta que a foto,
+                         desalinhada. Aqui em cima, as duas comecam
+                         juntas embaixo dele. -->
+                    <div class="detalhe-titulo-bloco detalhe-titulo-bloco-top detalhe-titulo-largo">
+                        <h1>${anuncio.titulo || 'Estabelecimento'}</h1>
+                        <div class="detalhe-meta">
+                            ${anuncio.cidade ? `<span><i class="fa-solid fa-location-dot"></i> ${anuncio.cidade}</span>` : ''}
+                            <span><i class="fa-solid fa-eye"></i> ${anuncio.visualizacoes || 0} visualizações</span>
                         </div>
+                    </div>
 
+                    <div class="detalhe-principal">
                         <div class="detalhe-img-wrapper" id="detalheImgPrincipal" style="background-image: url('${imagemPrincipal}');" role="img" aria-label="${anuncio.titulo || 'Anúncio'}">
                             <div class="detalhe-logo-badge" style="${anuncio.imagem_url ? `background-image: url('${anuncio.imagem_url}');` : ''}">
                                 ${!anuncio.imagem_url ? '<i class="fa-solid fa-store"></i>' : ''}
