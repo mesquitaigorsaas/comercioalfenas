@@ -68,21 +68,22 @@ grátis enquanto o formulário já cobrasse plano.
 
 ## Promoção de lançamento
 
-Até **31/10/2026** o cadastro é gratuito:
+Até **30/09/2026** o cadastro é gratuito — a data que manda é
+`gratisAte`, em `assets/js/regras.js`:
 
-- 1 logomarca + 6 fotos por loja
-- os 8 primeiros anúncios de cada cidade aparecem na vitrine da página
-  inicial, por ordem de cadastro
+- 1 logomarca + 5 fotos por loja — as mesmas do plano trimestral, que
+  é como o cadastro da promoção é gravado: ninguém publica uma foto
+  agora para vê-la sumir quando a cobrança começar
 - os botões de cadastrar pulam a página de planos e vão direto ao
   cadastro
 
-A partir de **01/11/2026** tudo isso se desliga sozinho: as faixas
+A partir de **01/10/2026** tudo isso se desliga sozinho: as faixas
 somem, os botões voltam a passar pelos planos e o limite de fotos
 passa a depender do plano contratado (5, 10 ou 15). Nada precisa ser
 editado no dia — basta a data virar.
 
 **Ainda não existe:** a cobrança. O caminho cadastro → pagamento →
-anúncio precisa ser construído antes de 01/11.
+anúncio precisa ser construído antes de 01/10.
 
 ---
 
