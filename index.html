@@ -302,6 +302,33 @@
             display: block;
         }
 
+        /* Um azulejo só mostra três ícones em vez de um, o de lanche.
+           Eles ficam numa fileira e menores que o ícone único dos
+           outros: três em tamanho cheio não cabem na largura de um
+           azulejo no celular, que é de duas colunas. */
+        .category-card .tri-icone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .category-card .tri-icone i {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            display: inline-block;
+        }
+
+        /* O espeto é desenhado aqui, e não vem do Font Awesome, porque
+           a versão gratuita não tem espeto — o mais perto é uma coxa de
+           frango, que não é churrasquinho. */
+        .category-card .tri-icone svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: currentColor;
+        }
+
         /* Cores dos Cards */
         .cat-auto { background-color: #ef4444; }
         .cat-beleza { background-color: #06b6d4; }
@@ -309,7 +336,7 @@
         .cat-decor { background-color: #eab308; }
         .cat-gastro { background-color: #a855f7; }
         .cat-imoveis { background-color: #f97316; }
-        .cat-moda { background-color: #ec4899; }
+        .cat-taxi { background-color: #ec4899; }
         .cat-pet { background-color: #14b8a6; }
         .cat-sorvete { background-color: #6366f1; }
         .cat-agro { background-color: #a16207; }
@@ -720,7 +747,6 @@
                         <option value="Imóveis e Imobiliárias">Imóveis e Imobiliárias</option>
                         <option value="Lanche, Pizza e outros">Lanche, Pizza e outros</option>
                         <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
-                        <option value="Moda Feminina|Moda Masculina|Moda Unissex">Moda (todas)</option>
                         <option value="Moda Feminina">Moda Feminina</option>
                         <option value="Moda Masculina">Moda Masculina</option>
                         <option value="Moda Unissex">Moda Unissex</option>
@@ -758,29 +784,45 @@
                     <i class="fa-solid fa-couch"></i>
                     <span>Decorações</span>
                 </a>
-                <a onclick="filtrarCategoria('Alimentação e Gastronomia')" class="category-card cat-gastro">
-                    <i class="fa-solid fa-burger"></i>
-                    <span>Gastronomia</span>
+                <a onclick="filtrarCategoria('Farmácias e Saúde')" class="category-card cat-saude">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Farmácia e Saúde</span>
                 </a>
                 <a onclick="filtrarCategoria('Imóveis e Imobiliárias')" class="category-card cat-imoveis">
                     <i class="fa-solid fa-house"></i>
                     <span>Imóveis</span>
                 </a>
-                <a onclick="filtrarCategoria('Moda Feminina|Moda Masculina|Moda Unissex')" class="category-card cat-moda">
-                    <i class="fa-solid fa-shirt"></i>
-                    <span>Moda</span>
+
+                <!-- Três ícones, e não um: o sanduíche e a pizza dizem o
+                     que este azulejo tem de mais procurado, e o espeto é
+                     o "e outros" ganhando cara. -->
+                <a onclick="filtrarCategoria('Lanche, Pizza e outros')" class="category-card cat-gastro">
+                    <span class="tri-icone">
+                        <i class="fa-solid fa-burger"></i>
+                        <i class="fa-solid fa-pizza-slice"></i>
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <g transform="rotate(-45 12 12)">
+                                <rect x="1.5" y="11.2" width="21" height="1.6" rx=".8"/>
+                                <rect x="8" y="8" width="4.2" height="8" rx="1.4"/>
+                                <rect x="13.1" y="8" width="4.2" height="8" rx="1.4"/>
+                                <rect x="18.2" y="8" width="4.2" height="8" rx="1.4"/>
+                            </g>
+                        </svg>
+                    </span>
+                    <span>Lanche, Pizzas e outros</span>
                 </a>
+
                 <a onclick="filtrarCategoria('Pet Shop e Veterinária')" class="category-card cat-pet">
                     <i class="fa-solid fa-dog"></i>
                     <span>Pet Shop</span>
                 </a>
-                <a onclick="filtrarCategoria('Farmácias e Saúde')" class="category-card cat-saude">
-                    <i class="fa-solid fa-user-doctor"></i>
-                    <span>Saúde</span>
-                </a>
                 <a onclick="filtrarCategoria('Sorvete, Açaí e Picolé')" class="category-card cat-sorvete">
                     <i class="fa-solid fa-ice-cream"></i>
                     <span>Sorvete e Açaí</span>
+                </a>
+                <a onclick="filtrarCategoria('Táxi e Moto Táxi')" class="category-card cat-taxi">
+                    <i class="fa-solid fa-taxi"></i>
+                    <span>Táxi e Moto Táxi</span>
                 </a>
             </div>
         </div>
@@ -992,26 +1034,26 @@
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());
                 }
                 if (categoriaFiltro) {
-                    // Um atalho pode valer por mais de uma categoria. O
-                    // azulejo Moda leva às três categorias de moda de
-                    // uma vez: quem clica em Moda quer ver roupa, e não
-                    // escolher antes se é masculina, feminina ou unissex.
+                    // Um endereço pode pedir mais de uma categoria de
+                    // uma vez, separadas por barra vertical. Barra, e
+                    // não vírgula: três categorias já têm vírgula no
+                    // nome ("Sorvete, Açaí e Picolé"), e elas se
+                    // partiriam no meio.
                     //
-                    // Vêm separadas por barra vertical no endereço. Barra,
-                    // e não vírgula: três categorias já têm vírgula no
-                    // nome ("Sorvete, Açaí e Picolé"), e elas se partiriam
-                    // no meio.
+                    // Nenhum azulejo usa isso hoje. O de Moda usava, e
+                    // saiu da grade. Isto continua de pé porque link já
+                    // compartilhado chega com as três categorias de
+                    // moda no endereço, e tem de continuar abrindo.
                     const categorias = categoriaFiltro.split('|')
                         .map((c) => c.trim())
                         .filter(Boolean);
 
                     if (categorias.length > 1) {
                         // Vieram várias de uma vez, e aí elas aparecem
-                        // agrupadas: primeiro as de Moda Feminina, depois
-                        // as de Masculina, depois as de Unissex. Uma lista
-                        // com as três embaralhadas obriga quem procura a
-                        // ler a etiqueta de cada card para separar o que
-                        // interessa.
+                        // agrupadas, uma categoria inteira depois da
+                        // outra. Uma lista com todas embaralhadas obriga
+                        // quem procura a ler a etiqueta de cada card
+                        // para separar o que interessa.
                         query = query.in('categoria', categorias)
                                      .order('categoria', { ascending: true });
                     } else {
