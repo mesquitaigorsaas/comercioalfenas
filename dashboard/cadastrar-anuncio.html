@@ -221,14 +221,62 @@
             border-color: #93c5fd;
         }
 
-        input[type="file"] {
+        /* A caixa de escolher arquivo.
+
+           O visual é o mesmo de antes — tracejado, largura inteira —, mas
+           agora ele veste um <label>, e não o próprio input. A diferença
+           não aparece na tela e é toda a diferença no dedo: label inteiro
+           abre a galeria, input estilizado só abre pelo botão nativo, que
+           ocupa um canto da caixa.
+
+           min-height de 56px porque é o alvo de toque confortável num
+           celular; a caixa antiga tinha a altura do botão nativo. */
+        .campo-arquivo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
-            padding: 10px;
+            min-height: 56px;
+            margin-bottom: 0;
+            padding: 12px 14px;
             border: 1px dashed #cbd5e1;
             background-color: #f8fafc;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            text-align: center;
+            transition: border-color 0.15s, background-color 0.15s;
+        }
+
+        .campo-arquivo:hover {
+            border-color: #93c5fd;
+            background-color: #eff6ff;
+        }
+
+        .campo-arquivo i { color: #2563eb; }
+
+        /* O input continua existindo: é ele que guarda o arquivo e dispara
+           o evento. Só não é mais ele que a pessoa vê.
+
+           Fica fora da tela em vez de display:none para continuar
+           alcançável pelo teclado — quem navega por Tab precisa chegar
+           nele, e elemento com display:none sai da ordem de foco. */
+        .input-arquivo {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        /* O contorno de foco não pode ficar no input, que está escondido:
+           aparece na caixa, que é o que a pessoa enxerga. */
+        .campo-arquivo:has(+ .input-arquivo:focus-visible) {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
         }
 
         textarea { resize: vertical; min-height: 100px; }
@@ -521,7 +569,26 @@
                              porque encolherImagem() já joga qualquer imagem
                              num canvas e devolve JPEG. -->
                         <label for="uploadLogo">Logo da Empresa</label>
-                        <input type="file" id="uploadLogo" accept="image/*">
+
+                        <!-- A caixa inteira é a área de toque, e quem faz
+                             isso é o <label> — não o estilo do input.
+
+                             Antes, o input tinha o visual da caixa tracejada
+                             de largura inteira, e parecia uma área de soltar
+                             arquivo. Mas num input de arquivo nativo só o
+                             botãozinho "Escolher arquivo" abre a galeria: o
+                             resto da caixa é decoração. No celular o dedo cai
+                             no meio dela, e não acontece nada.
+
+                             Clicar num label abre o seletor do input que ele
+                             aponta, em qualquer navegador. Então o label vira
+                             a caixa, e o input some da tela. -->
+                        <label class="campo-arquivo" for="uploadLogo">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Toque aqui para escolher a logomarca</span>
+                        </label>
+                        <input type="file" id="uploadLogo" accept="image/*" class="input-arquivo">
+
                         <div id="previewLogoContainer" class="preview-container"></div>
                         <p class="form-hint">Recomendado: imagem quadrada, ex: 500x500px.</p>
                     </div>
@@ -538,7 +605,14 @@
                     <!-- accept="image/*" pelo mesmo motivo da logomarca,
                          logo acima: foto de iPhone é HEIC. -->
                     <label for="uploadFotos">Fotos <span id="rotuloLimiteFotos"></span></label>
-                    <input type="file" id="uploadFotos" accept="image/*" multiple>
+
+                    <!-- Mesma caixa da logomarca, pelo mesmo motivo. -->
+                    <label class="campo-arquivo" for="uploadFotos">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Toque aqui para escolher as fotos</span>
+                    </label>
+                    <input type="file" id="uploadFotos" accept="image/*" multiple class="input-arquivo">
+
                     <div id="previewFotosContainer" class="preview-container"></div>
                     <p class="form-hint" id="contadorFotos"></p>
                 </div>
