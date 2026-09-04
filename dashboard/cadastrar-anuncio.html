@@ -503,8 +503,25 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="uploadLogo">Logo da Empresa (PNG ou JPEG)</label>
-                        <input type="file" id="uploadLogo" accept="image/png, image/jpeg, image/jpg">
+                        <!-- accept="image/*", e não a lista de três tipos que
+                             estava aqui.
+
+                             A lista antiga era "image/png, image/jpeg,
+                             image/jpg". O terceiro nem existe — o tipo certo
+                             do JPEG é image/jpeg —, mas o problema grave era
+                             o que ficou de fora: HEIC, o formato em que o
+                             iPhone salva foto desde 2017.
+
+                             Numa lista dessas, a galeria do celular abre com
+                             as fotos apagadas, impossíveis de tocar. Quem
+                             está do outro lado não lê "formato não aceito":
+                             lê que clicou e não aconteceu nada.
+
+                             Aceitar tudo e converter depois é mais seguro,
+                             porque encolherImagem() já joga qualquer imagem
+                             num canvas e devolve JPEG. -->
+                        <label for="uploadLogo">Logo da Empresa</label>
+                        <input type="file" id="uploadLogo" accept="image/*">
                         <div id="previewLogoContainer" class="preview-container"></div>
                         <p class="form-hint">Recomendado: imagem quadrada, ex: 500x500px.</p>
                     </div>
@@ -518,8 +535,10 @@
                     <!-- O número sai de assets/js/regras.js e é escrito
                          aqui pelo JavaScript: durante a promoção são 5,
                          depois passa a depender do plano. -->
+                    <!-- accept="image/*" pelo mesmo motivo da logomarca,
+                         logo acima: foto de iPhone é HEIC. -->
                     <label for="uploadFotos">Fotos <span id="rotuloLimiteFotos"></span></label>
-                    <input type="file" id="uploadFotos" accept="image/png, image/jpeg, image/jpg" multiple>
+                    <input type="file" id="uploadFotos" accept="image/*" multiple>
                     <div id="previewFotosContainer" class="preview-container"></div>
                     <p class="form-hint" id="contadorFotos"></p>
                 </div>
@@ -1055,9 +1074,20 @@
 
         document.getElementById('uploadFotos').addEventListener('change', function(e) {
             const arquivos = Array.from(e.target.files);
+
+            // Cancelou o seletor sem escolher nada: não há o que dizer.
+            if (arquivos.length === 0) return;
+
             const totalAtual = fotosExistentes.length + fotosNovas.length;
             const limite = limiteDeFotos();
-            const vagasDisponiveis = limite - totalAtual;
+
+            // Math.max(0, ...) porque negativo aqui fazia estrago calado.
+            // Com o limite já estourado — acontece quando a loja tinha
+            // mais fotos do que o plano de hoje permite —, vagas ficava
+            // em -1, e slice(0, -1) não devolve nada: devolve tudo menos
+            // o último arquivo. Ou seja, a checagem de limite acabava
+            // ADICIONANDO fotos além do limite, silenciosamente.
+            const vagasDisponiveis = Math.max(0, limite - totalAtual);
 
             if (arquivos.length > vagasDisponiveis) {
                 alert(vagasDisponiveis > 0
@@ -1068,6 +1098,14 @@
             const arquivosParaAdicionar = arquivos.slice(0, vagasDisponiveis);
             fotosNovas.push(...arquivosParaAdicionar);
             renderizarPreviewFotos();
+
+            // A escolha não virou nada na tela, e o alerta do limite não
+            // era o motivo. Sem esta linha, a pessoa escolhe a foto, olha
+            // para uma tela que não mudou e conclui que o site está
+            // quebrado — foi exatamente essa a reclamação que chegou.
+            if (arquivosParaAdicionar.length === 0 && vagasDisponiveis > 0) {
+                alert('Não consegui abrir esse arquivo como imagem. Tente uma foto em JPG ou PNG.');
+            }
 
             e.target.value = '';
         });
