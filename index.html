@@ -377,6 +377,21 @@
             text-align: left;
         }
 
+        /* E não vira caixa alta. "ACADEMIAS E ESPORTES" é letreiro de
+           seção; o que a pessoa acabou de clicar chama-se "Academias e
+           Esportes", e é assim que ela quer ver de volta — igual ao que
+           está escrito no azulejo e no menu de busca. */
+        .section-header.filtrada h2,
+        .section-header.filtrada p {
+            text-transform: none;
+        }
+
+        /* A contagem é informação, não legenda: escurece para ser lida
+           junto do nome, e não depois dele. */
+        .section-header.filtrada p {
+            color: #334155;
+        }
+
         /* Quatro por fileira, duas fileiras: os 8 destaques da home.
            Antes era "auto-fill" com 320px mínimos, o que dava 3 por
            fileira no computador e deixava a segunda com um buraco. */
