@@ -872,6 +872,52 @@
     // O telefone é o do responsável, do cadastro dele — não o WhatsApp
     // da loja, que é o número de atendimento ao cliente e pode ser o
     // do balcão, com outra pessoa do outro lado.
+    // "Olá, Reginaldo!" quando o nome veio no cadastro, "Olá!" quando
+    // não veio. Sem isto a mensagem abria com "Olá, !" — vírgula solta
+    // e ponto de exclamação, logo na primeira linha da conversa.
+    function saudacao(primeiroNome) {
+        return primeiroNome ? `Olá, ${primeiroNome}!` : 'Olá!';
+    }
+
+    // A mensagem de quem criou a conta e não publicou o anúncio.
+    //
+    // Ela vem pronta porque esse caso vai se repetir muito, e o que se
+    // repete acaba não sendo feito: escrever tudo de novo a cada
+    // cadastro parado é o tipo de trabalho que se adia até a pessoa
+    // esfriar. Aqui é um clique, com o texto sempre igual — e um texto
+    // igual é um texto que dá para melhorar depois de ver o que
+    // responde bem.
+    //
+    // O tom é de ajuda, não de cobrança: quem parou no meio geralmente
+    // travou em alguma coisa (a foto, o horário, a categoria), e a
+    // pergunta aberta abre a conversa melhor do que a insistência.
+    function mensagemDeRetomada(primeiroNome) {
+        const linhas = [
+            `${saudacao(primeiroNome)} Tudo bem? Aqui é do Guia Comercial Alfenas e Região.`,
+            '',
+            'Vi que você não finalizou o anúncio do seu negócio. Teve alguma dificuldade ou dúvida? Estou aqui pra ajudar no que precisar ou esclarecer qualquer coisa.',
+            '',
+            'E você está fazendo muito bem em divulgar seu comércio no novo meio de comunicação de Alfenas, entre o comércio e os moradores da cidade. É lá que quem procura acha — e quem não está, não aparece.'
+        ];
+
+        // A linha do prazo só entra enquanto ela for verdade. Prometer
+        // cadastro gratuito depois que a promoção acabar é pior do que
+        // não falar de preço nenhum — a conversa começaria por uma
+        // informação que o site vai desmentir no clique seguinte.
+        if (window.REGRAS.promocaoValendo()) {
+            const prazo = window.REGRAS.gratisAte.toLocaleDateString('pt-BR');
+            linhas.push('', `O cadastro está gratuito até ${prazo}. Depois dessa data, só com plano.`);
+        }
+
+        // Fecha com pergunta, e não com despedida. A pessoa parou no meio
+        // por algum motivo que ela mesma talvez não saiba explicar; um
+        // "quer que eu te ajude?" é mais fácil de responder do que um
+        // "termine seu cadastro", e é a resposta que abre a conversa.
+        linhas.push('', 'Quer que eu te ajude a terminar agora? Leva poucos minutos.');
+
+        return linhas.join('\n');
+    }
+
     function botaoFalar(a) {
         const digitos = soNumeros(a.telefone);
 
@@ -888,7 +934,15 @@
         }
 
         const primeiroNome = (a.nome_completo || '').trim().split(/\s+/)[0] || '';
-        const texto = `Olá, ${primeiroNome}! Aqui é do Guia Comercial Alfenas e Região.`;
+
+        // Duas conversas diferentes saem deste mesmo botão. Quem já tem
+        // anúncio no ar recebe só a abertura, porque o assunto varia —
+        // renovação, foto trocada, uma dúvida qualquer. Quem parou antes
+        // de publicar recebe a mensagem inteira, que é sempre a mesma.
+        const texto = a.anuncio_id
+            ? `${saudacao(primeiroNome)} Aqui é do Guia Comercial Alfenas e Região.`
+            : mensagemDeRetomada(primeiroNome);
+
         const link = `https://wa.me/55${digitos}?text=${encodeURIComponent(texto)}`;
 
         return `<a class="btn-acao falar" href="${link}" target="_blank" rel="noopener"
