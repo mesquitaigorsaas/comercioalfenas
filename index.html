@@ -367,6 +367,16 @@
             font-weight: 600;
         }
 
+        /* Quando a busca é por categoria, este cabeçalho deixa de ser
+           título de seção e vira a resposta ao clique. Por isso encosta
+           na esquerda: centralizado ele continua com cara de enfeite de
+           seção, e enfeite o olho pula. Encostado, começa na mesma
+           linha vertical em que começa o primeiro azulejo da grade —
+           os dois estão dentro do mesmo .container. */
+        .section-header.filtrada {
+            text-align: left;
+        }
+
         /* Quatro por fileira, duas fileiras: os 8 destaques da home.
            Antes era "auto-fill" com 320px mínimos, o que dava 3 por
            fileira no computador e deixava a segunda com um buraco. */
@@ -830,7 +840,7 @@
 
     <section class="listings-section" id="anuncios">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header" id="cabecalhoAnuncios">
                 <h2>ANÚNCIOS EM DESTAQUE</h2>
                 <p>Confira os principais estabelecimentos de Alfenas</p>
             </div>
@@ -1007,9 +1017,63 @@
             }).then(() => {}, () => {});
         });
 
+        /**
+         * O cabeçalho da listagem, que muda conforme a busca.
+         *
+         * Sem categoria escolhida ele continua sendo o título fixo da
+         * vitrine, centralizado. Com categoria, vira o resultado: o
+         * nome da categoria na frente e, embaixo, quantos anunciantes
+         * ela tem. Quem clicou num azulejo quer saber se achou alguma
+         * coisa, e o título antigo respondia "confira os principais
+         * estabelecimentos de Alfenas" — que não responde nada.
+         *
+         * `quantidade` vem nula enquanto a busca não voltou, e também
+         * quando ela falha. Nesses dois casos o número não aparece, em
+         * vez de aparecer como zero: zero é uma afirmação, e nenhuma
+         * das duas situações permite afirmar que não há ninguém.
+         */
+        function montarCabecalhoDaListagem(categoriaFiltro, quantidade) {
+            const cabecalho = document.getElementById('cabecalhoAnuncios');
+            const titulo = cabecalho.querySelector('h2');
+            const linha = cabecalho.querySelector('p');
+
+            if (!categoriaFiltro) {
+                cabecalho.classList.remove('filtrada');
+                titulo.textContent = 'ANÚNCIOS EM DESTAQUE';
+                linha.textContent = 'Confira os principais estabelecimentos de Alfenas';
+                linha.hidden = false;
+                return;
+            }
+
+            // Um endereço pode pedir mais de uma categoria de uma vez
+            // (ver o filtro em carregarAnuncios). Aí o título traz as
+            // duas, separadas do mesmo jeito que o endereço as separa.
+            const nomes = categoriaFiltro.split('|')
+                .map((c) => c.trim())
+                .filter(Boolean);
+
+            cabecalho.classList.add('filtrada');
+            titulo.textContent = nomes.join(' · ');
+
+            if (quantidade === null || quantidade === undefined) {
+                linha.textContent = '';
+                linha.hidden = true;
+                return;
+            }
+
+            linha.textContent = quantidade === 1
+                ? '1 anunciante encontrado'
+                : `${quantidade} anunciantes encontrados`;
+            linha.hidden = false;
+        }
+
         async function carregarAnuncios(cidadeFiltro, categoriaFiltro) {
             const container = document.getElementById('listingsContainer');
             container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1;">Buscando estabelecimentos...</p>';
+
+            // O nome da categoria entra já, junto do "buscando".
+            // O número só existe depois da resposta.
+            montarCabecalhoDaListagem(categoriaFiltro, null);
 
             try {
                 // Sem teto: entram todas as lojas da cidade, quatro por
@@ -1074,6 +1138,8 @@
 
                 if (error) throw error;
 
+                montarCabecalhoDaListagem(categoriaFiltro, data ? data.length : 0);
+
                 if (!data || data.length === 0) {
                     container.innerHTML = '<p style="text-align: center; color: #64748b; grid-column: 1 / -1; padding: 40px 0;">Nenhum anúncio encontrado para esta busca.</p>';
                     return;
@@ -1102,6 +1168,7 @@ card.innerHTML = `
 
             } catch (err) {
                 console.error('Erro ao carregar anúncios:', err.message);
+                montarCabecalhoDaListagem(categoriaFiltro, null);
                 container.innerHTML = '<p style="text-align: center; color: #ef4444; grid-column: 1 / -1;">Erro ao conectar com o banco de dados.</p>';
             }
         }
