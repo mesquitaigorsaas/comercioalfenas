@@ -279,6 +279,34 @@
             outline-offset: 2px;
         }
 
+        /* O recado de que a escolha ainda não é envio.
+
+           Âmbar, e não o cinza das outras dicas: as outras explicam um
+           campo, esta evita um anúncio publicado sem foto. Cinza ela some
+           no meio do formulário, que é o que já acontecia com a palavra
+           "selecionadas" no contador. */
+        .aviso-envio {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 26px 0 18px;
+            padding: 12px 14px;
+            border: 1px solid #fcd34d;
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+            background-color: #fffbeb;
+            font-size: 0.83rem;
+            line-height: 1.5;
+            color: #78350f;
+        }
+
+        .aviso-envio i {
+            margin-top: 2px;
+            color: #d97706;
+        }
+
+        .aviso-envio strong { white-space: nowrap; }
+
         textarea { resize: vertical; min-height: 100px; }
 
         .preview-container {
@@ -616,6 +644,18 @@
                     <div id="previewFotosContainer" class="preview-container"></div>
                     <p class="form-hint" id="contadorFotos"></p>
                 </div>
+
+                <!-- A miniatura aparece na hora, mas o arquivo ainda está no
+                     celular da pessoa: quem sobe tudo é o botão aqui embaixo.
+                     Sem este aviso, quem escolhe as fotos, vê as miniaturas e
+                     fecha a página jura que publicou — e do lado de cá o
+                     anúncio aparece sem imagem nenhuma.
+                     Fica logo acima do botão porque é a última coisa lida
+                     antes de tocar nele. -->
+                <p class="aviso-envio">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>As imagens ainda não foram enviadas. Elas sobem quando você tocar em <strong>Salvar e publicar anúncio</strong>, aqui embaixo.</span>
+                </p>
 
                 <button type="submit" class="btn-submit">SALVAR E PUBLICAR ANÚNCIO</button>
             </form>
