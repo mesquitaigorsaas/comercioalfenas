@@ -302,11 +302,16 @@
             display: block;
         }
 
-        /* Um azulejo só mostra três ícones em vez de um, o de lanche.
-           Eles ficam numa fileira e menores que o ícone único dos
-           outros: três em tamanho cheio não cabem na largura de um
-           azulejo no celular, que é de duas colunas. */
-        .category-card .tri-icone {
+        /* Dois azulejos mostram mais de um ícone: o de lanche mostra
+           três, o de casa mostra dois. Eles ficam numa fileira e
+           menores que o ícone único dos outros azulejos — três em
+           tamanho cheio não cabem na largura de um azulejo no celular,
+           que é de duas colunas.
+
+           Os dois azulejos usam a mesma medida, mesmo o de casa tendo
+           espaço para ícones maiores: lado a lado na grade, dois
+           tamanhos diferentes de ícone pequeno leem-se como descuido. */
+        .category-card .icones {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -314,7 +319,7 @@
             margin-bottom: 12px;
         }
 
-        .category-card .tri-icone i {
+        .category-card .icones i {
             font-size: 1.5rem;
             margin-bottom: 0;
             display: inline-block;
@@ -323,10 +328,17 @@
         /* O espeto é desenhado aqui, e não vem do Font Awesome, porque
            a versão gratuita não tem espeto — o mais perto é uma coxa de
            frango, que não é churrasquinho. */
-        .category-card .tri-icone svg {
+        .category-card .icones svg {
             width: 1.5rem;
             height: 1.5rem;
             fill: currentColor;
+        }
+
+        /* O nome mais comprido da grade, e o único que precisa de letra
+           menor: em tamanho normal ele quebra em três linhas no celular
+           e puxa a altura da fileira inteira. */
+        .category-card .rotulo-menor {
+            font-size: 0.75rem;
         }
 
         /* Cores dos Cards */
@@ -806,8 +818,11 @@
                     <span>Beleza e Estética</span>
                 </a>
                 <a onclick="filtrarCategoria('Casa, Construção e Reformas')" class="category-card cat-casa">
-                    <i class="fa-solid fa-trowel-bricks"></i>
-                    <span>Casa, Construção e Reformas</span>
+                    <span class="icones">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                        <i class="fa-solid fa-couch"></i>
+                    </span>
+                    <span class="rotulo-menor">Casa, Construção e Reformas</span>
                 </a>
                 <a onclick="filtrarCategoria('Farmácias e Saúde')" class="category-card cat-saude">
                     <i class="fa-solid fa-user-doctor"></i>
@@ -822,7 +837,7 @@
                      que este azulejo tem de mais procurado, e o espeto é
                      o "e outros" ganhando cara. -->
                 <a onclick="filtrarCategoria('Lanche, Pizza e outros')" class="category-card cat-gastro">
-                    <span class="tri-icone">
+                    <span class="icones">
                         <i class="fa-solid fa-burger"></i>
                         <i class="fa-solid fa-pizza-slice"></i>
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
