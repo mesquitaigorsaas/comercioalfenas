@@ -58,7 +58,18 @@
 
         .banner-slide {
             min-width: 100%;
-            height: 420px;
+
+            /* A proporção EXATA das imagens: 2188 por 718.
+               Com altura fixa em 420px a proporção da caixa não batia
+               com a da imagem, e o object-fit: cover cortava as
+               laterais — bem onde ficam o nome do anunciante e o
+               telefone. Amarrando a proporção, não sobra nada para
+               cortar, e a altura acompanha a largura em qualquer tela.
+
+               Banner novo tem de sair nesta medida. Fora dela, volta
+               a cortar. */
+            aspect-ratio: 2188 / 718;
+
             position: relative;
             background-color: #0f172a;
         }
@@ -110,11 +121,7 @@
             .banner-slides-container {
                 align-items: flex-start;
             }
-            .banner-slide {
-                height: auto;
-            }
             .banner-slide img {
-                height: auto;
                 object-fit: cover;
             }
             .banner-caption h3 { font-size: 1rem; }
@@ -945,30 +952,11 @@
         let currentIndex = 0;
         const totalSlides = slides.length;
 
-        // Ajusta a altura do banner à proporção real da imagem ativa (só no mobile)
-        function ajustarAlturaBanner() {
-            if (window.innerWidth > 768) {
-                bannerWrapper.style.height = '';
-                return;
-            }
-            const img = slides[currentIndex].querySelector('img');
-            const aplicarAltura = () => {
-                const ratio = img.naturalHeight / img.naturalWidth;
-                bannerWrapper.style.height = (bannerWrapper.offsetWidth * ratio) + 'px';
-            };
-            if (img.complete && img.naturalWidth) {
-                aplicarAltura();
-            } else {
-                img.addEventListener('load', aplicarAltura, { once: true });
-            }
-        }
-
         function updateSlider() {
             slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
             dots.forEach((dot, idx) => {
                 dot.classList.toggle('active', idx === currentIndex);
             });
-            ajustarAlturaBanner();
         }
 
         function nextSlide() {
@@ -991,8 +979,9 @@
             });
         });
 
-        window.addEventListener('resize', ajustarAlturaBanner);
-        ajustarAlturaBanner();
+        // A altura vem da proporção no CSS, e não de conta em
+        // JavaScript. Uma fonte só evita as duas discordarem no meio de
+        // um redimensionamento.
 
         // Rotação automática a cada 5 segundos
         let autoSlide = setInterval(nextSlide, 5000);
