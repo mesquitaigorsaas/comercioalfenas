@@ -85,7 +85,9 @@
         .plan-card-header {
             background-color: #27272a;
             color: #ffffff;
-            padding: 30px 20px;
+            /* Os 14px a mais em cima abrem a faixa dos selos do canto,
+               nos três cards por igual, para o topo ter a mesma altura. */
+            padding: 44px 20px 30px;
             text-align: center;
         }
 
@@ -153,6 +155,23 @@
             border-radius: 999px;
         }
 
+        /* "Melhor custo-benefício", e não "mais escolhido": o guia é
+           novo e ainda não tem venda que sustente a segunda frase. A
+           primeira é conta — o anual tem o menor valor por mês. O azul é
+           o mesmo da borda do card em destaque. */
+        .plan-destaque {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
         .plan-card-body {
             padding: 30px 20px;
             display: flex;
@@ -180,6 +199,22 @@
             color: #22c55e;
             font-size: 0.85rem;
         }
+
+        /* A economia do anual em reais, e não em porcentagem: "R$ 17,82"
+           é dinheiro que a pessoa enxerga no bolso. A conta é 12 meses do
+           trimestral (R$ 118,80) menos o anual (R$ 100,98). */
+        .plan-features li.plan-economia {
+            background: #fff4ec;
+            color: #9a3412;
+            border-radius: 6px;
+            border-bottom: none;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .plan-features li.plan-economia i { color: #ff6600; }
+        .plan-features li.plan-economia strong { color: #ff6600; }
 
         .btn-choose {
             display: block;
@@ -458,12 +493,14 @@
                         <div class="plan-price-box">
                             <span class="currency">R$</span>100<span class="price-cents">,98</span>
                         </div>
+                        <span class="plan-destaque">MELHOR CUSTO-BENEFÍCIO</span>
                         <span class="plan-desconto">15% OFF</span>
                         <h3>ANUAL</h3>
                         <p class="plan-mensal">equivale a <strong>R$ 8,42</strong> por mês</p>
                     </div>
                     <div class="plan-card-body">
                         <ul class="plan-features">
+                            <li class="plan-economia"><i class="fa-solid fa-piggy-bank"></i> Você economiza <strong>R$ 17,82</strong> no ano</li>
                             <li><i class="fa-solid fa-check"></i> Validade : 12 Meses</li>
                             <li><i class="fa-solid fa-check"></i> Link Para Redes Sociais e Site : Sim</li>
                             <li><i class="fa-solid fa-check"></i> Contato direto para WhatsApp : Sim</li>
@@ -472,7 +509,7 @@
                             <li><i class="fa-solid fa-check"></i> Espaço para logomarca : Sim</li>
                             <li><i class="fa-solid fa-check"></i> Horário De Funcionamento : Sim</li>
                         </ul>
-                        <a href="auth/cadastro.html?plano=anual" class="btn-choose btn-highlight">CONTRATAR PLANO</a>
+                        <a href="auth/cadastro.html?plano=anual" class="btn-choose btn-highlight">QUERO O PLANO ANUAL</a>
                     </div>
                 </div>
 
