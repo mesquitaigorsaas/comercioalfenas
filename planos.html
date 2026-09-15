@@ -28,22 +28,46 @@
         }
 
         /* 2. HERO / BANNER DA PÁGINA PLANOS */
-        /* A foto de Alfenas no fundo. O escurecido segura a leitura do
-           título branco em cima da igreja. A posição "center 30%" guarda
-           o "Alfenas é o nosso foco" do canto direito no computador. */
+        /* A capa é a imagem pronta: "PLANOS", a frase, o nome do guia e o
+           caminho "Início > Planos" já vêm desenhados nela. Entra inteira,
+           sem corte, do mesmo jeito que o topo dos cards. */
         .plans-hero {
             background-color: #27272a;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)), url('assets/img/planos/capa-planos.jpg');
-            background-size: cover;
-            background-position: center 30%;
             color: #ffffff;
             text-align: center;
-            padding: 70px 20px;
+            line-height: 0;
         }
 
-        .plans-hero h1,
-        .plans-hero p {
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        .plans-hero .capa-planos {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .capa-texto {
+            line-height: 1.5;
+            padding: 50px 20px;
+        }
+
+        /* Do tablet para cima vale a imagem, e o texto fica invisível, só
+           para leitor de tela e buscador. No celular é o contrário: a
+           imagem tem 1672px de largura e encolheria para uns 73px de
+           altura, com as letras ilegíveis — ali vale a faixa escura com o
+           texto de verdade. */
+        @media (min-width: 700px) {
+            .capa-texto {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                overflow: hidden;
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 699px) {
+            .plans-hero .capa-planos { display: none; }
         }
 
         .plans-hero h1 {
@@ -383,9 +407,11 @@
 
 
     <section class="plans-hero">
-        <div class="container">
+        <img class="capa-planos" src="assets/img/planos/capa-planos.jpg"
+             alt="Planos do Guia Comercial de Alfenas: coloque sua empresa onde seus clientes estão procurando">
+        <div class="container capa-texto">
             <h1>Planos</h1>
-            <p><a href="index.html">Home</a> &gt; Planos</p>
+            <p><a href="index.html">Início</a> &gt; Planos</p>
         </div>
     </section>
 
