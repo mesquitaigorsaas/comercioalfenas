@@ -117,6 +117,42 @@
             margin-top: 10px;
         }
 
+        /* O total do período assusta mais que o mês. Quem compara plano
+           pensa em "quanto por mês", e é essa conta que fica aqui. */
+        .plan-mensal {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-size: 0.85rem;
+        }
+
+        .plan-mensal strong {
+            color: #ff6600;
+            font-weight: 700;
+        }
+
+        /* O desconto é contado sobre o mês do trimestral (R$ 9,90):
+           semestral 10%, anual 15%. Fica no canto, por cima do fundo,
+           para não mudar a altura do topo — os três cards continuam
+           com as listas começando na mesma linha. */
+        .plan-card-header { position: relative; }
+
+        .plan-desconto {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ff6600;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
         .plan-card-body {
             padding: 30px 20px;
             display: flex;
@@ -378,6 +414,7 @@
                             <span class="currency">R$</span>29<span class="price-cents">,70</span>
                         </div>
                         <h3>TRIMESTRAL</h3>
+                        <p class="plan-mensal">equivale a <strong>R$ 9,90</strong> por mês</p>
                     </div>
                     <div class="plan-card-body">
                         <ul class="plan-features">
@@ -396,9 +433,11 @@
                 <div class="plan-card">
                     <div class="plan-card-header">
                         <div class="plan-price-box">
-                            <span class="currency">R$</span>54<span class="price-cents">,40</span>
+                            <span class="currency">R$</span>53<span class="price-cents">,46</span>
                         </div>
+                        <span class="plan-desconto">10% OFF</span>
                         <h3>SEMESTRAL</h3>
+                        <p class="plan-mensal">equivale a <strong>R$ 8,91</strong> por mês</p>
                     </div>
                     <div class="plan-card-body">
                         <ul class="plan-features">
@@ -417,9 +456,11 @@
                 <div class="plan-card featured">
                     <div class="plan-card-header">
                         <div class="plan-price-box">
-                            <span class="currency">R$</span>109<span class="price-cents">,80</span>
+                            <span class="currency">R$</span>100<span class="price-cents">,98</span>
                         </div>
+                        <span class="plan-desconto">15% OFF</span>
                         <h3>ANUAL</h3>
+                        <p class="plan-mensal">equivale a <strong>R$ 8,42</strong> por mês</p>
                     </div>
                     <div class="plan-card-body">
                         <ul class="plan-features">
