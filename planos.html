@@ -28,11 +28,22 @@
         }
 
         /* 2. HERO / BANNER DA PÁGINA PLANOS */
+        /* A foto de Alfenas no fundo. O escurecido segura a leitura do
+           título branco em cima da igreja. A posição "center 30%" guarda
+           o "Alfenas é o nosso foco" do canto direito no computador. */
         .plans-hero {
             background-color: #27272a;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)), url('assets/img/planos/capa-planos.jpg');
+            background-size: cover;
+            background-position: center 30%;
             color: #ffffff;
             text-align: center;
-            padding: 50px 20px;
+            padding: 70px 20px;
+        }
+
+        .plans-hero h1,
+        .plans-hero p {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
         .plans-hero h1 {
@@ -72,6 +83,10 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s;
+
+            /* O topo mede a largura do card, e não a da tela: é ela que
+               decide se o preço encosta no ícone da imagem. */
+            container-type: inline-size;
         }
 
         .plan-card:hover {
@@ -142,6 +157,47 @@
            com as listas começando na mesma linha. */
         .plan-card-header { position: relative; }
 
+        /* A imagem de cada plano no fundo do topo. Presa pela esquerda,
+           onde está o ícone do plano; o que sobra corta do lado direito.
+           O escurecido por cima segura a leitura do preço mesmo onde a
+           foto clareia (o céu do anual). */
+        .plan-card-header {
+            background-color: #27272a;
+            background-size: cover;
+            background-position: left center;
+        }
+
+        .plans-grid .plan-card:nth-child(1) .plan-card-header {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.55)), url('assets/img/planos/plano-trimestral.jpg');
+        }
+
+        .plans-grid .plan-card:nth-child(2) .plan-card-header {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.55)), url('assets/img/planos/plano-semestral.jpg');
+        }
+
+        .plans-grid .plan-card:nth-child(3) .plan-card-header {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.55)), url('assets/img/planos/plano-anual.jpg');
+        }
+
+        .plan-card-header .plan-price-box,
+        .plan-card-header h3 {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Card estreito (celular): o preço centralizado chegava em cima
+           do ícone do canto esquerdo da imagem — no anual, R$ 100,98
+           passava 5px por cima da estrela. Mais espaço à esquerda empurra
+           o bloco do preço para a direita, longe do ícone. */
+        @container (max-width: 380px) {
+            .plan-card-header { padding-left: 48px; padding-right: 12px; }
+        }
+
+        /* Mais estreito ainda (dois cards por fileira, perto de 680px de
+           tela): com 48px o anual ainda passava 2px por cima da estrela. */
+        @container (max-width: 320px) {
+            .plan-card-header { padding-left: 64px; }
+        }
+
         .plan-desconto {
             position: absolute;
             top: 12px;
@@ -158,19 +214,23 @@
         /* "Melhor custo-benefício", e não "mais escolhido": o guia é
            novo e ainda não tem venda que sustente a segunda frase. A
            primeira é conta — o anual tem o menor valor por mês. O azul é
-           o mesmo da borda do card em destaque. */
+           o mesmo da borda do card em destaque.
+
+           Fica no começo da lista, e não no canto do topo: o canto
+           esquerdo do topo é onde a imagem do plano tem o ícone. */
         .plan-destaque {
-            position: absolute;
-            top: 12px;
-            left: 12px;
+            align-self: center;
+            margin: -8px 0 14px;
             background: #2563eb;
             color: #ffffff;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             font-weight: 800;
             letter-spacing: 0.5px;
-            padding: 4px 10px;
+            padding: 5px 14px;
             border-radius: 999px;
         }
+
+        .plan-destaque i { margin-right: 4px; }
 
         .plan-card-body {
             padding: 30px 20px;
@@ -493,12 +553,12 @@
                         <div class="plan-price-box">
                             <span class="currency">R$</span>100<span class="price-cents">,98</span>
                         </div>
-                        <span class="plan-destaque">MELHOR CUSTO-BENEFÍCIO</span>
                         <span class="plan-desconto">15% OFF</span>
                         <h3>ANUAL</h3>
                         <p class="plan-mensal">equivale a <strong>R$ 8,42</strong> por mês</p>
                     </div>
                     <div class="plan-card-body">
+                        <p class="plan-destaque"><i class="fa-solid fa-star"></i> MELHOR CUSTO-BENEFÍCIO</p>
                         <ul class="plan-features">
                             <li class="plan-economia"><i class="fa-solid fa-piggy-bank"></i> Você economiza <strong>R$ 17,82</strong> no ano</li>
                             <li><i class="fa-solid fa-check"></i> Validade : 12 Meses</li>
