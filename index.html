@@ -453,6 +453,10 @@
                altura em vez de subir e descer de card para card. */
             display: flex;
             flex-direction: column;
+
+            /* O pé mede a largura do card, e não a da tela: com quatro
+               por fileira o card estreita antes de a grade virar três. */
+            container-type: inline-size;
         }
 
         .listing-card > a { flex: 1 1 auto; }
@@ -525,28 +529,31 @@
            Ele fica FORA do <a> que embrulha o card. Link dentro de link
            o navegador não aceita: ele fecha o primeiro por conta
            própria, e o card inteiro deixa de abrir a loja. */
+        /* Numa linha só, sempre. Com "Fechado" e "Entrega" juntos, a
+           quebra jogava os botões para baixo e aquele card ficava com o
+           pé mais alto que os vizinhos da fileira. */
         .listing-footer {
             border-top: 1px solid #f1f5f9;
-            padding: 12px 14px;
+            padding: 12px 12px;
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
+            flex-wrap: nowrap;
+            gap: 5px;
         }
 
         .selo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 9px;
+            gap: 4px;
+            padding: 4px 7px;
             border-radius: 999px;
-            font-size: 0.7rem;
+            font-size: 0.64rem;
             font-weight: 700;
-            letter-spacing: 0.2px;
+            letter-spacing: 0.1px;
             white-space: nowrap;
         }
 
-        .selo i { font-size: 0.6rem; }
+        .selo i { font-size: 0.55rem; }
 
         .selo-aberto  { background: #dcfce7; color: #15803d; }
         .selo-fechado { background: #f1f5f9; color: #64748b; }
@@ -563,15 +570,16 @@
 
         .listing-actions {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             margin-left: auto;
+            flex-shrink: 0;
         }
 
         /* Redondos e coloridos: são botões, e precisam parecer botões
            mesmo no canto de um card. */
         .listing-actions a {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -585,6 +593,18 @@
         .listing-actions a:hover {
             transform: scale(1.1);
             filter: brightness(1.08);
+        }
+
+        /* Card estreito (telas perto de 1024px, ainda com quatro por
+           fileira): "Fechado", "Entrega" e os dois botões só cabem
+           juntos se tudo encolher mais um pouco. */
+        @container (max-width: 250px) {
+            .listing-footer { padding: 12px 8px; gap: 4px; }
+            .selo { padding: 3px 5px; gap: 3px; font-size: 0.58rem; letter-spacing: 0; }
+            .selo i { font-size: 0.5rem; }
+            .selo-entrega i { font-size: 0.68rem; }
+            .listing-actions { gap: 4px; }
+            .listing-actions a { width: 28px; height: 28px; font-size: 0.85rem; }
         }
 
         .acao-whats { background: #25d366; }
