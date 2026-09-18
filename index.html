@@ -753,7 +753,14 @@
         <div class="banner-wrapper">
             <div class="banner-slides-container" id="bannerSlides">
                 <div class="banner-slide">
-                    <img src="assets/img/Banner0.jpg" alt="Mesquita Auto Peças: peças automotivas nacionais e importadas em Alfenas, com parcelamento em até 10x. Avenida Governador Valadares, 1134. Telefone (35) 3291-4040">
+                    <!-- B91, parceira financeira do guia. O botão do banner
+                         diz "Agende a visita do consultor": o clique abre o
+                         WhatsApp do Leandro, consultor da B91 em Alfenas,
+                         com a conversa já começada. -->
+                    <a href="https://wa.me/5538991449735?text=Ol%C3%A1%2C%20Leandro!%20Vi%20o%20banner%20da%20B91%20no%20Guia%20Comercial%20de%20Alfenas%20e%20quero%20agendar%20uma%20visita."
+                       target="_blank" rel="noopener">
+                        <img src="assets/img/BannerB91.jpg" alt="B91: venda hoje, receba hoje. Maquininha com recebimento no mesmo dia (D+0), conta PJ sem pegadinhas e atendimento humanizado em Alfenas. Agende a visita do consultor.">
+                    </a>
                     <div class="banner-caption">
                     </div>
                 </div>
@@ -966,6 +973,14 @@
         let currentIndex = 0;
         const totalSlides = slides.length;
 
+        // Com um banner só não há para onde girar: setas e bolinha
+        // somem, em vez de ficarem ali sem fazer nada.
+        if (totalSlides < 2) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            document.getElementById('bannerDots').style.display = 'none';
+        }
+
         function updateSlider() {
             slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
             dots.forEach((dot, idx) => {
@@ -1137,15 +1152,26 @@
                 // Ordem: destacados na frente e, entre iguais, ordem de
                 // cadastro — quem entrou primeiro aparece primeiro.
                 //
-                // PENDENTE: quando a promoção acabar, o destaque vira
-                // produto pago (a caixa de R$ 120 por 15 dias, na página
-                // de planos), e aí ele passa a decidir quem aparece
-                // aqui, não só em que ordem.
+                // O destaque pago (R$ 120 por 15 dias) só muda a ordem:
+                // quem comprou vem na frente, e o banco desliga sozinho
+                // quando os 15 dias acabam.
+                const hoje = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' });
+                const montarConsulta = (comVencimento) => {
                 let query = supabaseClient
                     .from('anuncios')
                     .select('*')
                     // Quem o administrador tirou do ar não aparece.
                     .eq('ativo', true);
+
+                // Nem quem está com o plano vencido ou ainda não pagou.
+                // Para o visitante o banco já esconde esses (013); o
+                // filtro aqui é para o anunciante logado, que o banco
+                // deixa ver a própria loja e que não deve se achar na
+                // vitrine enquanto ela está fora do ar para os outros.
+                // Táxi não vence, e entra pela categoria.
+                if (comVencimento) {
+                    query = query.or(`vence_em.gte.${hoje},categoria.eq."${window.REGRAS.categoriaGratuita}"`);
+                }
 
                 if (cidadeFiltro) {
                     query = query.eq('cidade', cidadeFiltro.toLowerCase());
@@ -1187,7 +1213,17 @@
                     .order('destaque', { ascending: false })
                     .order('criado_em', { ascending: true });
 
-                const { data, error } = await query;
+                return query;
+                };
+
+                // Enquanto o banco não tiver a coluna vence_em (antes de
+                // rodar o 013-pagamento.sql), a consulta com o filtro de
+                // vencimento dá erro. Aí vai sem ele: a vitrine não pode
+                // ficar vazia por causa da ordem em que as coisas sobem.
+                let { data, error } = await montarConsulta(true);
+                if (error && /vence_em/.test(error.message || '')) {
+                    ({ data, error } = await montarConsulta(false));
+                }
 
                 if (error) throw error;
 
