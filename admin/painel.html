@@ -937,7 +937,12 @@
                     </span>`;
         }
 
-        const primeiroNome = (a.nome_completo || '').trim().split(/\s+/)[0] || '';
+        // Loja cadastrada pelo guia vem com "Cadastrada pelo guia" no
+        // nome, que não é nome de gente: sem isto a conversa abriria
+        // com "Olá, Cadastrada!".
+        const primeiroNome = a.perfil_id
+            ? (a.nome_completo || '').trim().split(/\s+/)[0] || ''
+            : '';
 
         // Duas conversas diferentes saem deste mesmo botão. Quem já tem
         // anúncio no ar recebe só a abertura, porque o assunto varia —
@@ -980,7 +985,9 @@
 
                 <td class="celula-pessoa">
                     <strong>${escapar(a.nome_completo)}</strong>
-                    <small>${a.documento
+                    <small>${!a.perfil_id
+                        ? 'Ainda sem dono: pode ser passada para a conta do comerciante'
+                        : a.documento
                         ? `${a.tipo_documento === 'cnpj' ? 'CNPJ' : 'CPF'} ${formatarDocumento(a.documento)}`
                         : 'Documento não informado'}</small>
                 </td>
@@ -1049,16 +1056,20 @@
                             <i class="fa-solid fa-pen"></i> Editar
                         </a>
 
+                        <!-- Loja cadastrada pelo guia não tem responsável:
+                             não há cadastro de pessoa para abrir. -->
+                        ${a.perfil_id ? `
                         <button type="button" class="btn-acao" data-cadastro="${a.perfil_id}"
                                 title="Ver e editar o cadastro do responsável">
                             <i class="fa-solid fa-id-card"></i> Cadastro
-                        </button>
+                        </button>` : ''}
 
                         <!-- Vale para linha com loja e sem loja: o que se
                              apaga é o anunciante, e o anúncio vai junto
                              se existir. -->
                         <button type="button" class="btn-acao perigo"
-                                data-excluir="${a.perfil_id}"
+                                data-excluir="${a.perfil_id || ''}"
+                                data-anuncio="${a.anuncio_id || ''}"
                                 data-nome="${escapar(a.nome_completo || a.email || 'este cadastro')}"
                                 data-loja="${escapar(a.titulo || '')}"
                                 title="Excluir este anunciante do guia">
@@ -1147,6 +1158,32 @@
         const id = botao.dataset.excluir;
         const nome = botao.dataset.nome;
         const loja = botao.dataset.loja;
+
+        // Loja cadastrada pelo guia: não há conta nem cadastro de pessoa,
+        // só o anúncio. Ele é apagado direto (regra "admin apaga qualquer
+        // anuncio", da migração 013).
+        if (!id) {
+            if (!confirm(`Excluir o anúncio da loja ${loja}?\n\nNão há como desfazer.`)) {
+                return;
+            }
+
+            botao.disabled = true;
+
+            const { error } = await supabaseClient
+                .from('anuncios')
+                .delete()
+                .eq('id', botao.dataset.anuncio);
+
+            if (error) {
+                botao.disabled = false;
+                recado('erro', error.message || 'Não foi possível excluir.');
+                return;
+            }
+
+            recado('ok', 'Anúncio excluído.');
+            await carregarAnunciantes();
+            return;
+        }
 
         const oQueSai = loja
             ? `o cadastro de ${nome} e o anúncio da loja ${loja}`

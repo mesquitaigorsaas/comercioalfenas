@@ -1374,7 +1374,11 @@
                     // Em modo de edicao, mantem quem ja era o dono: se
                     // o administrador salvasse com o proprio id, a loja
                     // mudaria de dono sem ninguem pedir.
-                    user_id: donoDoAnuncio || usuarioAtual.id,
+                    //
+                    // Loja cadastrada pelo guia não tem dono (nulo), e
+                    // continua sem: o "||" de antes a entregaria ao
+                    // administrador que só veio corrigir um telefone.
+                    user_id: modoEdicao ? donoDoAnuncio : usuarioAtual.id,
                     titulo: document.getElementById('nomeEmpresa').value.trim(),
                     cidade: document.getElementById('cidade').value.toLowerCase().trim(),
                     categoria: document.getElementById('categoria').value.trim(),
@@ -1456,7 +1460,7 @@
                 // O administrador que veio editar a loja de outra pessoa
                 // volta para o painel de onde saiu, e não para o painel
                 // dele — que nem tem loja para mostrar.
-                const voltarPara = (souAdmin && donoDoAnuncio && donoDoAnuncio !== usuarioAtual.id)
+                const voltarPara = (souAdmin && modoEdicao && donoDoAnuncio !== usuarioAtual.id)
                     ? '../admin/painel.html'
                     : 'dashboard.html';
 
