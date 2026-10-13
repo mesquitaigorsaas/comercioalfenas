@@ -36,12 +36,44 @@
             padding: 0 20px;
         }
 
-        /* 2. HERO / BANNER DA PÁGINA PLANOS */
+        /* 2. HERO / BANNER DA PÁGINA
+           A capa é uma arte pronta, igual à da página de Planos: o título
+           e o caminho "Início > Quem Somos" já vêm desenhados nela. */
         .plans-hero {
             background-color: #27272a;
             color: #ffffff;
             text-align: center;
+            line-height: 0;
+        }
+
+        .plans-hero .capa-planos {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .capa-texto {
+            line-height: 1.5;
             padding: 50px 20px;
+        }
+
+        /* Do tablet para cima vale a imagem, e o texto fica só para leitor
+           de tela e buscador. No celular a arte encolheria até as letras
+           ficarem ilegíveis: ali vale a faixa escura com o texto. */
+        @media (min-width: 700px) {
+            .capa-texto {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                overflow: hidden;
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 699px) {
+            .plans-hero .capa-planos { display: none; }
         }
 
         .plans-hero h1 {
@@ -455,9 +487,11 @@
     </header>
 
     <section class="plans-hero">
-        <div class="container">
+        <img class="capa-planos" src="assets/img/planos/capa-quem-somos.jpg"
+             alt="Quem somos: nascemos para conectar negócios locais com os moradores de Alfenas e região">
+        <div class="container capa-texto">
             <h1>Sobre nós</h1>
-            <p><a href="index.html">Home</a> &gt; Sobre nós</p>
+            <p><a href="index.html">Início</a> &gt; Sobre nós</p>
         </div>
     </section>
 
