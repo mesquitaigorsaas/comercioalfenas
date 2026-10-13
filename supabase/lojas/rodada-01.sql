@@ -1,4 +1,8 @@
 -- =====================================================================
+-- JÁ RODADO EM 12/10/2026. NÃO RODE DE NOVO: ele traria de volta as três
+-- lojas que a rodada-01-correcao.sql tirou do ar por não cumprirem a
+-- regra de fotos reais e informações completas.
+-- =====================================================================
 -- Lojas cadastradas pelo guia — RODADA 1
 -- Academias e Esportes · Advocacia e Contabilidade · Agropecuária
 --
