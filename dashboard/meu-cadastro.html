@@ -264,6 +264,47 @@
                 </form>
             </div>
 
+            <!-- Troca de senha, separada do cadastro: é outra ação, com
+                 outro botão, e não depende de mexer em mais nada. As
+                 contas das lojas cadastradas pelo guia nascem com uma
+                 senha gerada por nós; é aqui que o dono põe a dele. -->
+            <div class="cadastro-card" id="cartaoSenha" style="display:none; margin-top:24px;">
+                <div id="recadoSenha"></div>
+
+                <form id="formSenha" autocomplete="on">
+                    <p class="cadastro-secao">Alterar senha</p>
+
+                    <!-- Campo oculto com o e-mail: ajuda o gerenciador de
+                         senhas do navegador a saber de qual conta é a
+                         senha nova. -->
+                    <input type="email" id="emailSenha" autocomplete="username" style="display:none;" readonly>
+
+                    <div class="campo">
+                        <label for="senhaAntiga">Senha atual *</label>
+                        <input type="password" id="senhaAntiga" autocomplete="current-password" required>
+                    </div>
+
+                    <div class="linha">
+                        <div class="campo">
+                            <label for="senhaNova">Nova senha *</label>
+                            <input type="password" id="senhaNova" autocomplete="new-password" minlength="8" required>
+                            <span class="campo-nota">No mínimo 8 caracteres.</span>
+                        </div>
+
+                        <div class="campo">
+                            <label for="senhaConfirma">Repita a nova senha *</label>
+                            <input type="password" id="senhaConfirma" autocomplete="new-password" minlength="8" required>
+                        </div>
+                    </div>
+
+                    <div class="rodape-form">
+                        <button type="submit" class="btn-salvar" id="btnSenha">
+                            <i class="fa-solid fa-key"></i> Alterar senha
+                        </button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </main>
 
@@ -314,6 +355,7 @@
 
         document.getElementById('carregando').style.display = 'none';
         document.getElementById('cartao').style.display = '';
+        document.getElementById('cartaoSenha').style.display = '';
 
         if (error || !perfil) {
             recado('erro', 'Não foi possível carregar seu cadastro. Recarregue a página.');
@@ -323,6 +365,7 @@
 
         emailOriginal = (user.email || '').toLowerCase();
         documentoOriginal = soNumeros(perfil.documento);
+        document.getElementById('emailSenha').value = user.email || '';
 
         document.getElementById('email').value = user.email || '';
         document.getElementById('documento').value = formatarDocumento(perfil.documento);
@@ -547,6 +590,67 @@
         if (/cep/.test(bruta)) return 'Confira o CEP: são 8 números.';
         return 'Não foi possível salvar: ' + bruta;
     }
+
+    // ===== Alterar senha =====
+    //
+    // A senha atual é conferida no servidor antes de trocar: num
+    // computador emprestado e ainda logado, sem isso qualquer um
+    // trocaria a senha e tomaria a conta.
+    function recadoSenha(tipo, texto) {
+        document.getElementById('recadoSenha').innerHTML = `
+            <div class="aviso ${tipo}">
+                <i class="fa-solid ${tipo === 'ok' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+                <span>${texto}</span>
+            </div>`;
+    }
+
+    document.getElementById('formSenha').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const botao = document.getElementById('btnSenha');
+        const antiga = document.getElementById('senhaAntiga').value;
+        const nova = document.getElementById('senhaNova').value;
+        const confirma = document.getElementById('senhaConfirma').value;
+
+        if (nova.length < 8) {
+            recadoSenha('erro', 'A nova senha precisa ter pelo menos 8 caracteres.');
+            return;
+        }
+        if (nova !== confirma) {
+            recadoSenha('erro', 'A confirmação não bate com a nova senha. Digite as duas iguais.');
+            return;
+        }
+        if (nova === antiga) {
+            recadoSenha('erro', 'A nova senha é igual à atual. Escolha outra.');
+            return;
+        }
+
+        botao.disabled = true;
+
+        const { error: erroAtual } = await supabaseClient.auth.signInWithPassword({
+            email: emailOriginal,
+            password: antiga
+        });
+
+        if (erroAtual) {
+            botao.disabled = false;
+            recadoSenha('erro', 'Senha atual incorreta. A senha não foi alterada.');
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({ password: nova });
+
+        botao.disabled = false;
+
+        if (error) {
+            recadoSenha('erro', 'Não foi possível alterar a senha: ' + error.message);
+            return;
+        }
+
+        document.getElementById('formSenha').reset();
+        document.getElementById('emailSenha').value = emailOriginal;
+        recadoSenha('ok', 'Senha alterada. Da próxima vez, entre com a senha nova.');
+    });
 
     // ===== Sair =====
     document.getElementById('btnSair').addEventListener('click', async (e) => {
